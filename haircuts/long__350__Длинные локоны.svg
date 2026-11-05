@@ -1,1 +1,13 @@
-<svg width="600" height="720" class="figure-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 720" aria-hidden="true"><defs><linearGradient id="f5gold" x1="0" x2="1"><stop stop-color="#d79b13"/><stop offset=".22" stop-color="#ffd95a"/><stop offset=".65" stop-color="#f4c337"/><stop offset="1" stop-color="#d69b13"/></linearGradient><linearGradient id="f5shine" x1="0" y1="0" x2="1" y2=".6"><stop stop-color="#fff" stop-opacity=".37"/><stop offset=".35" stop-color="#fff" stop-opacity=".06"/><stop offset=".7" stop-color="#000" stop-opacity=".02"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient></defs><g><path d="M204 318q-17-103 7-153 22-47 87-46 65-7 90 48 19 51 10 151l-41-3 1-102q-37-9-55-39-17 30-61 45l5 97Z" fill="#38251e" stroke="#24170f" stroke-opacity=".5" stroke-width="2"/><path d="M204 318q-17-103 7-153 22-47 87-46 65-7 90 48 19 51 10 151l-41-3 1-102q-37-9-55-39-17 30-61 45l5 97Z" fill="url(#f5shine)"/><g fill="none" stroke="#e8be91" stroke-opacity=".22" stroke-width="5" stroke-linecap="round"><path d="M285 143q-65 20-59 122m70-120q-34 33-56 44m69-47q53 19 61 113"/></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720">
+ <title>Длинные локоны</title>
+ <defs>
+  <linearGradient id="shine" x1="0" y1="0" x2="1" y2=".6"><stop stop-color="#fff" stop-opacity=".24"/><stop offset=".4" stop-color="#fff" stop-opacity=".03"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+  <clipPath id="face-opening"><path d="M190 110 H410 V327 H356 V224 C336 225 316 215 300 211 C282 222 263 225 244 224 V327 H190 Z"/></clipPath>
+ </defs>
+ <g clip-path="url(#face-opening)">
+  <path d="M207 320 C197 283 198 213 211 181 C222 146 254 135 298 139 C341 132 377 149 389 180 C404 220 402 280 394 320 L357 317 L356 222 C333 215 316 202 301 189 C284 209 264 218 244 223 L245 317 Z" fill="#38251e" stroke="#24170f" stroke-opacity=".45" stroke-width="2"/>
+  <path d="M207 320 C197 283 198 213 211 181 C222 146 254 135 298 139 C341 132 377 149 389 180 C404 220 402 280 394 320 L357 317 L356 222 C333 215 316 202 301 189 C284 209 264 218 244 223 L245 317 Z" fill="url(#shine)"/>
+
+  <path d="M286 155 C247 151 216 195 222 278 M288 174 C275 194 256 205 242 209 M311 154 C357 149 387 197 379 283 M314 175 C328 197 344 207 357 210 M232 240 L230 303 M369 242 L371 302" fill="none" stroke="#e8be91" stroke-opacity=".25" stroke-width="4" stroke-linecap="round"/>
+ </g>
+</svg>

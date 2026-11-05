@@ -16,8 +16,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install test tools
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
       - name: Test catalog and configurator
         run: npm test
+      - name: Test pointer interaction and hairstyle alignment
+        run: npm run test:browser
       - name: Build static site
         run: npm run build
       - uses: actions/upload-pages-artifact@v3

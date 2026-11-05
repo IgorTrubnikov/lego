@@ -18,17 +18,26 @@ function render(){
  $('#breakdown').innerHTML=categories.map(c=>`<div>${c.singular}<strong>${money(parts.find(p=>p.id===selection[c.id])?.price||0)}</strong></div>`).join('');
  renderCatalog();persist('teuilor-selection-v1',selection);
 }
+function renderTabs(){
+ if(!$('#tabs').children.length){
+  $('#tabs').innerHTML=categories.map(c=>`<button class="tab" role="tab" id="tab-${c.id}" aria-controls="catalog" data-category="${c.id}"><svg viewBox="0 0 24 24" aria-hidden="true">${c.icon}</svg>${c.name}</button>`).join('');
+ }
+ for(const tab of $('#tabs').children){
+  const active=tab.dataset.category===current;
+  tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;
+ }
+}
 function renderCatalog(){
- $('#tabs').innerHTML=categories.map(c=>`<button class="tab" role="tab" id="tab-${c.id}" aria-controls="catalog" aria-selected="${current===c.id}" tabindex="${current===c.id?0:-1}" data-category="${c.id}"><svg viewBox="0 0 24 24" aria-hidden="true">${c.icon}</svg>${c.name}</button>`).join('');
+ renderTabs();
  const list=parts.filter(p=>p.category===current);
  $('#category-title').textContent=categories.find(c=>c.id===current).name;
  $('#variants-count').textContent=`${list.length} ${list.length%10===1&&list.length%100!==11?'вариант':list.length%10>=2&&list.length%10<=4&&(list.length%100<12||list.length%100>14)?'варианта':'вариантов'}`;
  $('#catalog').setAttribute('aria-labelledby','tab-'+current);
  $('#catalog').innerHTML=list.map(p=>`<button title="${escapeHtml(p.name)}" class="part-card ${selection[current]===p.id?'selected':''}" data-part="${escapeHtml(p.id)}" aria-pressed="${selection[current]===p.id}" aria-label="${escapeHtml(p.name)}, ${money(p.price)}"><span class="part-art">${renderFigure({...selection,[current]:p.id},parts,current)}</span><span class="part-name">${escapeHtml(p.name)}</span><span class="part-price">${money(p.price)}</span></button>`).join('');
 }
-$('#tabs').addEventListener('click',e=>{const btn=e.target.closest('[data-category]');if(btn){current=btn.dataset.category;renderCatalog();$('#tab-'+current).focus();}});
-$('#tabs').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const index=categories.findIndex(c=>c.id===current);current=categories[e.key==='Home'?0:e.key==='End'?3:(index+(e.key==='ArrowRight'?1:3))%4].id;renderCatalog();$('#tab-'+current).focus();});
-$('#catalog').addEventListener('click',e=>{const btn=e.target.closest('[data-part]');if(btn){selection[current]=btn.dataset.part;render();document.querySelector(`[data-part="${selection[current]}"]`)?.focus();}});
+$('#tabs').addEventListener('click',e=>{const btn=e.target.closest('[data-category]');if(btn){current=btn.dataset.category;renderCatalog();$('#tab-'+current).focus({preventScroll:true});}});
+$('#tabs').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const index=categories.findIndex(c=>c.id===current);current=categories[e.key==='Home'?0:e.key==='End'?3:(index+(e.key==='ArrowRight'?1:3))%4].id;renderCatalog();$('#tab-'+current).focus({preventScroll:true});});
+$('#catalog').addEventListener('click',e=>{const btn=e.target.closest('[data-part]');if(btn){selection[current]=btn.dataset.part;render();document.querySelector(`[data-part="${selection[current]}"]`)?.focus({preventScroll:true});}});
 $('#reset').onclick=()=>{selection={...startingSelection};render();toast('Вернулись к первой истории');};
 $('#random').onclick=()=>{for(const c of categories){const list=parts.filter(p=>p.category===c.id);selection[c.id]=list[Math.floor(Math.random()*list.length)].id;}render();};
 function renderCart(){

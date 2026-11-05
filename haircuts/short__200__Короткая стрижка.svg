@@ -1,1 +1,13 @@
-<svg width="600" height="720" class="figure-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 720" aria-hidden="true"><defs><linearGradient id="f6gold" x1="0" x2="1"><stop stop-color="#d79b13"/><stop offset=".22" stop-color="#ffd95a"/><stop offset=".65" stop-color="#f4c337"/><stop offset="1" stop-color="#d69b13"/></linearGradient><linearGradient id="f6shine" x1="0" y1="0" x2="1" y2=".6"><stop stop-color="#fff" stop-opacity=".37"/><stop offset=".35" stop-color="#fff" stop-opacity=".06"/><stop offset=".7" stop-color="#000" stop-opacity=".02"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient></defs><g><path d="M216 222q-17-65 32-86 41-20 83-4 59 16 52 84l-30-22-26-20-57 20-27 21-8 28Z" fill="#37251e" stroke="#24170f" stroke-opacity=".5" stroke-width="2"/><path d="M216 222q-17-65 32-86 41-20 83-4 59 16 52 84l-30-22-26-20-57 20-27 21-8 28Z" fill="url(#f6shine)"/><g fill="none" stroke="#e8be91" stroke-opacity=".22" stroke-width="5" stroke-linecap="round"><path d="M222 172q0-36 42-34 15-32 47-16m-69 58q28 3 46-26 38 26 70 4m-30-33q47-1 57 38"/></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720">
+ <title>Короткая стрижка</title>
+ <defs>
+  <linearGradient id="shine" x1="0" y1="0" x2="1" y2=".6"><stop stop-color="#fff" stop-opacity=".24"/><stop offset=".4" stop-color="#fff" stop-opacity=".03"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+  <clipPath id="face-opening"><path d="M190 110 H410 V327 H356 V224 C336 225 316 215 300 211 C282 222 263 225 244 224 V327 H190 Z"/></clipPath>
+ </defs>
+ <g clip-path="url(#face-opening)">
+  <path d="M219 245 C206 223 208 196 218 176 C231 150 256 142 284 147 C314 135 350 146 371 165 C392 183 394 219 382 244 L365 232 L360 210 C342 211 323 202 311 190 C291 208 267 218 240 214 L236 235 Z" fill="#37251e" stroke="#24170f" stroke-opacity=".45" stroke-width="2"/>
+  <path d="M219 245 C206 223 208 196 218 176 C231 150 256 142 284 147 C314 135 350 146 371 165 C392 183 394 219 382 244 L365 232 L360 210 C342 211 323 202 311 190 C291 208 267 218 240 214 L236 235 Z" fill="url(#shine)"/>
+
+  <path d="M228 190 C247 164 276 169 291 164 M240 201 C264 206 285 190 299 179 M309 161 C336 153 364 178 372 201 M321 184 C334 199 348 199 358 199" fill="none" stroke="#e8be91" stroke-opacity=".25" stroke-width="4" stroke-linecap="round"/>
+ </g>
+</svg>
