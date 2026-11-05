@@ -1,34 +1,262 @@
 {
   "expectedTotal": 28,
-  "expectedCategories": {"frames": 15, "keychains": 9, "domes": 4},
+  "expectedCategories": {
+    "frames": 15,
+    "keychains": 9,
+    "domes": 4
+  },
   "works": [
-    {"position":1,"id":"new-01","category":"keychains","title":"Парные брелоки с чёрным сердцем","source":null},
-    {"position":2,"id":"new-02","category":"frames","title":"Семейная рамка","source":null},
-    {"position":3,"id":"new-03","category":"keychains","title":"Парные брелоки с рюкзаком","source":null},
-    {"position":4,"id":"new-04","category":"keychains","title":"Брелок с питомцем","source":null},
-    {"position":5,"id":"new-05","category":"frames","title":"Февральская история с котиком","source":null},
-    {"position":6,"id":"new-06","category":"domes","title":"Пара на деревянной подставке","source":null},
-    {"position":7,"id":"new-07","category":"frames","title":"Рамка с мотоциклом и фотографиями","source":null},
-    {"position":8,"id":"new-08","category":"frames","title":"Любовь в маленьких деталях","source":null},
-    {"position":9,"id":"new-09","category":"frames","title":"Большое розовое сердце","source":null},
-    {"position":10,"id":"new-10","category":"frames","title":"Зубная фея","source":null},
-    {"position":11,"id":"new-11","category":"domes","title":"Пара с телефоном под колпаком","source":null},
-    {"position":12,"id":"new-12","category":"keychains","title":"Брелоки с красным сердцем","source":null},
-    {"position":13,"id":"new-13","category":"frames","title":"Для лучшей подруги","source":null},
-    {"position":14,"id":"new-14","category":"frames","title":"Рамка с маленькими сердцами","source":null},
-    {"position":15,"id":"new-15","category":"keychains","title":"Парные брелоки в упаковке Love","source":null},
-    {"position":16,"id":"new-16","category":"frames","title":"Рамка с нежным фоном","source":null},
-    {"position":17,"id":"new-17","category":"frames","title":"История для двоих","source":null},
-    {"position":18,"id":"new-18","category":"frames","title":"Розовая рамка с мотоциклом","source":null},
-    {"position":19,"id":"new-19","category":"domes","title":"Пара с розовой сумкой под колпаком","source":null},
-    {"position":20,"id":"new-20","category":"frames","title":"Рамка с февральским календарём","source":null},
-    {"position":21,"id":"new-21","category":"keychains","title":"Пара с мишкой на ёлке","source":null},
-    {"position":22,"id":"new-22","category":"keychains","title":"Брелоки с телефонами на ёлке","source":null},
-    {"position":23,"id":"new-23","category":"keychains","title":"Пара с сердцем на ёлке","source":null},
-    {"position":24,"id":"new-24","category":"frames","title":"Любовь — это…","source":null},
-    {"position":25,"id":"new-25","category":"frames","title":"Рамка с розовыми сердцами","source":null},
-    {"position":26,"id":"new-26","category":"keychains","title":"Парные брелоки в бордовой упаковке","source":null},
-    {"position":27,"id":"new-27","category":"frames","title":"Рамка With Love","source":null},
-    {"position":28,"id":"new-28","category":"domes","title":"Семья с коляской под колпаком","source":null}
+    {
+      "position": 1,
+      "id": "new-01",
+      "source": "1.jpg",
+      "category": "keychains",
+      "title": "Парные брелоки с чёрным сердцем",
+      "alt": "Парные брелоки с двумя минифигурками и чёрным сердцем на ладони.",
+      "sourceSha256": "82f6280394a56b5fa9f54e980f37ab3d972b8881579f9901b936b0c75d212ea6"
+    },
+    {
+      "position": 2,
+      "id": "new-02",
+      "source": "2.jpg",
+      "category": "frames",
+      "title": "Семейная рамка",
+      "alt": "Белая семейная рамка с тремя минифигурками и надписью family.",
+      "sourceSha256": "b4af60508d40383476ee0bfef33a6f50f7ac402bd4cb315068bc0958d0490a13"
+    },
+    {
+      "position": 3,
+      "id": "new-03",
+      "source": "3.jpg",
+      "category": "keychains",
+      "title": "Парные брелоки с рюкзаком",
+      "alt": "Два брелока на ладони: минифигурка в светлой кофте и минифигурка с рюкзаком.",
+      "sourceSha256": "d4029fff9dabf9c4b52aae84a3031da6c1218b8d9943c1a4cc1b87a5a1066c44"
+    },
+    {
+      "position": 4,
+      "id": "new-04",
+      "source": "4.JPG",
+      "category": "keychains",
+      "title": "Брелок с питомцем",
+      "alt": "Брелок с минифигуркой в чёрном платье и маленькой собакой рядом с ключами.",
+      "sourceSha256": "da2acc6b79cc64bd04a3e1de595aca270f6d5bc3674ee611a82be2861656a47d"
+    },
+    {
+      "position": 5,
+      "id": "new-05",
+      "source": "5.JPG",
+      "category": "frames",
+      "title": "Февральская история с котиком",
+      "alt": "Белая рамка с февральским календарём, двумя минифигурками, котиком и розовыми цветами.",
+      "sourceSha256": "69b94f1cfe146ccf3d984e5bb93b1142604474f804b096c749001d3dd4ca1436"
+    },
+    {
+      "position": 6,
+      "id": "new-06",
+      "source": "6.JPG",
+      "category": "frames",
+      "title": "Любовь — это…",
+      "alt": "Рамка Love is с сердцем из отпечатков, двумя минифигурками и чёрным котом.",
+      "sourceSha256": "14b2876f5adb3506fd825f77a61a85a4d9fa3510baf8fa20a30cc906ba9ac9e8"
+    },
+    {
+      "position": 7,
+      "id": "new-07",
+      "source": "7.jpg",
+      "category": "domes",
+      "title": "Пара на деревянной подставке",
+      "alt": "Две минифигурки под стеклянным колпаком на круглой деревянной подставке.",
+      "sourceSha256": "6f2bae6124d42c32e63c2d7fe003ff9cd0a223e3e8e786119dc7aa218990e207"
+    },
+    {
+      "position": 8,
+      "id": "new-08",
+      "source": "8.jpg",
+      "category": "frames",
+      "title": "Рамка с мотоциклом и фотографиями",
+      "alt": "Белая рамка с мотоциклом, двумя минифигурками и тремя фотографиями внизу.",
+      "sourceSha256": "3450f74cb581c4ea5a48449f56dc91101eda45442d1a1b79adb9f7833eac0c3e"
+    },
+    {
+      "position": 9,
+      "id": "new-09",
+      "source": "9.jpg",
+      "category": "frames",
+      "title": "Любовь в маленьких деталях",
+      "alt": "Белая рамка с надписью love, двумя минифигурками, чёрной сумкой и красным напитком.",
+      "sourceSha256": "4cb1f99c3875dc246d316efc08bc30d2dc952bf368b29e0b56c939cecaf217f9"
+    },
+    {
+      "position": 10,
+      "id": "new-10",
+      "source": "10.jpg",
+      "category": "frames",
+      "title": "Большое розовое сердце",
+      "alt": "Белая рамка с большим розовым сердцем и двумя минифигурками, одна держит цветы.",
+      "sourceSha256": "8c65b78b84813b8d294158fc0e6850df6131be901fe2a49916224eb4fd3ebb74"
+    },
+    {
+      "position": 11,
+      "id": "new-11",
+      "source": "11.jpg",
+      "category": "frames",
+      "title": "Зубная фея",
+      "alt": "Персональная рамка «Зубная фея» с одной минифигуркой на фоне розового зуба.",
+      "sourceSha256": "3ce5bbd0cd3a24cfa9ddbfe4382cfba0e88f529965db9a6aa55e3ca79139c3f5"
+    },
+    {
+      "position": 12,
+      "id": "new-12",
+      "source": "12.JPG",
+      "category": "frames",
+      "title": "Рамка с розовыми сердцами",
+      "alt": "Белая рамка с двумя минифигурками и розовыми сердцами под защитной плёнкой.",
+      "sourceSha256": "f3f02af42c8c8c618be8457b27c6fcae86774950fbb75f11cec90ff08cf055dc"
+    },
+    {
+      "position": 13,
+      "id": "new-13",
+      "source": "13.jpg",
+      "category": "domes",
+      "title": "Пара с телефоном под колпаком",
+      "alt": "Две минифигурки с телефоном под стеклянным колпаком на пробковой подставке.",
+      "sourceSha256": "8eafe8b866c649ca13fadf4640c4761e094f650ab641816a520d242f00fa20c8"
+    },
+    {
+      "position": 14,
+      "id": "new-14",
+      "source": "14.jpg",
+      "category": "keychains",
+      "title": "Брелоки с красным сердцем",
+      "alt": "Парные брелоки с красным сердцем и минифигурками в кофтах с надписями My BF и My GF.",
+      "sourceSha256": "916003ac5cdd0526dd70ee1fd3488f47c0e21c14f1f834a8a985232375204399"
+    },
+    {
+      "position": 15,
+      "id": "new-15",
+      "source": "15.jpg",
+      "category": "frames",
+      "title": "Для лучшей подруги",
+      "alt": "Рамка best friend с двумя минифигурками на фоне розового сердца.",
+      "sourceSha256": "a40f80f4a4c6b01da74cc305746ad2ca7e8a6577473170bddd7bb8871472344d"
+    },
+    {
+      "position": 16,
+      "id": "new-16",
+      "source": "16.jpg",
+      "category": "frames",
+      "title": "Рамка с маленькими сердцами",
+      "alt": "Белая рамка с маленькими розовыми сердцами, двумя минифигурками и коричневой книгой.",
+      "sourceSha256": "55a88792fb85a65d95394ddd45a665193bc21ea0669640cddf470db9e5bf4ebe"
+    },
+    {
+      "position": 17,
+      "id": "new-17",
+      "source": "17.jpg",
+      "category": "keychains",
+      "title": "Парные брелоки в упаковке Love",
+      "alt": "Два брелока с минифигурками в прозрачной упаковке на карточке Love с отпечатками поцелуев.",
+      "sourceSha256": "8e05ca0b1c9a5aef54a2e76e87a9bc743b9273a8ddec3b442ee107915763d8ed"
+    },
+    {
+      "position": 18,
+      "id": "new-18",
+      "source": "18.jpg",
+      "category": "frames",
+      "title": "Рамка с нежным фоном",
+      "alt": "Белая рамка с двумя минифигурками в голубой и светлой одежде на нежном розовом фоне.",
+      "sourceSha256": "3cd78d7f5eb19d3d78b8c0f87c648cec817a9b465e334b963ae916af8b933192"
+    },
+    {
+      "position": 19,
+      "id": "new-19",
+      "source": "19.jpg",
+      "category": "frames",
+      "title": "История для двоих",
+      "alt": "Белая рамка love с двумя минифигурками, одна держит розовую сумку.",
+      "sourceSha256": "76c1bb6b41e3ef8c98056ed55b03d6e691089f9875bcca01cfe154277d7454dc"
+    },
+    {
+      "position": 20,
+      "id": "new-20",
+      "source": "20.jpg",
+      "category": "keychains",
+      "title": "Парные брелоки в бордовой упаковке",
+      "alt": "Парные брелоки в прозрачной упаковке на карточке с бордовыми отпечатками поцелуев.",
+      "sourceSha256": "5d9e58e04806999eed3f659f893bed95dc492ce8f72999dfc7656db7f34bbdd5"
+    },
+    {
+      "position": 21,
+      "id": "new-21",
+      "source": "21.jpg",
+      "category": "frames",
+      "title": "Рамка With Love",
+      "alt": "Белая рамка With Love с двумя минифигурками и светлой сумкой.",
+      "sourceSha256": "742da5db438344dbb1b3c3afa7d433e3a684e5338a94aeb67173ef1e46651148"
+    },
+    {
+      "position": 22,
+      "id": "new-22",
+      "source": "22.JPG",
+      "category": "frames",
+      "title": "Розовая рамка с мотоциклом",
+      "alt": "Розовая рамка Good things are coming с двумя минифигурками, котом и мотоциклом.",
+      "sourceSha256": "22407fb13ae3abcd9956d2c743b4c6339ff80e54b3b0e7befe62f439dabcff43"
+    },
+    {
+      "position": 23,
+      "id": "new-23",
+      "source": "23.jpg",
+      "category": "domes",
+      "title": "Пара с розовой сумкой под колпаком",
+      "alt": "Пара минифигурок с розовой сумкой и телефоном под стеклянным колпаком.",
+      "sourceSha256": "1c96160fb129b79c4f77009cf0b22c9d706a5f6fa7c442143260bb619c06f40d"
+    },
+    {
+      "position": 24,
+      "id": "new-24",
+      "source": "24.JPG",
+      "category": "frames",
+      "title": "Рамка с февральским календарём",
+      "alt": "Белая рамка с февральским календарём, розовым сердцем и двумя минифигурками.",
+      "sourceSha256": "981003c9411fc3a8b4e37a259a1305ca99781b70990a8c1f37b5f8d23661f966"
+    },
+    {
+      "position": 25,
+      "id": "new-25",
+      "source": "25.jpg",
+      "category": "domes",
+      "title": "Семья с коляской под колпаком",
+      "alt": "Семейная композиция под стеклянным шаром: две взрослые минифигурки и малыш в коляске.",
+      "sourceSha256": "fee15cec65c57578f19347ac9f80b912496ab023ea3cf18ed6c76ca02a5f80e2"
+    },
+    {
+      "position": 26,
+      "id": "new-26",
+      "source": "26.JPG",
+      "category": "keychains",
+      "title": "Пара с мишкой на ёлке",
+      "alt": "Две минифигурки на новогодней ёлке: одна с мишкой, другая с телефоном.",
+      "sourceSha256": "da591fa26f7f713b62cb5da08af127236c51a7a01915563e4f6ce6d99a3fa9ff"
+    },
+    {
+      "position": 27,
+      "id": "new-27",
+      "source": "27.JPG",
+      "category": "keychains",
+      "title": "Брелоки с телефонами на ёлке",
+      "alt": "Два брелока с минифигурками и телефонами среди веток и золотых украшений ёлки.",
+      "sourceSha256": "190e2f41c0eac023828ff01f3a9d7f8453af8fcf0f77ff5ba63e24831ca64d47"
+    },
+    {
+      "position": 28,
+      "id": "new-28",
+      "source": "28.JPG",
+      "category": "keychains",
+      "title": "Пара с сердцем на ёлке",
+      "alt": "Пара минифигурок с розовым сердцем и телефоном среди золотых украшений ёлки.",
+      "sourceSha256": "12e42b034e47995c08ccf9c069507ada9b74692dd3e6ab30a1120dd044f17b23"
+    }
   ]
 }

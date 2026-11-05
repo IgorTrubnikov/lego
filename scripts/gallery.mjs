@@ -25,7 +25,7 @@ export function workCard(work,index,{preview=false}={}){
 }
 export function renderWorksPreview(works){
  if(!works.length)return '';
- const preferred=['heart','dome-pair','red-heart-keys'];
+ const preferred=['new-10','new-07','new-14'];
  const selected=[...preferred.map(id=>works.find(w=>w.id===id)).filter(Boolean),...works.filter(w=>!preferred.includes(w.id))].slice(0,3);
  return `<section class="works-preview"><div class="works-preview-heading"><div><div class="eyebrow">СДЕЛАНО С ЛЮБОВЬЮ</div><h2>Истории, которые <em>уже обрели форму.</em></h2></div><a class="text-link" href="works.html">Все готовые работы <span aria-hidden="true">→</span></a></div><div class="works-grid">${selected.map((work,index)=>workCard(work,index,{preview:true})).join('')}</div></section>`;
 }
