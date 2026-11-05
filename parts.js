@@ -6,7 +6,7 @@ export const categories = [
   { id: 'accessory', name: 'Аксессуары', singular: 'Аксессуар', optional: true, emptyLabel: 'Без аксессуара', icon: '<path d="M5 8h14l2 13H3ZM8 8V6a4 4 0 0 1 8 0v2"/>' },
   { id: 'animal', name: 'Животные', singular: 'Животное', optional: true, emptyLabel: 'Без животного', icon: '<path d="M7 13c-2 2-4 6-1 7s4-1 6-1 3 2 6 1 1-5-1-7q-5-5-10 0Z"/><ellipse cx="4" cy="9" rx="2" ry="3"/><ellipse cx="10" cy="5" rx="2" ry="3"/><ellipse cx="16" cy="5" rx="2" ry="3"/><ellipse cx="21" cy="10" rx="2" ry="3"/>' }
 ];
-export const initialSelection = { hair:'hair-wave',face:'face-smile',torso:'torso-cream',legs:'legs-cream',accessory:'accessory-none',animal:'animal-none' };
+export const initialSelection = { hair:'hair-wave',face:'face-smile',torso:'torso-3d-ivory-blazer',legs:'legs-3d-ivory',accessory:'accessory-none',animal:'animal-none' };
 // Empty choices are virtual: administrators only add actual images to the folders.
 export function withOptionalChoices(parts) {
  return [...categories.filter(c=>c.optional).map(c=>({id:c.id+'-none',category:c.id,name:c.emptyLabel,price:0})),...parts];
@@ -15,7 +15,7 @@ export const money = value => new Intl.NumberFormat('ru-RU').format(value) + ' �
 export function totalPrice(selection, parts) { return categories.reduce((sum,c)=>sum+(parts.find(p=>p.id===selection[c.id]&&p.category===c.id)?.price||0),0); }
 export function escapeHtml(value) { return String(value).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 export function renderFigure(selection, parts, crop) {
-  const views={hair:'155 65 290 255',face:'190 170 220 160',torso:'130 305 340 235',legs:'200 495 200 210',accessory:'15 405 150 290',animal:'430 435 170 265'};
+  const views={hair:'155 65 290 255',face:'190 170 220 160',torso:'125 280 350 270',legs:'200 445 200 250',accessory:'15 405 150 290',animal:'430 435 170 265'};
   const layers=(crop?[crop]:['legs','torso','face','hair','accessory','animal']).map(category=>{
     const part=parts.find(p=>p.id===selection[category]&&p.category===category);
     return part?.image ? `<image href="${escapeHtml(part.image)}" width="600" height="720" data-layer="${category}"/>` : '';

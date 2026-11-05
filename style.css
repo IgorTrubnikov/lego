@@ -7,3 +7,7 @@
 .arrow-icon{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.5}.shuffle-icon{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5;vertical-align:middle;margin-right:5px}
 
 .empty-choice{display:grid;place-items:center;height:100%;font-size:37px;font-weight:400;color:#bc98a3}.tab{min-width:0}.parts-panel{min-width:0}
+
+/* Keep a larger catalog within reach of the category tabs. */
+.catalog{max-height:340px;overflow-y:auto;align-content:start;padding:4px 5px 6px 4px;scrollbar-width:thin;scrollbar-color:#c69da9 transparent;overscroll-behavior:contain}
+.part-badge{position:absolute;top:9px;left:8px;font-size:6px;letter-spacing:.6px;font-weight:700;color:var(--wine);background:#fffaf3de;padding:3px 4px;border-radius:3px;pointer-events:none}

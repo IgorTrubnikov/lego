@@ -9,7 +9,7 @@ let selection={...startingSelection,...read('teuilor-selection-v1',{})};
 for(const c of categories) if(!parts.some(p=>p.id===selection[c.id]&&p.category===c.id)) selection[c.id]=startingSelection[c.id];
 let cart=read('teuilor-cart-v1',[]);if(!Array.isArray(cart))cart=[];
 cart=cart.filter(i=>i&&i.selection&&i.snapshot&&Array.isArray(i.snapshot)&&typeof i.total==='number');
-let current='hair',timer;
+let current='hair',renderedCategory,timer;
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('show');clearTimeout(timer);timer=setTimeout(()=>$('#toast').classList.remove('show'),3000);}
 function persist(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{toast('Не удалось сохранить: хранилище браузера заполнено или недоступно.');return false;}}
 function render(){
@@ -35,7 +35,9 @@ function renderCatalog(){
  $('#category-title').textContent=categories.find(c=>c.id===current).name;
  $('#variants-count').textContent=`${count} ${count%10===1&&count%100!==11?'вариант':count%10>=2&&count%10<=4&&(count%100<12||count%100>14)?'варианта':'вариантов'}`;
  $('#catalog').setAttribute('aria-labelledby','tab-'+current);
- $('#catalog').innerHTML=list.map(p=>`<button title="${escapeHtml(p.name)}" class="part-card ${selection[current]===p.id?'selected':''}" data-part="${escapeHtml(p.id)}" aria-pressed="${selection[current]===p.id}" aria-label="${escapeHtml(p.name)}, ${money(p.price)}"><span class="part-art">${p.image?renderFigure({...selection,[current]:p.id},parts,current):'<span class="empty-choice" aria-hidden="true">∅</span>'}</span><span class="part-name">${escapeHtml(p.name)}</span><span class="part-price">${money(p.price)}</span></button>`).join('');
+ const scrollTop=renderedCategory===current?$('#catalog').scrollTop:0;
+ $('#catalog').innerHTML=list.map(p=>`<button title="${escapeHtml(p.name)}" class="part-card ${selection[current]===p.id?'selected':''}" data-part="${escapeHtml(p.id)}" aria-pressed="${selection[current]===p.id}" aria-label="${escapeHtml(p.name)}, ${money(p.price)}">${p.id.includes('-3d-')?'<span class="part-badge">НОВОЕ</span>':''}<span class="part-art">${p.image?renderFigure({...selection,[current]:p.id},parts,current):'<span class="empty-choice" aria-hidden="true">∅</span>'}</span><span class="part-name">${escapeHtml(p.name)}</span><span class="part-price">${money(p.price)}</span></button>`).join('');
+ $('#catalog').scrollTop=scrollTop;renderedCategory=current;
 }
 $('#tabs').addEventListener('click',e=>{const btn=e.target.closest('[data-category]');if(btn){current=btn.dataset.category;renderCatalog();$('#tab-'+current).focus({preventScroll:true});}});
 $('#tabs').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const index=categories.findIndex(c=>c.id===current);current=categories[e.key==='Home'?0:e.key==='End'?categories.length-1:(index+(e.key==='ArrowRight'?1:categories.length-1))%categories.length].id;renderCatalog();$('#tab-'+current).focus({preventScroll:true});});

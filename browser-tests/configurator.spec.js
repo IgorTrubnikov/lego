@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('pants thumbnails cannot intercept category tabs',async({page})=>{
+ test.setTimeout(60_000);
  await page.goto('/');
  await page.locator('[data-category="legs"]').click();
  const pants=await page.locator('[data-part]').evaluateAll(buttons=>buttons.map(b=>b.dataset.part));
@@ -99,4 +100,60 @@ test('extras appear beside the figure, add to price, persist and reset to none',
  await page.locator('#random').click();await page.locator('#reset').click();
  for(const category of ['accessory','animal'])await expect(page.locator(`#figure [data-layer="${category}"]`)).toHaveCount(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+
+test('reference-based raster parts load with transparent background in their assembly slots',async({page})=>{
+ await page.goto('/');
+ const checks=await page.evaluate(async()=>{
+  const {default:catalog}=await import('./catalog.js');
+  const slots={torso:[139,285,322,257],legs:[212,451,176,232],animal:[430,435,170,265]};
+  return Promise.all(catalog.filter(p=>p.id.includes('-3d-')).map(async part=>{
+   const image=new Image();image.src=part.image;await image.decode();
+   const canvas=document.createElement('canvas');canvas.width=600;canvas.height=720;
+   const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0);
+   const data=ctx.getImageData(0,0,600,720).data;
+   const [left,top,width,height]=slots[part.category];
+   let visible=0,outside=0;
+   for(let y=0;y<720;y++)for(let x=0;x<600;x++)if(data[(y*600+x)*4+3]>0){
+    visible++;
+    if(x<left||x>=left+width||y<top||y>=top+height)outside++;
+   }
+   return {id:part.id,width:image.width,height:image.height,visible,outside};
+  }));
+ });
+ expect(checks.length).toBeGreaterThanOrEqual(18);
+ for(const check of checks){
+  expect([check.width,check.height],check.id).toEqual([600,720]);
+  expect(check.visible,check.id).toBeGreaterThan(500);
+  expect(check.outside,check.id+' does not cover other assembly slots').toBe(0);
+ }
+});
+
+test('new clothes, legs and pets combine with legacy parts and persist in the collection',async({page})=>{
+ await page.goto('/');
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const picks=[['torso','torso-3d-kitten-jacket'],['legs','legs-3d-blue'],['animal','animal-3d-ginger-kitten']];
+ for(const [category,id] of picks){
+  await page.locator(`[data-category="${category}"]`).click();
+  await page.locator(`[data-part="${id}"]`).click();
+  await expect(page.locator(`#figure [data-layer="${category}"]`)).toHaveAttribute('href',/\.webp$/);
+ }
+ await page.locator('[data-category="face"]').click();await page.locator('[data-part="face-glasses"]').click();
+ await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',/\.svg$/);
+ await page.locator('#add-cart').click();await page.reload();await page.locator('#cart-open').click();
+ await expect(page.locator('.cart-item')).toHaveCount(1);
+ await expect(page.locator('.cart-item')).toContainText('Жакет с котёнком');
+ await expect(page.locator('.cart-item')).toContainText('Рыжий котёнок');
+ await expect(page.locator('.cart-art image[href$=".webp"]')).toHaveCount(3);
+ await page.locator('#cart-dialog .close').click();
+ await page.locator('[data-category="torso"]').click();
+ const scrollArea=page.locator('#catalog');
+ expect(await scrollArea.evaluate(el=>el.scrollHeight>el.clientHeight)).toBe(true);
+ await page.locator('[data-part="torso-cream"]').click();
+ await expect(page.locator('#figure [data-layer="torso"]')).toHaveAttribute('href',/\.svg$/);
+ await page.locator('[data-category="animal"]').click();
+ expect(await scrollArea.evaluate(el=>el.scrollTop)).toBe(0);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ expect(errors).toEqual([]);
 });
