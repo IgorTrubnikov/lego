@@ -1,0 +1,240 @@
+[
+  {
+    "id": "hair-blond",
+    "category": "hair",
+    "name": "Солнечный блонд",
+    "price": 300,
+    "image": "./haircuts/blond__300__%D0%A1%D0%BE%D0%BB%D0%BD%D0%B5%D1%87%D0%BD%D1%8B%D0%B9%20%D0%B1%D0%BB%D0%BE%D0%BD%D0%B4.svg"
+  },
+  {
+    "id": "hair-bob",
+    "category": "hair",
+    "name": "Каре с пробором",
+    "price": 250,
+    "image": "./haircuts/bob__250__%D0%9A%D0%B0%D1%80%D0%B5%20%D1%81%20%D0%BF%D1%80%D0%BE%D0%B1%D0%BE%D1%80%D0%BE%D0%BC.svg"
+  },
+  {
+    "id": "hair-curls",
+    "category": "hair",
+    "name": "Каштановые кудри",
+    "price": 300,
+    "image": "./haircuts/curls__300__%D0%9A%D0%B0%D1%88%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D1%8B%D0%B5%20%D0%BA%D1%83%D0%B4%D1%80%D0%B8.svg"
+  },
+  {
+    "id": "hair-long",
+    "category": "hair",
+    "name": "Длинные локоны",
+    "price": 350,
+    "image": "./haircuts/long__350__%D0%94%D0%BB%D0%B8%D0%BD%D0%BD%D1%8B%D0%B5%20%D0%BB%D0%BE%D0%BA%D0%BE%D0%BD%D1%8B.svg"
+  },
+  {
+    "id": "hair-short",
+    "category": "hair",
+    "name": "Короткая стрижка",
+    "price": 200,
+    "image": "./haircuts/short__200__%D0%9A%D0%BE%D1%80%D0%BE%D1%82%D0%BA%D0%B0%D1%8F%20%D1%81%D1%82%D1%80%D0%B8%D0%B6%D0%BA%D0%B0.svg"
+  },
+  {
+    "id": "hair-wave",
+    "category": "hair",
+    "name": "Тёмные волны",
+    "price": 250,
+    "image": "./haircuts/wave__250__%D0%A2%D1%91%D0%BC%D0%BD%D1%8B%D0%B5%20%D0%B2%D0%BE%D0%BB%D0%BD%D1%8B.svg"
+  },
+  {
+    "id": "face-freckles",
+    "category": "face",
+    "name": "Веснушки",
+    "price": 200,
+    "image": "./faces/freckles__200__%D0%92%D0%B5%D1%81%D0%BD%D1%83%D1%88%D0%BA%D0%B8.svg"
+  },
+  {
+    "id": "face-glasses",
+    "category": "face",
+    "name": "В очках",
+    "price": 200,
+    "image": "./faces/glasses__200__%D0%92%20%D0%BE%D1%87%D0%BA%D0%B0%D1%85.svg"
+  },
+  {
+    "id": "face-grin",
+    "category": "face",
+    "name": "Счастливая улыбка",
+    "price": 150,
+    "image": "./faces/grin__150__%D0%A1%D1%87%D0%B0%D1%81%D1%82%D0%BB%D0%B8%D0%B2%D0%B0%D1%8F%20%D1%83%D0%BB%D1%8B%D0%B1%D0%BA%D0%B0.svg"
+  },
+  {
+    "id": "face-lashes",
+    "category": "face",
+    "name": "С ресничками",
+    "price": 200,
+    "image": "./faces/lashes__200__%D0%A1%20%D1%80%D0%B5%D1%81%D0%BD%D0%B8%D1%87%D0%BA%D0%B0%D0%BC%D0%B8.svg"
+  },
+  {
+    "id": "face-smile",
+    "category": "face",
+    "name": "Добрая улыбка",
+    "price": 150,
+    "image": "./faces/smile__150__%D0%94%D0%BE%D0%B1%D1%80%D0%B0%D1%8F%20%D1%83%D0%BB%D1%8B%D0%B1%D0%BA%D0%B0.svg"
+  },
+  {
+    "id": "face-wink",
+    "category": "face",
+    "name": "Подмигивание",
+    "price": 200,
+    "image": "./faces/wink__200__%D0%9F%D0%BE%D0%B4%D0%BC%D0%B8%D0%B3%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5.svg"
+  },
+  {
+    "id": "torso-black",
+    "category": "torso",
+    "name": "Чёрный топ",
+    "price": 300,
+    "image": "./clothes/black__300__%D0%A7%D1%91%D1%80%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D0%BF.svg"
+  },
+  {
+    "id": "torso-blue",
+    "category": "torso",
+    "name": "Синий свитшот",
+    "price": 300,
+    "image": "./clothes/blue__300__%D0%A1%D0%B8%D0%BD%D0%B8%D0%B9%20%D1%81%D0%B2%D0%B8%D1%82%D1%88%D0%BE%D1%82.svg"
+  },
+  {
+    "id": "torso-cream",
+    "category": "torso",
+    "name": "Молочная рубашка",
+    "price": 350,
+    "image": "./clothes/cream__350__%D0%9C%D0%BE%D0%BB%D0%BE%D1%87%D0%BD%D0%B0%D1%8F%20%D1%80%D1%83%D0%B1%D0%B0%D1%88%D0%BA%D0%B0.svg"
+  },
+  {
+    "id": "torso-green",
+    "category": "torso",
+    "name": "Шалфейная рубашка",
+    "price": 350,
+    "image": "./clothes/green__350__%D0%A8%D0%B0%D0%BB%D1%84%D0%B5%D0%B9%D0%BD%D0%B0%D1%8F%20%D1%80%D1%83%D0%B1%D0%B0%D1%88%D0%BA%D0%B0.svg"
+  },
+  {
+    "id": "torso-pink",
+    "category": "torso",
+    "name": "Розовое худи",
+    "price": 400,
+    "image": "./clothes/pink__400__%D0%A0%D0%BE%D0%B7%D0%BE%D0%B2%D0%BE%D0%B5%20%D1%85%D1%83%D0%B4%D0%B8.svg"
+  },
+  {
+    "id": "torso-red",
+    "category": "torso",
+    "name": "Красная футболка",
+    "price": 250,
+    "image": "./clothes/red__250__%D0%9A%D1%80%D0%B0%D1%81%D0%BD%D0%B0%D1%8F%20%D1%84%D1%83%D1%82%D0%B1%D0%BE%D0%BB%D0%BA%D0%B0.svg"
+  },
+  {
+    "id": "legs-black",
+    "category": "legs",
+    "name": "Чёрные брюки",
+    "price": 250,
+    "image": "./pants/black__250__%D0%A7%D1%91%D1%80%D0%BD%D1%8B%D0%B5%20%D0%B1%D1%80%D1%8E%D0%BA%D0%B8.svg"
+  },
+  {
+    "id": "legs-brown",
+    "category": "legs",
+    "name": "Шоколадные брюки",
+    "price": 250,
+    "image": "./pants/brown__250__%D0%A8%D0%BE%D0%BA%D0%BE%D0%BB%D0%B0%D0%B4%D0%BD%D1%8B%D0%B5%20%D0%B1%D1%80%D1%8E%D0%BA%D0%B8.svg"
+  },
+  {
+    "id": "legs-cream",
+    "category": "legs",
+    "name": "Молочные брюки",
+    "price": 250,
+    "image": "./pants/cream__250__%D0%9C%D0%BE%D0%BB%D0%BE%D1%87%D0%BD%D1%8B%D0%B5%20%D0%B1%D1%80%D1%8E%D0%BA%D0%B8.svg"
+  },
+  {
+    "id": "legs-denim",
+    "category": "legs",
+    "name": "Любимые джинсы",
+    "price": 300,
+    "image": "./pants/denim__300__%D0%9B%D1%8E%D0%B1%D0%B8%D0%BC%D1%8B%D0%B5%20%D0%B4%D0%B6%D0%B8%D0%BD%D1%81%D1%8B.svg"
+  },
+  {
+    "id": "legs-pink",
+    "category": "legs",
+    "name": "Пудровые брюки",
+    "price": 300,
+    "image": "./pants/pink__300__%D0%9F%D1%83%D0%B4%D1%80%D0%BE%D0%B2%D1%8B%D0%B5%20%D0%B1%D1%80%D1%8E%D0%BA%D0%B8.svg"
+  },
+  {
+    "id": "legs-sage",
+    "category": "legs",
+    "name": "Брюки шалфей",
+    "price": 300,
+    "image": "./pants/sage__300__%D0%91%D1%80%D1%8E%D0%BA%D0%B8%20%D1%88%D0%B0%D0%BB%D1%84%D0%B5%D0%B9.svg"
+  },
+  {
+    "id": "accessory-bouquet",
+    "category": "accessory",
+    "name": "Нежный букет",
+    "price": 350,
+    "image": "./accessories/bouquet__350__%D0%9D%D0%B5%D0%B6%D0%BD%D1%8B%D0%B9%20%D0%B1%D1%83%D0%BA%D0%B5%D1%82.svg"
+  },
+  {
+    "id": "accessory-handbag",
+    "category": "accessory",
+    "name": "Бордовая сумочка",
+    "price": 300,
+    "image": "./accessories/handbag__300__%D0%91%D0%BE%D1%80%D0%B4%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D1%83%D0%BC%D0%BE%D1%87%D0%BA%D0%B0.svg"
+  },
+  {
+    "id": "accessory-rose",
+    "category": "accessory",
+    "name": "Одна роза",
+    "price": 200,
+    "image": "./accessories/rose__200__%D0%9E%D0%B4%D0%BD%D0%B0%20%D1%80%D0%BE%D0%B7%D0%B0.svg"
+  },
+  {
+    "id": "accessory-tote",
+    "category": "accessory",
+    "name": "Молочный шопер",
+    "price": 250,
+    "image": "./accessories/tote__250__%D0%9C%D0%BE%D0%BB%D0%BE%D1%87%D0%BD%D1%8B%D0%B9%20%D1%88%D0%BE%D0%BF%D0%B5%D1%80.svg"
+  },
+  {
+    "id": "accessory-tulips",
+    "category": "accessory",
+    "name": "Розовые тюльпаны",
+    "price": 300,
+    "image": "./accessories/tulips__300__%D0%A0%D0%BE%D0%B7%D0%BE%D0%B2%D1%8B%D0%B5%20%D1%82%D1%8E%D0%BB%D1%8C%D0%BF%D0%B0%D0%BD%D1%8B.svg"
+  },
+  {
+    "id": "animal-black-cat",
+    "category": "animal",
+    "name": "Чёрная кошка",
+    "price": 350,
+    "image": "./animals/black-cat__350__%D0%A7%D1%91%D1%80%D0%BD%D0%B0%D1%8F%20%D0%BA%D0%BE%D1%88%D0%BA%D0%B0.svg"
+  },
+  {
+    "id": "animal-corgi",
+    "category": "animal",
+    "name": "Корги",
+    "price": 450,
+    "image": "./animals/corgi__450__%D0%9A%D0%BE%D1%80%D0%B3%D0%B8.svg"
+  },
+  {
+    "id": "animal-dalmatian",
+    "category": "animal",
+    "name": "Далматинец",
+    "price": 450,
+    "image": "./animals/dalmatian__450__%D0%94%D0%B0%D0%BB%D0%BC%D0%B0%D1%82%D0%B8%D0%BD%D0%B5%D1%86.svg"
+  },
+  {
+    "id": "animal-ginger-cat",
+    "category": "animal",
+    "name": "Рыжий кот",
+    "price": 350,
+    "image": "./animals/ginger-cat__350__%D0%A0%D1%8B%D0%B6%D0%B8%D0%B9%20%D0%BA%D0%BE%D1%82.svg"
+  },
+  {
+    "id": "animal-parrot",
+    "category": "animal",
+    "name": "Зелёный попугай",
+    "price": 400,
+    "image": "./animals/parrot__400__%D0%97%D0%B5%D0%BB%D1%91%D0%BD%D1%8B%D0%B9%20%D0%BF%D0%BE%D0%BF%D1%83%D0%B3%D0%B0%D0%B9.svg"
+  }
+]

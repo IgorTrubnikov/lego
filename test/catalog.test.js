@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,mkdir,writeFile,rm,rename} from 'node:fs/promises';
+import {mkdtemp,mkdir,writeFile,readFile,rm,rename} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {collectParts,folders,imageSize} from '../scripts/build.mjs';
@@ -44,3 +44,17 @@ test('reserves the empty-choice identifiers for optional categories',()=>fixture
  await writeFile(path.join(root,'animals/none__200__Кот.svg'),svg);
  await assert.rejects(collectParts(root),/повторяется идентификатор animal-none/);
 }));
+
+test('retained legacy catalog URLs keep their IDs and self-contained glossy artwork',async()=>{
+ const root=new URL('../',import.meta.url);
+ const original=JSON.parse(await readFile(new URL('fixtures/legacy-catalog.json',import.meta.url),'utf8'));
+ const catalog=await collectParts((await import('node:url')).fileURLToPath(root));
+ for(const expected of original){
+  // Future intentional removals or filename/price edits remain supported.
+  if(!catalog.some(p=>p.image===expected.image))continue;
+  assert.deepEqual(catalog.find(p=>p.id===expected.id),expected);
+  const svg=await readFile(new URL(expected.image,root),'utf8');
+  assert.match(svg,/data-render-style="glossy-plastic"/);
+  assert.match(svg,/data:image\/webp;base64,/);
+ }
+});
