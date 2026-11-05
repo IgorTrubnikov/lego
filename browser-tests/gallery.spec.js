@@ -8,6 +8,7 @@ test('gallery navigation, categories and every supplied photo work',async({page}
  if(page.viewportSize().width<=1000){await page.locator('.mobile-menu summary').click();await page.getByRole('navigation',{name:'Мобильная навигация'}).getByRole('link',{name:'Готовые работы',exact:true}).click();}
  else await page.getByRole('navigation',{name:'Основная навигация'}).getByRole('link',{name:'Готовые работы',exact:true}).click();
  await expect(page).toHaveURL(/works\.html$/);
+ if(!works.length){await expect(page.locator('.gallery-empty')).toBeVisible();await expect(page.locator('#works-grid .work-card')).toHaveCount(0);expect(errors).toEqual([]);return;}
  await expect(page.locator('#works-grid .work-card')).toHaveCount(works.length);
  await expect(page.locator('#work-count')).toHaveText(works.length+' фото');
  for(const category of ['frames','keychains','domes']){
@@ -26,6 +27,7 @@ test('gallery navigation, categories and every supplied photo work',async({page}
 });
 
 test('full-size view supports next, previous, filtering, Escape and focus restoration',async({page})=>{
+ test.skip(!works.length,'Gallery is intentionally empty while awaiting the replacement photos.');
  await page.goto('/works.html');
  const category=works[0].category,subset=works.filter(w=>w.category===category);
  await page.locator(`[data-filter="${category}"]`).click();
@@ -49,7 +51,8 @@ test('gallery remains a usable photo page without JavaScript',async({browser})=>
  await page.goto('http://127.0.0.1:3100/works.html');
  await expect(page.locator('#works-grid .work-card')).toHaveCount(works.length);
  await expect(page.locator('.work-filters')).not.toBeVisible();
- await expect(page.locator('#works-grid .work-open').first()).toHaveAttribute('href',works[0].full);
+ if(works.length)await expect(page.locator('#works-grid .work-open').first()).toHaveAttribute('href',works[0].full);
+ else await expect(page.locator('.gallery-empty')).toBeVisible();
  await page.locator('.mobile-menu summary').click();await expect(page.getByRole('navigation',{name:'Мобильная навигация'})).toBeVisible();
  await context.close();
 });
