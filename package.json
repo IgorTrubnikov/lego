@@ -1,0 +1,15 @@
+{
+  "name": "teuilor-minifigure-studio",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "npm run start",
+    "start": "npm run build && node server.mjs",
+    "test": "node test/parts.test.js && node test/catalog.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "type": "module"
+}
