@@ -55,6 +55,6 @@ $('#add-cart').onclick=()=>{
  if(!persist('teuilor-cart-v1',next))return;cart=next;renderCart();toast('Твой человечек в коллекции ♡');
 };
 $('#cart-items').onclick=e=>{const b=e.target.closest('[data-remove]');if(!b)return;const next=cart.filter((_,i)=>i!==Number(b.dataset.remove));if(persist('teuilor-cart-v1',next)){cart=next;renderCart();}};
-for(const name of ['cart','about','catalog-help']){$('#'+name+'-open').onclick=()=>{if(name==='cart')renderCart();$('#'+name+'-dialog').showModal();};}
+for(const name of ['cart','catalog-help']){$('#'+name+'-open').onclick=()=>{if(name==='cart')renderCart();$('#'+name+'-dialog').showModal();};}
 for(const d of document.querySelectorAll('dialog')){d.querySelector('.close').onclick=()=>d.close();d.addEventListener('click',e=>{if(e.target!==d)return;const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close();});}
 render();renderCart();

@@ -1,6 +1,7 @@
 import { readdir, readFile, mkdir, rm, cp, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {categories} from '../parts.js';
+import {renderHeader,renderFooter,renderPage,pages} from './site-pages.mjs';
 import { fileURLToPath } from 'node:url';
 
 export const folders = { haircuts:'hair', faces:'face', clothes:'torso', pants:'legs', accessories:'accessory', animals:'animal' };
@@ -67,10 +68,14 @@ export async function collectParts(root) {
 export async function build(root=process.cwd(),output=path.join(root,'_site')) {
   const parts=await collectParts(root); // Validate before replacing the last successful build.
   await rm(output,{recursive:true,force:true});await mkdir(output,{recursive:true});
-  for(const file of ['index.html','style.css','app.js','parts.js','assets',...Object.keys(folders)]){
+  for(const file of ['index.html','style.css','app.js','navigation.js','parts.js','assets',...Object.keys(folders)]){
     try{await cp(path.join(root,file),path.join(output,file),{recursive:true});}
     catch(error){if(error.code==='ENOENT'&&categories.find(c=>c.id===folders[file])?.optional)continue;throw error;}
   }
+  const home=await readFile(path.join(root,'index.html'),'utf8');
+  if(!home.includes('<!-- SITE_HEADER -->')||!home.includes('<!-- SITE_FOOTER -->'))throw new Error('Missing shared navigation placeholders in index.html');
+  await writeFile(path.join(output,'index.html'),home.replace('<!-- SITE_HEADER -->',renderHeader('home')).replace('<!-- SITE_FOOTER -->',renderFooter('home')));
+  for(const page of pages)await writeFile(path.join(output,page.id+'.html'),renderPage(page));
   await writeFile(path.join(output,'catalog.js'),'// Generated from the category folders. Do not edit.\nexport default '+JSON.stringify(parts,null,2)+';\n');
   await writeFile(path.join(output,'.nojekyll'),'');
   console.log(`Каталог: ${parts.length} деталей. Статический сайт: ${output}`);
