@@ -1,5 +1,6 @@
-import {categories,initialSelection,money,totalPrice,escapeHtml,renderFigure} from './parts.js';
-import parts from './catalog.js';
+import {categories,initialSelection,money,totalPrice,escapeHtml,renderFigure,withOptionalChoices} from './parts.js';
+import catalog from './catalog.js';
+const parts=withOptionalChoices(catalog);
 const $=s=>document.querySelector(s);
 // A category may contain only new images, without any of the demo IDs.
 const startingSelection=Object.fromEntries(categories.map(c=>[c.id,parts.find(p=>p.category===c.id&&p.id===initialSelection[c.id])?.id||parts.find(p=>p.category===c.id).id]));
@@ -13,7 +14,7 @@ function toast(message){$('#toast').textContent=message;$('#toast').classList.ad
 function persist(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{toast('Не удалось сохранить: хранилище браузера заполнено или недоступно.');return false;}}
 function render(){
  $('#figure').innerHTML=renderFigure(selection,parts);
- $('#figure').setAttribute('aria-label','Фигурка: '+categories.map(c=>parts.find(p=>p.id===selection[c.id])?.name).join(', '));
+ $('#figure').setAttribute('aria-label','Фигурка: '+categories.map(c=>parts.find(p=>p.id===selection[c.id])?.name).filter(Boolean).join(', '));
  $('#total').textContent=money(totalPrice(selection,parts));
  $('#breakdown').innerHTML=categories.map(c=>`<div>${c.singular}<strong>${money(parts.find(p=>p.id===selection[c.id])?.price||0)}</strong></div>`).join('');
  renderCatalog();persist('teuilor-selection-v1',selection);
@@ -30,19 +31,20 @@ function renderTabs(){
 function renderCatalog(){
  renderTabs();
  const list=parts.filter(p=>p.category===current);
+ const count=list.filter(p=>p.image).length;
  $('#category-title').textContent=categories.find(c=>c.id===current).name;
- $('#variants-count').textContent=`${list.length} ${list.length%10===1&&list.length%100!==11?'вариант':list.length%10>=2&&list.length%10<=4&&(list.length%100<12||list.length%100>14)?'варианта':'вариантов'}`;
+ $('#variants-count').textContent=`${count} ${count%10===1&&count%100!==11?'вариант':count%10>=2&&count%10<=4&&(count%100<12||count%100>14)?'варианта':'вариантов'}`;
  $('#catalog').setAttribute('aria-labelledby','tab-'+current);
- $('#catalog').innerHTML=list.map(p=>`<button title="${escapeHtml(p.name)}" class="part-card ${selection[current]===p.id?'selected':''}" data-part="${escapeHtml(p.id)}" aria-pressed="${selection[current]===p.id}" aria-label="${escapeHtml(p.name)}, ${money(p.price)}"><span class="part-art">${renderFigure({...selection,[current]:p.id},parts,current)}</span><span class="part-name">${escapeHtml(p.name)}</span><span class="part-price">${money(p.price)}</span></button>`).join('');
+ $('#catalog').innerHTML=list.map(p=>`<button title="${escapeHtml(p.name)}" class="part-card ${selection[current]===p.id?'selected':''}" data-part="${escapeHtml(p.id)}" aria-pressed="${selection[current]===p.id}" aria-label="${escapeHtml(p.name)}, ${money(p.price)}"><span class="part-art">${p.image?renderFigure({...selection,[current]:p.id},parts,current):'<span class="empty-choice" aria-hidden="true">∅</span>'}</span><span class="part-name">${escapeHtml(p.name)}</span><span class="part-price">${money(p.price)}</span></button>`).join('');
 }
 $('#tabs').addEventListener('click',e=>{const btn=e.target.closest('[data-category]');if(btn){current=btn.dataset.category;renderCatalog();$('#tab-'+current).focus({preventScroll:true});}});
-$('#tabs').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const index=categories.findIndex(c=>c.id===current);current=categories[e.key==='Home'?0:e.key==='End'?3:(index+(e.key==='ArrowRight'?1:3))%4].id;renderCatalog();$('#tab-'+current).focus({preventScroll:true});});
+$('#tabs').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const index=categories.findIndex(c=>c.id===current);current=categories[e.key==='Home'?0:e.key==='End'?categories.length-1:(index+(e.key==='ArrowRight'?1:categories.length-1))%categories.length].id;renderCatalog();$('#tab-'+current).focus({preventScroll:true});});
 $('#catalog').addEventListener('click',e=>{const btn=e.target.closest('[data-part]');if(btn){selection[current]=btn.dataset.part;render();document.querySelector(`[data-part="${selection[current]}"]`)?.focus({preventScroll:true});}});
 $('#reset').onclick=()=>{selection={...startingSelection};render();toast('Вернулись к первой истории');};
 $('#random').onclick=()=>{for(const c of categories){const list=parts.filter(p=>p.category===c.id);selection[c.id]=list[Math.floor(Math.random()*list.length)].id;}render();};
 function renderCart(){
  $('#cart-count').textContent=cart.length;
- $('#cart-items').innerHTML=cart.length?cart.map((item,index)=>`<div class="cart-item"><div class="cart-art">${renderFigure(item.selection,item.snapshot)}</div><div><h3>Твоя история №${index+1}</h3><p>${categories.map(c=>escapeHtml(item.snapshot.find(p=>p.id===item.selection[c.id])?.name||'Деталь')).join(' · ')}</p><strong>${money(item.total)}</strong></div><button data-remove="${index}" aria-label="Удалить фигурку ${index+1}">Удалить</button></div>`).join(''):'<div class="empty">Здесь скоро появится твой первый человечек ♡</div>';
+ $('#cart-items').innerHTML=cart.length?cart.map((item,index)=>`<div class="cart-item"><div class="cart-art">${renderFigure(item.selection,item.snapshot)}</div><div><h3>Твоя история №${index+1}</h3><p>${categories.map(c=>item.snapshot.find(p=>p.id===item.selection[c.id])?.name).filter(Boolean).map(escapeHtml).join(' · ')}</p><strong>${money(item.total)}</strong></div><button data-remove="${index}" aria-label="Удалить фигурку ${index+1}">Удалить</button></div>`).join(''):'<div class="empty">Здесь скоро появится твой первый человечек ♡</div>';
  $('#cart-sum').textContent=cart.length?'Всего: '+money(cart.reduce((sum,i)=>sum+i.total,0)):'';
 }
 $('#add-cart').onclick=()=>{

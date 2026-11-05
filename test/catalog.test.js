@@ -7,7 +7,7 @@ import {collectParts,folders,imageSize} from '../scripts/build.mjs';
 const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 720"><rect x="224" y="190" width="152" height="130"/></svg>';
 async function fixture(fn){const root=await mkdtemp(path.join(os.tmpdir(),'teuilor-catalog-'));try{for(const f of Object.keys(folders)){await mkdir(path.join(root,f));await writeFile(path.join(root,f,'test__250__Деталь.svg'),svg);}await fn(root);}finally{await rm(root,{recursive:true,force:true});}}
 test('discovers all folders and encodes file URLs for GitHub project pages',()=>fixture(async root=>{
- const parts=await collectParts(root);assert.equal(parts.length,4);
+ const parts=await collectParts(root);assert.equal(parts.length,Object.keys(folders).length);
  assert.equal(parts[0].id,'hair-test');assert.equal(parts[0].price,250);assert.equal(parts[0].name,'Деталь');
  assert.equal(parts[0].image,'./haircuts/test__250__%D0%94%D0%B5%D1%82%D0%B0%D0%BB%D1%8C.svg');
 }));
@@ -32,3 +32,15 @@ test('checks PNG and WebP canvas headers',()=>{
  const webp=Buffer.alloc(30);webp.write('RIFF');webp.writeUInt32LE(22,4);webp.write('WEBP',8);webp.write('VP8X',12);webp.writeUInt32LE(10,16);webp.writeUIntLE(599,24,3);webp.writeUIntLE(719,27,3);
  assert.deepEqual(imageSize(webp,'.webp'),{width:600,height:720});assert.throws(()=>imageSize(Buffer.from('bad'),'.webp'));
 });
+
+test('optional folders can be empty or absent',()=>fixture(async root=>{
+ await rm(path.join(root,'accessories'),{recursive:true});
+ await rm(path.join(root,'animals/test__250__Деталь.svg'));
+ const parts=await collectParts(root);assert.equal(parts.length,4);
+ assert.ok(parts.every(p=>!['accessory','animal'].includes(p.category)));
+}));
+
+test('reserves the empty-choice identifiers for optional categories',()=>fixture(async root=>{
+ await writeFile(path.join(root,'animals/none__200__Кот.svg'),svg);
+ await assert.rejects(collectParts(root),/повторяется идентификатор animal-none/);
+}));

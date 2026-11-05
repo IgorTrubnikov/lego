@@ -1,8 +1,9 @@
 import { readdir, readFile, mkdir, rm, cp, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import {categories} from '../parts.js';
 import { fileURLToPath } from 'node:url';
 
-export const folders = { haircuts:'hair', faces:'face', clothes:'torso', pants:'legs' };
+export const folders = { haircuts:'hair', faces:'face', clothes:'torso', pants:'legs', accessories:'accessory', animals:'animal' };
 const size = { width:600, height:720 };
 
 export function imageSize(data, extension) {
@@ -33,9 +34,13 @@ export function imageSize(data, extension) {
   throw new Error('Неизвестный формат');
 }
 export async function collectParts(root) {
-  const parts=[], ids=new Set();
+  const parts=[], ids=new Set(categories.filter(c=>c.optional).map(c=>c.id+'-none'));
   for(const [folder,category] of Object.entries(folders)) {
-    const entries=(await readdir(path.join(root,folder),{withFileTypes:true})).sort((a,b)=>a.name.localeCompare(b.name,'en'));
+    const optional=categories.find(c=>c.id===category)?.optional;
+    let entries;
+    try { entries=await readdir(path.join(root,folder),{withFileTypes:true}); }
+    catch(error){if(optional&&error.code==='ENOENT')continue;throw error;}
+    entries.sort((a,b)=>a.name.localeCompare(b.name,'en'));
     let count=0;
     for(const entry of entries) {
       if(entry.name.startsWith('.')||entry.name==='README.md')continue;
@@ -55,14 +60,17 @@ export async function collectParts(root) {
       ids.add(id);count++;
       parts.push({id,category,name,price,image:`./${folder}/${encodeURIComponent(filename)}`});
     }
-    if(!count)throw new Error(`Добавьте хотя бы одну деталь в ${folder}/`);
+    if(!count&&!optional)throw new Error(`Добавьте хотя бы одну деталь в ${folder}/`);
   }
   return parts;
 }
 export async function build(root=process.cwd(),output=path.join(root,'_site')) {
   const parts=await collectParts(root); // Validate before replacing the last successful build.
   await rm(output,{recursive:true,force:true});await mkdir(output,{recursive:true});
-  for(const file of ['index.html','style.css','app.js','parts.js','assets',...Object.keys(folders)])await cp(path.join(root,file),path.join(output,file),{recursive:true});
+  for(const file of ['index.html','style.css','app.js','parts.js','assets',...Object.keys(folders)]){
+    try{await cp(path.join(root,file),path.join(output,file),{recursive:true});}
+    catch(error){if(error.code==='ENOENT'&&categories.find(c=>c.id===folders[file])?.optional)continue;throw error;}
+  }
   await writeFile(path.join(output,'catalog.js'),'// Generated from the category folders. Do not edit.\nexport default '+JSON.stringify(parts,null,2)+';\n');
   await writeFile(path.join(output,'.nojekyll'),'');
   console.log(`Каталог: ${parts.length} деталей. Статический сайт: ${output}`);

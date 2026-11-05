@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { totalPrice,renderFigure,escapeHtml } from '../parts.js';
+import { totalPrice,renderFigure,escapeHtml,withOptionalChoices } from '../parts.js';
 const parts=[{id:'h',category:'hair',price:250,image:'./haircuts/test.svg'},{id:'f',category:'face',price:150,image:'./faces/test.png'},{id:'t',category:'torso',price:350,image:'./clothes/test.webp'},{id:'l',category:'legs',price:250,image:'./pants/test.svg'}];
 const selection={hair:'h',face:'f',torso:'t',legs:'l'};
 test('price sums selected parts, including a zero-priced replacement',()=>{
@@ -18,4 +18,18 @@ test('renders external layers in assembly order and crops category previews',()=
 test('escapes catalog names and image URLs',()=>{
  assert.equal(escapeHtml('<img onerror="x">'),'&lt;img onerror=&quot;x&quot;&gt;');
  assert.doesNotMatch(renderFigure({hair:'x'},[{id:'x',category:'hair',image:'x" onload="bad'}]),/href="x" onload=/);
+});
+
+test('optional extras add to the price, render beside the figure and can be removed',()=>{
+ const extras=withOptionalChoices([...parts,
+  {id:'bag',category:'accessory',price:300,image:'./accessories/bag.svg'},
+  {id:'cat',category:'animal',price:350,image:'./animals/cat.svg'}]);
+ const chosen={...selection,accessory:'bag',animal:'cat'};
+ assert.equal(totalPrice(chosen,extras),1650);
+ const svg=renderFigure(chosen,extras);assert.match(svg,/data-layer="accessory"/);assert.match(svg,/data-layer="animal"/);
+ assert.ok(svg.indexOf('./haircuts/')<svg.indexOf('./accessories/'));
+ const empty={...chosen,accessory:'accessory-none',animal:'animal-none'};
+ assert.equal(totalPrice(empty,extras),1000);
+ assert.doesNotMatch(renderFigure(empty,extras),/data-layer="(?:animal|accessory)"/);
+ assert.match(renderFigure(chosen,extras,'animal'),/viewBox="430 435 170 265"/);
 });
