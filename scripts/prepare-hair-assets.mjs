@@ -42,8 +42,8 @@ export function prepare(sources){
     const item=hairItems[sheetIndex*16+i];if(!item)break;
     const [slug,name,profile]=item;
     let {width:targetWidth,y}=fitting[profile];
-    // This flipped style has a higher inner hairline than the other medium cuts.
-    if(slug==='auburn-flipped')y+=26;
+    // Match the higher inner hairlines of these renders to the shared forehead.
+    y+=({'auburn-flipped':26,'long-copper-ringlets':24,'long-golden':32}[slug]||0);
     const left=Math.floor(i%4*width/4),top=Math.floor(Math.floor(i/4)*height/4),right=Math.floor((i%4+1)*width/4),bottom=Math.floor((Math.floor(i/4)+1)*height/4);
     let cell=`${right-left}x${bottom-top}+${left}+${top}`,input=source;
     if(profile==='cap'&&capSource){
