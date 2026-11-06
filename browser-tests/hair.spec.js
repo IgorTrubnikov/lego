@@ -5,7 +5,8 @@ test('fitted long hairstyles leave cheeks open and frontal caps sit above the ey
  await page.goto('/');
  const failures=await page.evaluate(async()=>{
   const catalog=(await import('./catalog.js')).default,failures=[];
-  for(const hair of catalog.filter(p=>p.category==='hair'&&(p.backImage||p.id.includes('cap-')))){
+  const croppedTail=p=>/^hair-catalog-(braid-black|pony-(brown|blond|burgundy|black))$/.test(p.id);
+  for(const hair of catalog.filter(p=>p.category==='hair'&&(p.backImage||p.id.includes('cap-')||croppedTail(p)))){
    const image=new Image();image.src=hair.image;await image.decode();
    const canvas=document.createElement('canvas');canvas.width=600;canvas.height=720;
    const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0);
@@ -14,6 +15,13 @@ test('fitted long hairstyles leave cheeks open and frontal caps sit above the ey
    const faceTop=hair.backImage?236:250;
    const area=ctx.getImageData(248,faceTop,104,301-faceTop).data;
    if(area.some((v,i)=>i%4===3&&v!==0))failures.push(hair.id+': face overlap');
+   if(croppedTail(hair)){
+    if(hair.backImage)failures.push(hair.id+': rear tail still enabled');
+    const belowHead=ctx.getImageData(0,320,600,400).data;
+    if(belowHead.some((v,i)=>i%4===3&&v!==0))failures.push(hair.id+': tail over body');
+    const behindFace=ctx.getImageData(250,250,100,70).data;
+    if(behindFace.some((v,i)=>i%4===3&&v!==0))failures.push(hair.id+': rear fragment through face');
+   }
    if(hair.id==='hair-catalog-long-black-ringlets'){
     // Locks must exist in the front layer over the shoulders, not only behind the body.
     for(const x of [250,350])if(ctx.getImageData(x,335,1,1).data[3]<200)failures.push(hair.id+': missing front lock');

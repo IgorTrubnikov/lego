@@ -65,20 +65,26 @@ export function prepare(sources){
     // the face and a narrower neck/chest corridor below it.
     const opening=back?'M165 35H435V490H333V320H362V242Q362 225 350 218Q300 199 250 218Q238 225 238 242V320H267V490H165Z':'M165 35H435V490H356V224C336 225 316 215 300 211C282 222 263 225 244 224V490H165Z';
     const naturalVisor=profile==='cap'&&capSource;
+    const hideTail=profile==='pony';
     const frontClip=naturalVisor?'':`<defs><clipPath id="front"><path d="${opening}"/></clipPath></defs>`;
     const image=`<image width="600" height="720" transform="${transform}" href="data:image/webp;base64,${data}"/>`;
     // Clip in head coordinates, outside the scaled image; caps retain their actual visor.
-    const content=naturalVisor?image:`${frontClip}<g clip-path="url(#front)">${image}</g>`;
-    const rear=back?`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720"><defs><clipPath id="back"><rect x="0" y="211" width="600" height="509"/></clipPath></defs><g clip-path="url(#back)">${image}</g></svg>\n`:null;
+    // A rear tail in these source renders is visible through the front opening.
+    // Omit it entirely, retaining only the crown and the short face-framing locks.
+    const tailClip=hideTail?'<defs><clipPath id="no-tail"><path d="M0 0H600V320H350V250H250V320H0Z"/></clipPath></defs>':'';
+    const frontImage=hideTail?`<g clip-path="url(#no-tail)">${image}</g>`:image;
+    const content=naturalVisor?image:`${frontClip}${tailClip}<g clip-path="url(#front)">${frontImage}</g>`;
+    const rear=back&&!hideTail?`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720"><defs><clipPath id="back"><rect x="0" y="211" width="600" height="509"/></clipPath></defs><g clip-path="url(#back)">${image}</g></svg>\n`:null;
     const version=createHash('sha256').update(content).update(rear||'').digest('hex').slice(0,12);
-    const front=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${version}" data-preview-box="${Math.floor(x*scale+300*(1-scale))-6} ${y-6} ${Math.ceil(w*scale)+12} ${h+12}"${back?` data-back-image="${backPath}"`:''}><title>${escapeHtml(name)}</title>${content}</svg>\n`;
+    const previewHeight=hideTail?Math.min(h+12,326-(y-6)):h+12;
+    const front=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${version}" data-preview-box="${Math.floor(x*scale+300*(1-scale))-6} ${y-6} ${Math.ceil(w*scale)+12} ${previewHeight}"${rear?` data-back-image="${backPath}"`:''}><title>${escapeHtml(name)}</title>${content}</svg>\n`;
     outputs.push({filename:`${id}__200__${name}.svg`,front,rear,backPath});
    }
   }
   if(outputs.length!==59)throw Error('Expected 59 hair and hat variants.');
   mkdirSync(path.join(root,'assets/hair-backs'),{recursive:true});
   for(const filename of readdirSync(path.join(root,'haircuts')))if(/\.(svg|png|webp)$/i.test(filename))rmSync(path.join(root,'haircuts',filename));
-  for(const output of outputs){writeFileSync(path.join(root,'haircuts',output.filename),output.front);if(output.rear)writeFileSync(path.join(root,output.backPath),output.rear);}
+  for(const output of outputs){writeFileSync(path.join(root,'haircuts',output.filename),output.front);if(output.rear)writeFileSync(path.join(root,output.backPath),output.rear);else rmSync(path.join(root,output.backPath),{force:true});}
   console.log('Prepared 59 hair and hat variants at 200 ₽ each.');
  }finally{rmSync(temporary,{recursive:true,force:true});}
 }
