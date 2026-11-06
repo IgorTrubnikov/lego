@@ -161,7 +161,7 @@
 
 .gallery-empty{text-align:center;border:1px solid var(--line);background:#fffdfb;border-radius:10px;padding:45px 25px}.gallery-empty>span{font:54px Georgia;color:#bd8c9e}.gallery-empty h2{font-size:30px;color:var(--wine)}.gallery-empty p{font-size:12px;line-height:1.9;color:var(--muted)}
 /* Optional wedding additions. */
-.tab[data-category="altar"]{grid-column:1/-1;padding:10px 0}
+.tab[data-category="altar"]{padding:10px 0}
 
 
 .checkout-actions{display:flex;flex-direction:column;gap:10px;min-width:230px}.checkout-actions .primary{gap:15px;white-space:nowrap}.save-png{border:1px solid #c9a1aa;border-radius:5px;padding:12px 15px;color:var(--wine);font-size:11px;background:#fffdfb}.save-png:hover{background:var(--pink)}
@@ -169,3 +169,5 @@
 .png-ready{margin:14px 0;padding:15px 20px;border:1px solid var(--line);border-radius:8px;font-size:12px;line-height:1.8;color:var(--dark)}.png-ready a{color:var(--wine);text-decoration:underline}.png-ready span{display:block;color:var(--muted);font-size:11px}
 @media(max-width:1100px) and (min-width:721px){.checkout{flex-wrap:wrap}.checkout-actions{width:100%;flex-direction:row}.checkout-actions>*{flex:1}}
 @media(max-width:720px){.checkout-actions{width:100%;min-width:0}.checkout-actions .primary{font-size:11px}.order-addon{padding:16px 12px;gap:12px}.addon-art{width:75px;height:90px}.order-addon h2{font-size:19px}.order-addon .eyebrow{font-size:7px}.order-addon>button{padding:6px}.order-addon p{font-size:10px}}
+
+.outfit-note{font-size:11px;line-height:1.6;color:var(--wine);background:#f8e9ed;border-radius:7px;padding:10px 12px;margin:0 0 14px}.part-includes{display:block;font-size:8px;line-height:1.5;color:var(--wine);margin-top:4px}

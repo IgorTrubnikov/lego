@@ -6,7 +6,7 @@ import {readGallery,galleryPage,renderWorksPreview} from './gallery.mjs';
 import { fileURLToPath } from 'node:url';
 import {createHash} from 'node:crypto';
 
-export const folders = { haircuts:'hair', faces:'face', clothes:'torso', pants:'legs', accessories:'accessory', animals:'animal', altars:'altar' };
+export const folders = { haircuts:'hair', faces:'face', clothes:'torso', pants:'legs', suits:'suit', accessories:'accessory', animals:'animal', altars:'altar' };
 const size = { width:600, height:720 };
 
 export function imageSize(data, extension) {
@@ -71,6 +71,8 @@ export async function collectParts(root) {
       const assetVersion=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-asset-version=["']([^"']*)["']/)?.[1]:undefined;
       if(assetVersion!==undefined&&!/^[a-z0-9-]{1,32}$/.test(assetVersion))throw new Error(`${folder}/${filename}: неверная версия изображения`);
       const versionQuery=assetVersion?'?v='+assetVersion:'';
+      const includedLabel=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-included-label=["']([^"']*)["']/)?.[1]:undefined;
+      if(includedLabel!==undefined&&(category!=='suit'||!includedLabel.trim()||includedLabel.length>60))throw new Error(`${folder}/${filename}: неверная подпись комплекта`);
       if(backImage!==undefined){
         if(category!=='hair'||!/^\.\/assets\/hair-backs\/[a-z0-9-]+\.svg$/.test(backImage))throw new Error(`${folder}/${filename}: неверный задний слой причёски`);
         const back=await readFile(path.join(root,backImage.slice(2)));
@@ -78,7 +80,7 @@ export async function collectParts(root) {
         if(back.length>2*1024*1024||dimensions.width!==size.width||dimensions.height!==size.height)throw new Error(`${folder}/${filename}: неверный размер заднего слоя причёски`);
       }
       ids.add(id);count++;
-      parts.push({id,category,name,price,image:`./${folder}/${encodeURIComponent(filename)}`+versionQuery,...(previewBox?{previewBox}:{}),...(backImage?{backImage:backImage+versionQuery}:{})});
+      parts.push({id,category,name,price,image:`./${folder}/${encodeURIComponent(filename)}`+versionQuery,...(previewBox?{previewBox}:{}),...(backImage?{backImage:backImage+versionQuery}:{}),...(includedLabel?{includedLabel}:{})});
     }
     if(!count&&!optional)throw new Error(`Добавьте хотя бы одну деталь в ${folder}/`);
   }

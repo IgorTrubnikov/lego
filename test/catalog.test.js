@@ -71,13 +71,24 @@ test('optional folders can be empty or absent',()=>fixture(async root=>{
  await rm(path.join(root,'accessories'),{recursive:true});
  await rm(path.join(root,'animals/test__250__Деталь.svg'));
  await rm(path.join(root,'altars'),{recursive:true});
+ await rm(path.join(root,'suits'),{recursive:true});
  const parts=await collectParts(root);assert.equal(parts.length,4);
- assert.ok(parts.every(p=>!['accessory','animal','altar'].includes(p.category)));
+ assert.ok(parts.every(p=>!['suit','accessory','animal','altar'].includes(p.category)));
 }));
 
 test('reserves the empty-choice identifiers for optional categories',()=>fixture(async root=>{
  await writeFile(path.join(root,'animals/none__200__Кот.svg'),svg);
  await assert.rejects(collectParts(root),/повторяется идентификатор animal-none/);
+}));
+
+test('suit inclusions are imported as labels without creating additional paid parts',()=>fixture(async root=>{
+ const file=path.join(root,'suits/test__250__Деталь.svg');
+ await writeFile(file,svg.replace('viewBox="0 0 600 720"','viewBox="0 0 600 720" data-included-label="Рюкзак в комплекте"'));
+ const catalog=await collectParts(root),suit=catalog.find(p=>p.category==='suit');
+ assert.equal(suit.includedLabel,'Рюкзак в комплекте');assert.equal(suit.price,250);
+ assert.equal(catalog.length,Object.keys(folders).length);
+ await writeFile(file,svg.replace('viewBox="0 0 600 720"','viewBox="0 0 600 720" data-included-label=""'));
+ await assert.rejects(collectParts(root),/неверная подпись комплекта/);
 }));
 
 test('retained legacy catalog URLs keep their IDs and self-contained glossy artwork',async()=>{

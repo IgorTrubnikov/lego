@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { totalPrice,renderFigure,escapeHtml,withOptionalChoices,selectedFigureParts } from '../parts.js';
+import { totalPrice,renderFigure,escapeHtml,withOptionalChoices,selectedFigureParts,choosePart,selectionCategories } from '../parts.js';
 const parts=[{id:'h',category:'hair',price:250,image:'./haircuts/test.svg'},{id:'f',category:'face',price:150,image:'./faces/test.png'},{id:'t',category:'torso',price:350,image:'./clothes/test.webp'},{id:'l',category:'legs',price:250,image:'./pants/test.svg'}];
 const selection={hair:'h',face:'f',torso:'t',legs:'l'};
 test('price sums selected parts, including a zero-priced replacement',()=>{
@@ -67,4 +67,22 @@ test('long hair uses the same back-first layers in the preview, thumbnails and P
  const thumb=renderFigure(selection,catalog,'hair');
  assert.match(thumb,/data-layer="hair-back"/);assert.match(thumb,/data-layer="hair"/);
  assert.doesNotMatch(thumb,/data-layer="(?:torso|face|legs)"/);
+});
+
+test('a complete suit replaces both body layers and prices without discarding separate choices',()=>{
+ const suit={id:'suit-test',category:'suit',price:500,image:'./suits/full.svg',includedLabel:'Рюкзак в комплекте'};
+ const catalog=withOptionalChoices([...parts,suit]),chosen=choosePart(selection,'suit',suit.id);
+ assert.equal(totalPrice(chosen,catalog),900); // Hair 250 + face 150 + suit 500.
+ assert.equal(chosen.torso,selection.torso);assert.equal(chosen.legs,selection.legs);
+ assert.deepEqual(selectedFigureParts(chosen,catalog).map(p=>p.category),['suit','face','hair']);
+ assert.deepEqual(selectionCategories(chosen,catalog).map(c=>c.id),['hair','face','suit','accessory','animal','altar']);
+ const svg=renderFigure(chosen,catalog);assert.match(svg,/suits\/full.svg/);assert.doesNotMatch(svg,/clothes\/|pants\//);
+ assert.ok(svg.indexOf('suits/full.svg')<svg.indexOf('faces/test.png'));
+ for(const category of ['torso','legs']){
+  const restored=choosePart(chosen,category,selection[category]);
+  assert.equal(restored.suit,'suit-none');assert.equal(totalPrice(restored,catalog),1000);
+  assert.deepEqual(selectedFigureParts(restored,catalog).map(p=>p.category),['legs','torso','face','hair']);
+ }
+ assert.equal(totalPrice({...chosen,suit:'suit-removed'},catalog),1000);
+ assert.equal(choosePart(chosen,'face','another-face').suit,suit.id);
 });
