@@ -28,7 +28,7 @@ test('accessory artwork decodes transparently inside its slot and its own thumbn
  }
 });
 
-test('retired accessories clear from saved selections and collections without dropping other parts',async({page})=>{
+test('retired accessories clear from saved selections without dropping other parts',async({page})=>{
  const {readFile}=await import('node:fs/promises');
  const legacy=JSON.parse(await readFile(new URL('../test/fixtures/legacy-catalog.json',import.meta.url),'utf8'));
  const {collectParts}=await import('../scripts/build.mjs');
@@ -39,31 +39,20 @@ test('retired accessories clear from saved selections and collections without dr
  const snapshot=[...['hair','face','torso','legs','animal'].map(category=>catalog.find(p=>p.category===category)).filter(Boolean),removed];
  const selection=Object.fromEntries(snapshot.map(p=>[p.category,p.id]));
  const total=snapshot.reduce((sum,p)=>sum+p.price,0),expected=total-removed.price;
- await page.addInitScript(({selection,snapshot,total})=>{
-  localStorage.setItem('teuilor-selection-v1',JSON.stringify(selection));
-  localStorage.setItem('teuilor-cart-v1',JSON.stringify([{selection,snapshot,total}]));
- },{selection,snapshot,total});
+ await page.addInitScript(selection=>localStorage.setItem('teuilor-selection-v1',JSON.stringify(selection)),selection);
  const failures=[];page.on('response',r=>{if(r.status()>=400)failures.push(r.url());});
  await page.goto('/');
  await expect(page.locator('#figure [data-layer="accessory"]')).toHaveCount(0);
  await page.locator('[data-category="accessory"]').click();
  await expect(page.locator('[data-part="accessory-none"]')).toHaveAttribute('aria-pressed','true');
- await page.locator('#cart-open').click();
- await expect(page.locator('.cart-item')).toHaveCount(1);
- await expect(page.locator('.cart-art [data-layer="accessory"]')).toHaveCount(0);
- expect(Number((await page.locator('#cart-sum').innerText()).replace(/\D/g,''))).toBe(expected);
+ expect(Number((await page.locator('#total').innerText()).replace(/\D/g,''))).toBe(expected);
  for(const part of snapshot.filter(p=>p.category!=='accessory')){
-  await expect(page.locator(`.cart-art [data-layer="${part.category}"]`)).toHaveAttribute('href',part.image);
+  await expect(page.locator(`#figure [data-layer="${part.category}"]`)).toHaveAttribute('href',part.image);
  }
- await page.locator('#cart-dialog .close').click();
  const first=catalog.find(p=>p.category==='accessory');
  await page.locator(`[data-part="${first.id}"]`).click();
  expect(Number((await page.locator('#total').innerText()).replace(/\D/g,''))).toBe(expected+first.price);
- await page.locator('#add-cart').click();
- const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('teuilor-cart-v1')));
- expect(saved[0].selection.accessory).toBe('accessory-none');
- expect(saved[0].total).toBe(expected);
- expect(saved[0].snapshot.some(p=>p.id===removed.id)).toBe(false);
- expect(saved[1].selection.accessory).toBe(first.id);
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('teuilor-selection-v1')));
+ expect(saved.accessory).toBe(first.id);
  expect(failures).toEqual([]);
 });

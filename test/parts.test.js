@@ -42,13 +42,13 @@ test('asset-specific preview bounds enlarge thumbnails without moving assembled 
  assert.match(renderFigure(chosen,catalog),/width="600" height="720" data-layer="accessory"/);
 });
 
-test('wedding scenes frame the selected character and keep thumbnails architecture-only',()=>{
+test('wedding additions affect the price and their cards without changing the character',()=>{
  const scene={id:'altar-test',category:'altar',name:'Алтарь',price:400,image:'./altars/test.svg',previewBox:'14 70 572 636'};
  const catalog=withOptionalChoices([...parts,scene]),chosen={...selection,altar:scene.id};
  assert.equal(totalPrice(chosen,catalog),1400);
  const svg=renderFigure(chosen,catalog);
- assert.ok(svg.indexOf('data-layer="altar"')<svg.indexOf('data-layer="legs"'));
- assert.match(svg,/data-figure-in-altar="true" transform="translate\(120 260\) scale\(0.6\)"/);
+ assert.equal(svg,renderFigure(selection,catalog));
+ assert.doesNotMatch(svg,/data-layer="altar"|transform=/);
  const card=renderFigure(chosen,catalog,'altar');
  assert.match(card,/viewBox="14 70 572 636"/);
  assert.match(card,/data-layer="altar"/);assert.doesNotMatch(card,/data-layer="(?:legs|face|torso|hair)"/);

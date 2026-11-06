@@ -84,10 +84,6 @@ test('extras appear beside the figure, add to price, persist and reset to none',
  expect(Number((await page.locator('#total').innerText()).replace(/\D/g,''))).toBe(sum);
  await page.reload();
  for(const category of ['accessory','animal'])if(chosen[category])await expect(page.locator(`#figure [data-layer="${category}"]`)).toHaveCount(1);
- await page.locator('#add-cart').click();await page.locator('#cart-open').click();
- await expect(page.locator('.cart-item')).toHaveCount(1);
- for(const category of ['accessory','animal'])if(chosen[category])await expect(page.locator(`.cart-art [data-layer="${category}"]`)).toHaveCount(1);
- await page.locator('#cart-dialog .close').click();
  for(const category of ['accessory','animal']){
   await page.locator(`[data-category="${category}"]`).click();
   await page.locator(`[data-part="${category}-none"]`).click();
@@ -131,7 +127,7 @@ test('reference-based raster parts load with transparent background in their ass
  }
 });
 
-test('new clothes, legs and pets combine with legacy parts and persist in the collection',async({page})=>{
+test('new clothes, legs and pets combine with legacy parts and persist after reload',async({page})=>{
  await page.goto('/');
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const picks=[['torso','torso-3d-kitten-jacket'],['legs','legs-3d-blue'],['animal','animal-3d-ginger-kitten']];
@@ -142,12 +138,9 @@ test('new clothes, legs and pets combine with legacy parts and persist in the co
  }
  await page.locator('[data-category="face"]').click();await page.locator('[data-part="face-glasses"]').click();
  await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',/\.svg$/);
- await page.locator('#add-cart').click();await page.reload();await page.locator('#cart-open').click();
- await expect(page.locator('.cart-item')).toHaveCount(1);
- await expect(page.locator('.cart-item')).toContainText('Жакет с котёнком');
- await expect(page.locator('.cart-item')).toContainText('Рыжий котёнок');
- await expect(page.locator('.cart-art image[href$=".webp"]')).toHaveCount(3);
- await page.locator('#cart-dialog .close').click();
+ await page.reload();
+ for(const [category,id] of picks)await expect(page.locator(`#figure [data-layer="${category}"]`)).toHaveAttribute('href',new RegExp(id.replace(category+'-','')+'__'));
+ await expect(page.locator('#figure image[href$=".webp"]')).toHaveCount(3);
  await page.locator('[data-category="torso"]').click();
  const scrollArea=page.locator('#catalog');
  expect(await scrollArea.evaluate(el=>el.scrollHeight>el.clientHeight)).toBe(true);
@@ -169,18 +162,12 @@ test('redrawn legacy assets preserve saved figures and their public URLs',async(
  const snapshot=Object.values(Object.fromEntries(retained.map(p=>[p.category,p])));
  const selection=Object.fromEntries(snapshot.map(p=>[p.category,p.id]));
  const total=snapshot.reduce((sum,p)=>sum+p.price,0);
- await page.addInitScript(({selection,snapshot,total})=>{
-  localStorage.setItem('teuilor-selection-v1',JSON.stringify(selection));
-  localStorage.setItem('teuilor-cart-v1',JSON.stringify([{selection,snapshot,total}]));
- },{selection,snapshot,total});
+ await page.addInitScript(selection=>localStorage.setItem('teuilor-selection-v1',JSON.stringify(selection)),selection);
  await page.goto('/');
  expect(Number((await page.locator('#total').innerText()).replace(/\D/g,''))).toBe(total);
  for(const part of snapshot){
   await expect(page.locator(`#figure [data-layer="${part.category}"]`)).toHaveAttribute('href',part.image);
  }
- await page.locator('#cart-open').click();await expect(page.locator('.cart-item')).toHaveCount(1);
- await expect(page.locator('.cart-item')).toContainText(snapshot[0].name);
- await expect(page.locator('.cart-art image')).toHaveCount(snapshot.length);
  const checks=await page.evaluate(async retained=>{
   const {default:catalog}=await import('./catalog.js');
   const slots={hair:[190,110,220,217],face:[224,173,152,147],torso:[139,285,322,257],legs:[212,451,176,232],accessory:[15,405,150,290],animal:[430,435,170,265]};

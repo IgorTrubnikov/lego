@@ -60,8 +60,8 @@ test('home presents workshop facts and leads to a real Telegram enquiry',async({
  await expect(page.locator('.frame-story')).toContainText('Твой образ и твоя история');
  await expect(page.locator('.frame-story .primary')).toHaveAttribute('href',socialLinks.telegram);
  await expect(page.locator('.quote-note')).toContainText('предварительный расчёт');
- await page.locator('#add-cart').click();await page.locator('#cart-open').click();
- await expect(page.locator('#cart-dialog .primary')).toHaveAttribute('href',socialLinks.telegram);
- await expect(page.locator('.cart-item')).toHaveCount(1);
+ await expect(page.locator('#order-telegram')).toHaveAttribute('href',socialLinks.telegram);
+ await expect(page.locator('#cart-dialog, #cart-open, #add-cart')).toHaveCount(0);
+ await expect(page.locator('#save-png')).toBeVisible();
  expect(errors).toEqual([]);
 });

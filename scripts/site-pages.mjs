@@ -8,7 +8,7 @@ const arrow='<svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true"><pat
 const navigation=[['home','./#studio','Конструктор'],['works','works.html','Готовые работы'],['delivery','delivery.html','Доставка и оплата'],['faq','faq.html','Вопросы и ответы'],['contacts','contacts.html','Контакты']];
 const links=active=>navigation.map(([id,url,label])=>`<a href="${url}"${active===id?' class="active" aria-current="page"':''}>${label}</a>`).join('');
 export function renderHeader(active){
- const action=active==='home'?'<button class="bag" id="cart-open">Моя коллекция <span id="cart-count">0</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l1 14H4L5 7Zm3 0V5a4 4 0 0 1 8 0v2"/></svg></button>':'<a class="header-create" href="./#studio">Собрать персонажа '+arrow+'</a>';
+ const action=active==='home'?'<a class="header-create" href="'+socialLinks.telegram+'" target="_blank" rel="noopener noreferrer">Написать в Telegram '+arrow+'</a>':'<a class="header-create" href="./#studio">Собрать персонажа '+arrow+'</a>';
  return `<header class="header"><a href="./" class="brand" aria-label="teuilor — главная">teuilor<span>lego.from.teuilor</span></a><nav class="desktop-nav" aria-label="Основная навигация">${links(active)}</nav><div class="header-actions">${action}<details class="mobile-menu"><summary aria-label="Меню"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Мобильная навигация">${links(active)}<a href="${socialLinks.telegram}" target="_blank" rel="noopener noreferrer">Оставить заявку ${arrow}</a></nav></details></div></header>`;
 }
 export function renderFooter(active){

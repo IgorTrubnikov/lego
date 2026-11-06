@@ -77,7 +77,7 @@ export async function build(root=process.cwd(),output=path.join(root,'_site')) {
   const works=await readGallery(root);
   const parts=await collectParts(root); // Validate before replacing the last successful build.
   await rm(output,{recursive:true,force:true});await mkdir(output,{recursive:true});
-  for(const file of ['index.html','style.css','app.js','navigation.js','gallery.js','parts.js','assets',...Object.keys(folders)]){
+  for(const file of ['index.html','style.css','app.js','export-image.js','navigation.js','gallery.js','parts.js','assets',...Object.keys(folders)]){
     try{await cp(path.join(root,file),path.join(output,file),{recursive:true});}
     catch(error){if(error.code==='ENOENT'&&categories.find(c=>c.id===folders[file])?.optional)continue;throw error;}
   }

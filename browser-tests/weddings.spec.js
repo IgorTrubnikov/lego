@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 
-test('wedding scenes preserve independent extras, price, saved choice, collection and reset',async({page})=>{
+test('wedding additions change the order price without changing the assembled character',async({page})=>{
  await page.goto('/');
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
@@ -11,36 +11,35 @@ test('wedding scenes preserve independent extras, price, saved choice, collectio
   await page.locator(`[data-category="${category}"]`).click();
   await page.locator(`[data-part="${catalog.find(p=>p.category===category).id}"]`).click();
  }
+ const character=await page.locator('#figure').innerHTML();
  const baseline=Number((await page.locator('#total').innerText()).replace(/\D/g,''));
  await page.locator('[data-category="altar"]').click();
  await expect(page.locator('[data-part="altar-none"]')).toHaveAttribute('aria-pressed','true');
  await expect(page.locator('[data-part]')).toHaveCount(scenes.length+1);
  for(const scene of scenes){
   const card=page.locator(`[data-part="${scene.id}"]`);await card.click();
-  await expect(page.locator('#figure [data-layer="altar"]')).toHaveAttribute('href',scene.image);
+  expect(await page.locator('#figure').innerHTML()).toBe(character);
+  await expect(page.locator('#addon-art [data-layer="altar"]')).toHaveAttribute('href',scene.image);
+  await expect(page.locator('#addon-name')).toContainText(scene.name);
   await expect(card.locator('[data-layer]')).toHaveCount(1);
-  await expect(page.locator('#figure [data-figure-in-altar]')).toHaveCount(1);
+  await expect(page.locator('#addon-art [data-layer]')).toHaveCount(1);
   await expect(page.locator('#figure [data-layer="accessory"]')).toHaveCount(1);
   await expect(page.locator('#figure [data-layer="animal"]')).toHaveCount(1);
   expect(Number((await page.locator('#total').innerText()).replace(/\D/g,''))).toBe(baseline+scene.price);
  }
  const selected=scenes.at(-1);
- await expect(page.locator('.preview-panel')).toHaveClass(/has-altar/);
- await expect(page.locator('.pedestal')).toBeHidden();
- await page.reload();
- await expect(page.locator('#figure [data-layer="altar"]')).toHaveAttribute('href',selected.image);
- await page.locator('#add-cart').click();await page.locator('#cart-open').click();
- await expect(page.locator('.cart-item')).toHaveCount(1);
- await expect(page.locator('.cart-item')).toContainText(selected.name);
- await expect(page.locator('.cart-art [data-layer="altar"]')).toHaveAttribute('href',selected.image);
- await expect(page.locator('.cart-art [data-figure-in-altar]')).toHaveCount(1);
- await page.locator('#cart-dialog .close').click();
- await page.locator('[data-category="altar"]').click();await page.locator('[data-part="altar-none"]').click();
- await expect(page.locator('#figure [data-layer="altar"]')).toHaveCount(0);
- await expect(page.locator('#figure [data-figure-in-altar]')).toHaveCount(0);
+ await expect(page.locator('#order-addon')).toBeVisible();
  await expect(page.locator('.pedestal')).toBeVisible();
+ await page.reload();
+ await expect(page.locator('#addon-art [data-layer="altar"]')).toHaveAttribute('href',selected.image);
+ expect(await page.locator('#figure').innerHTML()).toBe(character);
+ await page.locator('#remove-addon').click();
+ await expect(page.locator('#order-addon')).toBeHidden();
+ await expect(page.locator('#figure [data-layer="altar"]')).toHaveCount(0);
  expect(Number((await page.locator('#total').innerText()).replace(/\D/g,''))).toBe(baseline);
+ await page.locator('[data-category="altar"]').click();
  await page.locator(`[data-part="${selected.id}"]`).click();await page.locator('#reset').click();
+ await expect(page.locator('#order-addon')).toBeHidden();
  await expect(page.locator('#figure [data-layer="altar"]')).toHaveCount(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  expect(errors).toEqual([]);

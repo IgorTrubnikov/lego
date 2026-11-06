@@ -15,6 +15,7 @@ export function withOptionalChoices(parts) {
 export const money = value => new Intl.NumberFormat('ru-RU').format(value) + ' ₽';
 export function totalPrice(selection, parts) { return categories.reduce((sum,c)=>sum+(parts.find(p=>p.id===selection[c.id]&&p.category===c.id)?.price||0),0); }
 export function escapeHtml(value) { return String(value).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+export const figureCategories=['legs','torso','face','hair','accessory','animal'];
 export function renderFigure(selection, parts, crop) {
   const views={hair:'155 65 290 255',face:'190 170 220 160',torso:'125 280 350 270',legs:'200 445 200 250',accessory:'15 405 150 290',animal:'430 435 170 265',altar:'10 40 580 670'};
   const preview=crop&&parts.find(p=>p.id===selection[crop]&&p.category===crop)?.previewBox;
@@ -22,8 +23,6 @@ export function renderFigure(selection, parts, crop) {
     const part=parts.find(p=>p.id===selection[category]&&p.category===category);
     return part?.image ? `<image href="${escapeHtml(part.image)}" width="600" height="720" data-layer="${category}"/>` : '';
   };
-  const figure=['legs','torso','face','hair','accessory','animal'].map(image).join('');
-  const altar=!crop&&image('altar');
-  const layers=crop?image(crop):altar?`${altar}<g data-figure-in-altar="true" transform="translate(120 260) scale(0.6)">${figure}</g>`:figure;
+  const layers=crop?image(crop):figureCategories.map(image).join('');
   return `<svg class="figure-svg" xmlns="http://www.w3.org/2000/svg" viewBox="${crop?escapeHtml(preview||views[crop]):'0 0 600 720'}" aria-hidden="true">${layers}</svg>`;
 }

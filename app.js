@@ -7,22 +7,17 @@ const startingSelection=Object.fromEntries(categories.map(c=>[c.id,parts.find(p=
 function read(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback;}catch{return fallback;}}
 let selection={...startingSelection,...read('teuilor-selection-v1',{})};
 for(const c of categories) if(!parts.some(p=>p.id===selection[c.id]&&p.category===c.id)) selection[c.id]=startingSelection[c.id];
-let cart=read('teuilor-cart-v1',[]);if(!Array.isArray(cart))cart=[];
-cart=cart.filter(i=>i&&i.selection&&i.snapshot&&Array.isArray(i.snapshot)&&typeof i.total==='number');
-// Removed trial accessories must not leave broken image URLs in saved figures.
-cart=cart.map(item=>{
- const accessory=item.snapshot.find(p=>p?.category==='accessory'&&p.id===item.selection.accessory);
- if(!accessory?.image||parts.some(p=>p.category==='accessory'&&p.id===accessory.id))return item;
- const empty=parts.find(p=>p.id==='accessory-none');
- return {...item,selection:{...item.selection,accessory:empty.id},snapshot:[...item.snapshot.filter(p=>p?.category!=='accessory'),{...empty}],total:item.total-(Number.isFinite(accessory.price)?accessory.price:0)};
-});
 let current='hair',renderedCategory,timer;
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('show');clearTimeout(timer);timer=setTimeout(()=>$('#toast').classList.remove('show'),3000);}
 function persist(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{toast('Не удалось сохранить: хранилище браузера заполнено или недоступно.');return false;}}
 function render(){
  $('#figure').innerHTML=renderFigure(selection,parts);
- $('.preview-panel').classList.toggle('has-altar',parts.some(p=>p.id===selection.altar&&p.category==='altar'&&p.image));
- $('#figure').setAttribute('aria-label','Фигурка: '+categories.map(c=>parts.find(p=>p.id===selection[c.id])?.name).filter(Boolean).join(', '));
+ const addon=parts.find(p=>p.id===selection.altar&&p.category==='altar'&&p.image);
+ $('#order-addon').hidden=!addon;
+ $('#addon-art').innerHTML=addon?renderFigure(selection,parts,'altar'):'';
+ $('#addon-name').textContent=addon?addon.name+' · '+money(addon.price):'';
+ $('#png-ready').hidden=true;
+ $('#figure').setAttribute('aria-label','Фигурка: '+categories.filter(c=>c.id!=='altar').map(c=>parts.find(p=>p.id===selection[c.id])?.name).filter(Boolean).join(', '));
  $('#total').textContent=money(totalPrice(selection,parts));
  $('#breakdown').innerHTML=categories.map(c=>`<div>${c.singular}<strong>${money(parts.find(p=>p.id===selection[c.id])?.price||0)}</strong></div>`).join('');
  renderCatalog();persist('teuilor-selection-v1',selection);
@@ -52,17 +47,24 @@ $('#tabs').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','
 $('#catalog').addEventListener('click',e=>{const btn=e.target.closest('[data-part]');if(btn){selection[current]=btn.dataset.part;render();document.querySelector(`[data-part="${selection[current]}"]`)?.focus({preventScroll:true});}});
 $('#reset').onclick=()=>{selection={...startingSelection};render();toast('Вернулись к первой истории');};
 $('#random').onclick=()=>{for(const c of categories){const list=parts.filter(p=>p.category===c.id);selection[c.id]=list[Math.floor(Math.random()*list.length)].id;}render();};
-function renderCart(){
- $('#cart-count').textContent=cart.length;
- $('#cart-items').innerHTML=cart.length?cart.map((item,index)=>`<div class="cart-item"><div class="cart-art">${renderFigure(item.selection,item.snapshot)}</div><div><h3>Твоя история №${index+1}</h3><p>${categories.map(c=>item.snapshot.find(p=>p.id===item.selection[c.id])?.name).filter(Boolean).map(escapeHtml).join(' · ')}</p><strong>${money(item.total)}</strong></div><button data-remove="${index}" aria-label="Удалить фигурку ${index+1}">Удалить</button></div>`).join(''):'<div class="empty">Здесь скоро появится твой первый человечек ♡</div>';
- $('#cart-sum').textContent=cart.length?'Всего: '+money(cart.reduce((sum,i)=>sum+i.total,0)):'';
-}
-$('#add-cart').onclick=()=>{
- const snapshot=categories.map(c=>({...parts.find(p=>p.id===selection[c.id])}));
- const next=[...cart,{selection:{...selection},snapshot,total:totalPrice(selection,parts)}];
- if(!persist('teuilor-cart-v1',next))return;cart=next;renderCart();toast('Твой человечек в коллекции ♡');
+$('#remove-addon').onclick=()=>{selection.altar='altar-none';render();};
+$('#catalog-help-open').onclick=()=>$('#catalog-help-dialog').showModal();
+let pngUrl;
+$('#save-png').onclick=async()=>{
+ const button=$('#save-png'),snapshot={...selection};
+ button.disabled=true;button.textContent='Готовлю PNG…';
+ try{
+  const {createFigurePng}=await import('./export-image.js');
+  const blob=await createFigurePng(snapshot,parts);
+  if(pngUrl)URL.revokeObjectURL(pngUrl);
+  pngUrl=URL.createObjectURL(blob);
+  const link=$('#png-link');link.href=pngUrl;
+  $('#png-ready').hidden=false;
+  const download=document.createElement('a');download.href=pngUrl;download.download='teuilor-personazh.png';
+  document.body.append(download);download.click();download.remove();
+ }catch{
+  toast('Не удалось сохранить изображение. Попробуйте ещё раз.');
+ }finally{button.disabled=false;button.textContent='Скачать персонажа в PNG';}
 };
-$('#cart-items').onclick=e=>{const b=e.target.closest('[data-remove]');if(!b)return;const next=cart.filter((_,i)=>i!==Number(b.dataset.remove));if(persist('teuilor-cart-v1',next)){cart=next;renderCart();}};
-for(const name of ['cart','catalog-help']){$('#'+name+'-open').onclick=()=>{if(name==='cart')renderCart();$('#'+name+'-dialog').showModal();};}
 for(const d of document.querySelectorAll('dialog')){d.querySelector('.close').onclick=()=>d.close();d.addEventListener('click',e=>{if(e.target!==d)return;const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close();});}
-render();renderCart();
+render();
