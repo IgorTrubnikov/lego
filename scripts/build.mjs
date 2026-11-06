@@ -68,6 +68,9 @@ export async function collectParts(root) {
         previewBox=box.join(' ');
       }
       const backImage=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-back-image=["']([^"']*)["']/)?.[1]:undefined;
+      const assetVersion=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-asset-version=["']([^"']*)["']/)?.[1]:undefined;
+      if(assetVersion!==undefined&&!/^[a-z0-9-]{1,32}$/.test(assetVersion))throw new Error(`${folder}/${filename}: неверная версия изображения`);
+      const versionQuery=assetVersion?'?v='+assetVersion:'';
       if(backImage!==undefined){
         if(category!=='hair'||!/^\.\/assets\/hair-backs\/[a-z0-9-]+\.svg$/.test(backImage))throw new Error(`${folder}/${filename}: неверный задний слой причёски`);
         const back=await readFile(path.join(root,backImage.slice(2)));
@@ -75,7 +78,7 @@ export async function collectParts(root) {
         if(back.length>2*1024*1024||dimensions.width!==size.width||dimensions.height!==size.height)throw new Error(`${folder}/${filename}: неверный размер заднего слоя причёски`);
       }
       ids.add(id);count++;
-      parts.push({id,category,name,price,image:`./${folder}/${encodeURIComponent(filename)}`,...(previewBox?{previewBox}:{}),...(backImage?{backImage}:{})});
+      parts.push({id,category,name,price,image:`./${folder}/${encodeURIComponent(filename)}`+versionQuery,...(previewBox?{previewBox}:{}),...(backImage?{backImage:backImage+versionQuery}:{})});
     }
     if(!count&&!optional)throw new Error(`Добавьте хотя бы одну деталь в ${folder}/`);
   }

@@ -37,6 +37,18 @@ test('hair back layers must be local, valid and fit the shared canvas',()=>fixtu
  await assert.rejects(collectParts(root),/неверный размер заднего слоя/);
  await rm(back);await assert.rejects(collectParts(root),/ENOENT/);
 }));
+test('updated artwork versions refresh both hair layers without changing saved IDs',()=>fixture(async root=>{
+ const dir=path.join(root,'assets/hair-backs');await mkdir(dir,{recursive:true});
+ await writeFile(path.join(dir,'test.svg'),svg);
+ const file=path.join(root,'haircuts/test__250__Деталь.svg');
+ const front=svg.replace('viewBox="0 0 600 720"','viewBox="0 0 600 720" data-back-image="./assets/hair-backs/test.svg" data-asset-version="fit-2"');
+ await writeFile(file,front);
+ const [part]=await collectParts(root);
+ assert.equal(part.id,'hair-test');assert.ok(part.image.endsWith('?v=fit-2'));
+ assert.equal(part.backImage,'./assets/hair-backs/test.svg?v=fit-2');
+ await writeFile(file,front.replace('fit-2','../../other?x=1'));
+ await assert.rejects(collectParts(root),/неверная версия изображения/);
+}));
 test('rejects malformed filenames instead of silently omitting images',()=>fixture(async root=>{
  await writeFile(path.join(root,'haircuts/wrong.png'),'bad');await assert.rejects(collectParts(root),/slug__цена/);
 }));

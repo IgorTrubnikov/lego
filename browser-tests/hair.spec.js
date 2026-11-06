@@ -1,6 +1,31 @@
 import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 
+test('fitted long hairstyles leave cheeks open and frontal caps sit above the eyebrows',async({page})=>{
+ await page.goto('/');
+ const failures=await page.evaluate(async()=>{
+  const catalog=(await import('./catalog.js')).default,failures=[];
+  for(const hair of catalog.filter(p=>p.category==='hair'&&(p.backImage||p.id.includes('cap-')))){
+   const image=new Image();image.src=hair.image;await image.decode();
+   const canvas=document.createElement('canvas');canvas.width=600;canvas.height=720;
+   const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0);
+   // A curved visor may reach the temples; cheeks and the entire lower face stay clear.
+   // Long locks must also leave the forehead sides open.
+   const faceTop=hair.backImage?236:250;
+   const area=ctx.getImageData(238,faceTop,124,301-faceTop).data;
+   if(area.some((v,i)=>i%4===3&&v!==0))failures.push(hair.id+': face overlap');
+   if(hair.id.includes('cap-')){
+    const bottom=x=>{let y=0;for(let r=90;r<280;r++)if(ctx.getImageData(x,r,1,1).data[3]>200)y=r;return y;};
+    for(const offset of [20,40,60])if(Math.abs(bottom(300-offset)-bottom(300+offset))>7)failures.push(hair.id+': tilted visor');
+    if(bottom(300)<195||bottom(300)>225)failures.push(hair.id+': visor height');
+    if(ctx.getImageData(300,182,1,1).data[3]<245)failures.push(hair.id+': uncovered stud');
+   }
+  }
+  return failures;
+ });
+ expect(failures).toEqual([]);
+});
+
 test('all hairstyles select independently, keep the correct price and export layered long hair and caps',async({page})=>{
  test.setTimeout(90_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');

@@ -1,12 +1,13 @@
-// Local import of four transparent 4 × 4 sheets; not part of the Pages build.
+// Local import of four transparent 4 × 4 sheets and optional 2 × 1 frontal caps.
 // ImageMagick slices and positions the prepared artwork; SVG clips keep faces clear.
-// Usage: node scripts/prepare-hair-assets.mjs sheet1.png sheet2.png sheet3.png sheet4.png
+// Usage: node scripts/prepare-hair-assets.mjs sheet1.png sheet2.png sheet3.png sheet4.png caps.png
 import {spawnSync} from 'node:child_process';
 import {readFileSync,writeFileSync,mkdirSync,mkdtempSync,rmSync,readdirSync} from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import {fileURLToPath} from 'node:url';
 import {escapeHtml} from '../parts.js';
+import {createHash} from 'node:crypto';
 const root=fileURLToPath(new URL('../',import.meta.url));
 // Slug, customer-facing name, fitting profile. Each reference position stays distinct.
 export const hairItems=[
@@ -29,29 +30,44 @@ export const hairItems=[
 const fitting={short:{width:208,y:128},medium:{width:224,y:128},long:{width:240,y:128},cap:{width:215,y:134},bun:{width:210,y:43},updo:{width:215,y:53},pony:{width:225,y:104}};
 function magick(args){const r=spawnSync('magick',args,{encoding:'utf8'});if(r.error)throw r.error;if(r.status!==0)throw Error(r.stderr);return r.stdout.trim();}
 export function prepare(sources){
- if(sources.length!==4)throw Error('Provide four transparent 4 × 4 sheets.');
+ if(sources.length<4||sources.length>5)throw Error('Provide four transparent 4 × 4 sheets, optionally followed by a frontal 2 × 1 cap sheet.');
+ const capSource=sources[4];
  const temporary=mkdtempSync(path.join(os.tmpdir(),'hair-assets-'));
  try{
   const outputs=[];
-  for(const [sheetIndex,source] of sources.entries()){
+  for(const [sheetIndex,source] of sources.slice(0,4).entries()){
    const [width,height]=magick(['identify','-format','%w %h',source]).split(' ').map(Number);
    if(width!==height||width<800)throw Error('Expected a square 4 × 4 sheet.');
    for(let i=0;i<16;i++){
     const item=hairItems[sheetIndex*16+i];if(!item)break;
-    const [slug,name,profile]=item,{width:targetWidth,y}=fitting[profile];
+    const [slug,name,profile]=item;
+    let {width:targetWidth,y}=fitting[profile];
     const left=Math.floor(i%4*width/4),top=Math.floor(Math.floor(i/4)*height/4),right=Math.floor((i%4+1)*width/4),bottom=Math.floor((Math.floor(i/4)+1)*height/4);
-    const cell=`${right-left}x${bottom-top}+${left}+${top}`;
-    const trim=magick([source,'-crop',cell,'+repage','-alpha','extract','-threshold','15%','-format','%@','info:']);
-    const base=[source,'-crop',cell,'+repage','-crop',trim,'+repage','-filter','Lanczos','-resize',`${targetWidth}x360`];
+    let cell=`${right-left}x${bottom-top}+${left}+${top}`,input=source;
+    if(profile==='cap'&&capSource){
+     const [cw,ch]=magick(['identify','-format','%w %h',capSource]).split(' ').map(Number);
+     if(cw!==ch*2)throw Error('Expected a 2 × 1 frontal cap sheet.');
+     input=capSource;cell=`${ch}x${ch}+${slug==='cap-black'?ch:0}+0`;targetWidth=184;y=99;
+    }
+    const trim=magick([input,'-crop',cell,'+repage','-alpha','extract','-threshold','15%','-format','%@','info:']);
+    const base=[input,'-crop',cell,'+repage','-crop',trim,'+repage','-filter','Lanczos','-resize',`${targetWidth}x360`];
     const [w,h]=magick([...base,'-format','%w %h','info:']).split(' ').map(Number),x=Math.round(300-w/2);
     const raster=path.join(temporary,slug+'.webp');
     magick([...base,'-background','none','-gravity','northwest','-splice',`${x}x${y}`,'-extent','600x720','-strip','-define','webp:lossless=true',raster]);
     const data=readFileSync(raster).toString('base64'),back=['long','medium','pony','bun','updo'].includes(profile);
     const id='catalog-'+slug,backPath=`./assets/hair-backs/${id}.svg`;
-    const frontClip='<defs><clipPath id="front"><path d="M165 35H435V490H356V224C336 225 316 215 300 211C282 222 263 225 244 224V490H165Z"/></clipPath></defs>';
-    const image=`<image width="600" height="720" href="data:image/webp;base64,${data}"`;
-    const front=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-preview-box="${x-6} ${y-6} ${w+12} ${h+12}"${back?` data-back-image="${backPath}"`:''}><title>${escapeHtml(name)}</title>${frontClip}${image} clip-path="url(#front)"/></svg>\n`;
-    const rear=back?`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720"><defs><clipPath id="back"><rect x="0" y="211" width="600" height="509"/></clipPath></defs>${image} clip-path="url(#back)"/></svg>\n`:null;
+    // Narrow the wig silhouette around the shared head without shortening the locks.
+    const scale=({long:.9,medium:.94,pony:.94,bun:.98,updo:.95})[profile]||1;
+    const transform=`translate(${300*(1-scale)} 0) scale(${scale} 1)`;
+    const opening=back?'M165 35H435V490H372V236Q372 218 358 211Q300 190 242 211Q228 218 228 236V490H165Z':'M165 35H435V490H356V224C336 225 316 215 300 211C282 222 263 225 244 224V490H165Z';
+    const naturalVisor=profile==='cap'&&capSource;
+    const frontClip=naturalVisor?'':`<defs><clipPath id="front"><path d="${opening}"/></clipPath></defs>`;
+    const image=`<image width="600" height="720" transform="${transform}" href="data:image/webp;base64,${data}"/>`;
+    // Clip in head coordinates, outside the scaled image; caps retain their actual visor.
+    const content=naturalVisor?image:`${frontClip}<g clip-path="url(#front)">${image}</g>`;
+    const rear=back?`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720"><defs><clipPath id="back"><rect x="0" y="211" width="600" height="509"/></clipPath></defs><g clip-path="url(#back)">${image}</g></svg>\n`:null;
+    const version=createHash('sha256').update(content).update(rear||'').digest('hex').slice(0,12);
+    const front=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${version}" data-preview-box="${Math.floor(x*scale+300*(1-scale))-6} ${y-6} ${Math.ceil(w*scale)+12} ${h+12}"${back?` data-back-image="${backPath}"`:''}><title>${escapeHtml(name)}</title>${content}</svg>\n`;
     outputs.push({filename:`${id}__200__${name}.svg`,front,rear,backPath});
    }
   }
