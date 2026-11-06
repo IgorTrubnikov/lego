@@ -12,8 +12,12 @@ test('fitted long hairstyles leave cheeks open and frontal caps sit above the ey
    // A curved visor may reach the temples; cheeks and the entire lower face stay clear.
    // Long locks must also leave the forehead sides open.
    const faceTop=hair.backImage?236:250;
-   const area=ctx.getImageData(238,faceTop,124,301-faceTop).data;
+   const area=ctx.getImageData(248,faceTop,104,301-faceTop).data;
    if(area.some((v,i)=>i%4===3&&v!==0))failures.push(hair.id+': face overlap');
+   if(hair.id==='hair-catalog-long-black-ringlets'){
+    // Locks must exist in the front layer over the shoulders, not only behind the body.
+    for(const x of [250,350])if(ctx.getImageData(x,335,1,1).data[3]<200)failures.push(hair.id+': missing front lock');
+   }
    if(hair.id.includes('cap-')){
     const bottom=x=>{let y=0;for(let r=90;r<280;r++)if(ctx.getImageData(x,r,1,1).data[3]>200)y=r;return y;};
     for(const offset of [20,40,60])if(Math.abs(bottom(300-offset)-bottom(300+offset))>7)failures.push(hair.id+': tilted visor');

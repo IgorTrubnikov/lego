@@ -59,7 +59,9 @@ export function prepare(sources){
     // Narrow the wig silhouette around the shared head without shortening the locks.
     const scale=({long:.9,medium:.94,pony:.94,bun:.98,updo:.95})[profile]||1;
     const transform=`translate(${300*(1-scale)} 0) scale(${scale} 1)`;
-    const opening=back?'M165 35H435V490H372V236Q372 218 358 211Q300 190 242 211Q228 218 228 236V490H165Z':'M165 35H435V490H356V224C336 225 316 215 300 211C282 222 263 225 244 224V490H165Z';
+    // Keep front locks over the head edges and shoulders, with an opening only for
+    // the face and a narrower neck/chest corridor below it.
+    const opening=back?'M165 35H435V490H333V320H362V242Q362 225 350 218Q300 199 250 218Q238 225 238 242V320H267V490H165Z':'M165 35H435V490H356V224C336 225 316 215 300 211C282 222 263 225 244 224V490H165Z';
     const naturalVisor=profile==='cap'&&capSource;
     const frontClip=naturalVisor?'':`<defs><clipPath id="front"><path d="${opening}"/></clipPath></defs>`;
     const image=`<image width="600" height="720" transform="${transform}" href="data:image/webp;base64,${data}"/>`;
