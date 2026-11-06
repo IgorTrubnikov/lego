@@ -13,10 +13,11 @@ function persist(key,value){try{localStorage.setItem(key,JSON.stringify(value));
 function render(){
  $('#figure').innerHTML=renderFigure(selection,parts);
  const addon=parts.find(p=>p.id===selection.altar&&p.category==='altar'&&p.image);
- $('#order-addon').hidden=!addon;
- $('#addon-art').innerHTML=addon?renderFigure(selection,parts,'altar'):'';
- $('#addon-name').textContent=addon?addon.name+' · '+money(addon.price):'';
- $('#png-ready').hidden=true;
+ const addonPanel=$('#order-addon'),addonArt=$('#addon-art'),addonName=$('#addon-name');
+ if(addonPanel)addonPanel.hidden=!addon;
+ if(addonArt)addonArt.innerHTML=addon?renderFigure(selection,parts,'altar'):'';
+ if(addonName)addonName.textContent=addon?addon.name+' · '+money(addon.price):'';
+ $('#png-ready')?.setAttribute('hidden','');
  $('#figure').setAttribute('aria-label','Фигурка: '+categories.filter(c=>c.id!=='altar').map(c=>parts.find(p=>p.id===selection[c.id])?.name).filter(Boolean).join(', '));
  $('#total').textContent=money(totalPrice(selection,parts));
  $('#breakdown').innerHTML=categories.map(c=>`<div>${c.singular}<strong>${money(parts.find(p=>p.id===selection[c.id])?.price||0)}</strong></div>`).join('');
@@ -47,10 +48,10 @@ $('#tabs').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','
 $('#catalog').addEventListener('click',e=>{const btn=e.target.closest('[data-part]');if(btn){selection[current]=btn.dataset.part;render();document.querySelector(`[data-part="${selection[current]}"]`)?.focus({preventScroll:true});}});
 $('#reset').onclick=()=>{selection={...startingSelection};render();toast('Вернулись к первой истории');};
 $('#random').onclick=()=>{for(const c of categories){const list=parts.filter(p=>p.category===c.id);selection[c.id]=list[Math.floor(Math.random()*list.length)].id;}render();};
-$('#remove-addon').onclick=()=>{selection.altar='altar-none';render();};
-$('#catalog-help-open').onclick=()=>$('#catalog-help-dialog').showModal();
+$('#remove-addon')?.addEventListener('click',()=>{selection.altar='altar-none';render();});
+$('#catalog-help-open')?.addEventListener('click',()=>$('#catalog-help-dialog')?.showModal());
 let pngUrl;
-$('#save-png').onclick=async()=>{
+$('#save-png')?.addEventListener('click',async()=>{
  const button=$('#save-png'),snapshot={...selection};
  button.disabled=true;button.textContent='Готовлю PNG…';
  try{
@@ -65,6 +66,6 @@ $('#save-png').onclick=async()=>{
  }catch{
   toast('Не удалось сохранить изображение. Попробуйте ещё раз.');
  }finally{button.disabled=false;button.textContent='Скачать персонажа в PNG';}
-};
-for(const d of document.querySelectorAll('dialog')){d.querySelector('.close').onclick=()=>d.close();d.addEventListener('click',e=>{if(e.target!==d)return;const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close();});}
+});
+for(const d of document.querySelectorAll('dialog')){d.querySelector('.close')?.addEventListener('click',()=>d.close());d.addEventListener('click',e=>{if(e.target!==d)return;const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close();});}
 render();

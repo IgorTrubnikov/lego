@@ -4,6 +4,7 @@ import {categories} from '../parts.js';
 import {renderHeader,renderFooter,renderPage,pages} from './site-pages.mjs';
 import {readGallery,galleryPage,renderWorksPreview} from './gallery.mjs';
 import { fileURLToPath } from 'node:url';
+import {createHash} from 'node:crypto';
 
 export const folders = { haircuts:'hair', faces:'face', clothes:'torso', pants:'legs', accessories:'accessory', animals:'animal', altars:'altar' };
 const size = { width:600, height:720 };
@@ -86,8 +87,31 @@ export async function build(root=process.cwd(),output=path.join(root,'_site')) {
   await writeFile(path.join(output,'index.html'),home.replace('<!-- SITE_HEADER -->',renderHeader('home')).replace('<!-- SITE_FOOTER -->',renderFooter('home')).replace('<!-- WORKS_PREVIEW -->',renderWorksPreview(works)));
   for(const page of [...pages,galleryPage(works)])await writeFile(path.join(output,page.id+'.html'),renderPage(page));
   await writeFile(path.join(output,'catalog.js'),'// Generated from the category folders. Do not edit.\nexport default '+JSON.stringify(parts,null,2)+';\n');
+  await versionAssets(output,['index.html',...pages.map(p=>p.id+'.html'),'works.html']);
   await writeFile(path.join(output,'.nojekyll'),'');
   console.log(`Каталог: ${parts.length} деталей. Статический сайт: ${output}`);
   return parts;
+}
+
+// A page and its complete module graph must load from the same release.
+// Keep plain filenames for older cached pages and existing public URLs.
+export async function versionAssets(output,htmlFiles){
+  const assetFiles=['app.js','parts.js','catalog.js','export-image.js','navigation.js','gallery.js','style.css'];
+  const source=new Map();
+  for(const file of [...assetFiles,...htmlFiles])source.set(file,await readFile(path.join(output,file),'utf8'));
+  const hash=createHash('sha256');
+  for(const [name,contents] of source)hash.update(name).update('\0').update(contents).update('\0');
+  const version=hash.digest('hex').slice(0,16);
+  const assets=Object.fromEntries(assetFiles.map(file=>[file,file+'?v='+version]));
+  for(const file of assetFiles){
+    const contents=file.endsWith('.js')?source.get(file).replace(/(['"])(\.\/[^'"\s]+\.js)\1/g,(match,quote,url)=>assets[url.slice(2)]?quote+'./'+assets[url.slice(2)]+quote:match):source.get(file);
+    await writeFile(path.join(output,file),contents);
+  }
+  for(const file of htmlFiles){
+    const contents=source.get(file).replace(/\b(src|href)="([^"\s]+)"/g,(match,attribute,url)=>assets[url]?`${attribute}="${assets[url]}"`:match);
+    await writeFile(path.join(output,file),contents);
+  }
+  await writeFile(path.join(output,'asset-manifest.json'),JSON.stringify({version,assets},null,2)+'\n');
+  return {version,assets};
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))build().catch(e=>{console.error(e.message);process.exitCode=1;});
