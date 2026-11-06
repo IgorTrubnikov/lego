@@ -26,11 +26,11 @@ test('all 66 reference heads load transparently, select, update price and surviv
 });
 
 test('a removed test head resets to the new default without discarding other choices',async({page})=>{
- await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({face:'face-glasses',hair:'hair-catalog-long-golden',torso:'torso-3d-black-suit',legs:'legs-3d-blue'})));
+ await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({face:'face-glasses',hair:'hair-catalog-long-golden',torso:'torso-catalog-12',legs:'legs-3d-blue'})));
  await page.goto('/');
  await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',/catalog-58__/);
  await expect(page.locator('#figure [data-layer="hair"]')).toHaveAttribute('href',/catalog-long-golden__/);
- await expect(page.locator('#figure [data-layer="torso"]')).toHaveAttribute('href',/3d-black-suit__/);
+ await expect(page.locator('#figure [data-layer="torso"]')).toHaveAttribute('href',/catalog-12__/);
  await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/3d-blue__/);
  await page.locator('[data-category="face"]').click();await expect(page.locator('[data-part="face-glasses"]')).toHaveCount(0);
 });
