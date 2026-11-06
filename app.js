@@ -9,6 +9,13 @@ let selection={...startingSelection,...read('teuilor-selection-v1',{})};
 for(const c of categories) if(!parts.some(p=>p.id===selection[c.id]&&p.category===c.id)) selection[c.id]=startingSelection[c.id];
 let cart=read('teuilor-cart-v1',[]);if(!Array.isArray(cart))cart=[];
 cart=cart.filter(i=>i&&i.selection&&i.snapshot&&Array.isArray(i.snapshot)&&typeof i.total==='number');
+// Removed trial accessories must not leave broken image URLs in saved figures.
+cart=cart.map(item=>{
+ const accessory=item.snapshot.find(p=>p?.category==='accessory'&&p.id===item.selection.accessory);
+ if(!accessory?.image||parts.some(p=>p.category==='accessory'&&p.id===accessory.id))return item;
+ const empty=parts.find(p=>p.id==='accessory-none');
+ return {...item,selection:{...item.selection,accessory:empty.id},snapshot:[...item.snapshot.filter(p=>p?.category!=='accessory'),{...empty}],total:item.total-(Number.isFinite(accessory.price)?accessory.price:0)};
+});
 let current='hair',renderedCategory,timer;
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('show');clearTimeout(timer);timer=setTimeout(()=>$('#toast').classList.remove('show'),3000);}
 function persist(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{toast('Не удалось сохранить: хранилище браузера заполнено или недоступно.');return false;}}

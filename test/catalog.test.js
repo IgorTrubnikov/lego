@@ -15,6 +15,15 @@ test('changing filename price/title preserves the identifier',()=>fixture(async 
  await rename(path.join(root,'haircuts/test__250__Деталь.svg'),path.join(root,'haircuts/test__400__Локоны.svg'));
  const [part]=await collectParts(root);assert.equal(part.id,'hair-test');assert.equal(part.price,400);assert.equal(part.name,'Локоны');
 }));
+test('imports bounded thumbnail view boxes and rejects invalid crop metadata',()=>fixture(async root=>{
+ const file=path.join(root,'accessories/test__250__Деталь.svg');
+ await writeFile(file,svg.replace('viewBox="0 0 600 720"','viewBox="0 0 600 720" data-preview-box="20 500 140 190"'));
+ assert.equal((await collectParts(root)).find(p=>p.category==='accessory').previewBox,'20 500 140 190');
+ for(const box of ['-1 0 20 20','590 500 140 190','0 0 0 20','0 0 NaN 20','0 0 20 20 20','bad']){
+  await writeFile(file,svg.replace('viewBox="0 0 600 720"',`viewBox="0 0 600 720" data-preview-box="${box}"`));
+  await assert.rejects(collectParts(root),/неверная область предпросмотра/);
+ }
+}));
 test('rejects malformed filenames instead of silently omitting images',()=>fixture(async root=>{
  await writeFile(path.join(root,'haircuts/wrong.png'),'bad');await assert.rejects(collectParts(root),/slug__цена/);
 }));

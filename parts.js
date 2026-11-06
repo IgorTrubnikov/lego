@@ -16,9 +16,10 @@ export function totalPrice(selection, parts) { return categories.reduce((sum,c)=
 export function escapeHtml(value) { return String(value).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 export function renderFigure(selection, parts, crop) {
   const views={hair:'155 65 290 255',face:'190 170 220 160',torso:'125 280 350 270',legs:'200 445 200 250',accessory:'15 405 150 290',animal:'430 435 170 265'};
+  const preview=crop&&parts.find(p=>p.id===selection[crop]&&p.category===crop)?.previewBox;
   const layers=(crop?[crop]:['legs','torso','face','hair','accessory','animal']).map(category=>{
     const part=parts.find(p=>p.id===selection[category]&&p.category===category);
     return part?.image ? `<image href="${escapeHtml(part.image)}" width="600" height="720" data-layer="${category}"/>` : '';
   }).join('');
-  return `<svg class="figure-svg" xmlns="http://www.w3.org/2000/svg" viewBox="${crop?views[crop]:'0 0 600 720'}" aria-hidden="true">${layers}</svg>`;
+  return `<svg class="figure-svg" xmlns="http://www.w3.org/2000/svg" viewBox="${crop?escapeHtml(preview||views[crop]):'0 0 600 720'}" aria-hidden="true">${layers}</svg>`;
 }

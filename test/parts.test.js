@@ -33,3 +33,11 @@ test('optional extras add to the price, render beside the figure and can be remo
  assert.doesNotMatch(renderFigure(empty,extras),/data-layer="(?:animal|accessory)"/);
  assert.match(renderFigure(chosen,extras,'animal'),/viewBox="430 435 170 265"/);
 });
+
+test('asset-specific preview bounds enlarge thumbnails without moving assembled layers',()=>{
+ const item={id:'controller',category:'accessory',price:200,image:'./accessories/controller.svg',previewBox:'19 582 142 107'};
+ const chosen={...selection,accessory:item.id},catalog=[...parts,item];
+ assert.match(renderFigure(chosen,catalog,'accessory'),/viewBox="19 582 142 107"/);
+ assert.match(renderFigure(chosen,catalog),/viewBox="0 0 600 720"/);
+ assert.match(renderFigure(chosen,catalog),/width="600" height="720" data-layer="accessory"/);
+});

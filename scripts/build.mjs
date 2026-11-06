@@ -59,8 +59,15 @@ export async function collectParts(root) {
       let dimensions;
       try{dimensions=imageSize(data,'.'+format.toLowerCase());}catch(e){throw new Error(`${folder}/${filename}: ${e.message}`);}
       if(dimensions.width!==size.width||dimensions.height!==size.height)throw new Error(`${folder}/${filename}: нужен холст 600 × 720 px`);
+      const preview=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-preview-box=["']([^"']*)["']/)?.[1]:undefined;
+      let previewBox;
+      if(preview!==undefined){
+        const box=preview.trim().split(/\s+/).map(Number),[x,y,w,h]=box;
+        if(box.length!==4||!box.every(Number.isFinite)||x<0||y<0||w<=0||h<=0||x+w>size.width||y+h>size.height)throw new Error(`${folder}/${filename}: неверная область предпросмотра`);
+        previewBox=box.join(' ');
+      }
       ids.add(id);count++;
-      parts.push({id,category,name,price,image:`./${folder}/${encodeURIComponent(filename)}`});
+      parts.push({id,category,name,price,image:`./${folder}/${encodeURIComponent(filename)}`,...(previewBox?{previewBox}:{})});
     }
     if(!count&&!optional)throw new Error(`Добавьте хотя бы одну деталь в ${folder}/`);
   }
