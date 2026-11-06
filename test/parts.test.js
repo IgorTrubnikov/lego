@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { totalPrice,renderFigure,escapeHtml,withOptionalChoices } from '../parts.js';
+import { totalPrice,renderFigure,escapeHtml,withOptionalChoices,selectedFigureParts } from '../parts.js';
 const parts=[{id:'h',category:'hair',price:250,image:'./haircuts/test.svg'},{id:'f',category:'face',price:150,image:'./faces/test.png'},{id:'t',category:'torso',price:350,image:'./clothes/test.webp'},{id:'l',category:'legs',price:250,image:'./pants/test.svg'}];
 const selection={hair:'h',face:'f',torso:'t',legs:'l'};
 test('price sums selected parts, including a zero-priced replacement',()=>{
@@ -55,4 +55,16 @@ test('wedding additions affect the price and their cards without changing the ch
  const plain={...chosen,altar:'altar-none'};
  assert.equal(totalPrice(plain,catalog),1000);
  assert.doesNotMatch(renderFigure(plain,catalog),/data-figure-in-altar|data-layer="altar"/);
+});
+
+test('long hair uses the same back-first layers in the preview, thumbnails and PNG export',()=>{
+ const hair={...parts[0],backImage:'./assets/hair-backs/test.svg'},catalog=[hair,...parts.slice(1)];
+ const selected=selectedFigureParts(selection,catalog);
+ assert.deepEqual(selected.map(p=>p.category),['hair-back','legs','torso','face','hair']);
+ assert.equal(selected[0].image,hair.backImage);
+ const figure=renderFigure(selection,catalog);
+ assert.ok(figure.indexOf('data-layer="hair-back"')<figure.indexOf('data-layer="face"'));
+ const thumb=renderFigure(selection,catalog,'hair');
+ assert.match(thumb,/data-layer="hair-back"/);assert.match(thumb,/data-layer="hair"/);
+ assert.doesNotMatch(thumb,/data-layer="(?:torso|face|legs)"/);
 });

@@ -1,8 +1,8 @@
-import {figureCategories} from './parts.js';
+import {selectedFigureParts} from './parts.js';
 
 // Draw the same local layers as the preview; no SVG serialization, API or upload.
 export async function createFigurePng(selection,parts){
- const chosen=figureCategories.map(category=>parts.find(p=>p.category===category&&p.id===selection[category])).filter(p=>p?.image);
+ const chosen=selectedFigureParts(selection,parts);
  if(!chosen.length)throw new Error('Нет выбранных деталей.');
  const images=await Promise.all(chosen.map(async part=>{
   const image=new Image();

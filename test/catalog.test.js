@@ -24,6 +24,19 @@ test('imports bounded thumbnail view boxes and rejects invalid crop metadata',()
   await assert.rejects(collectParts(root),/неверная область предпросмотра/);
  }
 }));
+
+test('hair back layers must be local, valid and fit the shared canvas',()=>fixture(async root=>{
+ const dir=path.join(root,'assets/hair-backs');await mkdir(dir,{recursive:true});
+ const back=path.join(dir,'test.svg'),file=path.join(root,'haircuts/test__250__Деталь.svg');
+ const front=svg.replace('viewBox="0 0 600 720"','viewBox="0 0 600 720" data-back-image="./assets/hair-backs/test.svg"');
+ await writeFile(back,svg);await writeFile(file,front);
+ assert.equal((await collectParts(root))[0].backImage,'./assets/hair-backs/test.svg');
+ await writeFile(file,front.replace('./assets/hair-backs/test.svg','https://example.com/hair.svg'));
+ await assert.rejects(collectParts(root),/неверный задний слой/);
+ await writeFile(file,front);await writeFile(back,svg.replace('600 720','300 300'));
+ await assert.rejects(collectParts(root),/неверный размер заднего слоя/);
+ await rm(back);await assert.rejects(collectParts(root),/ENOENT/);
+}));
 test('rejects malformed filenames instead of silently omitting images',()=>fixture(async root=>{
  await writeFile(path.join(root,'haircuts/wrong.png'),'bad');await assert.rejects(collectParts(root),/slug__цена/);
 }));

@@ -160,6 +160,7 @@ test('redrawn legacy assets preserve saved figures and their public URLs',async(
  const retained=original.filter(p=>current.some(c=>c.image===p.image));
  test.skip(!retained.length,'The original artwork has intentionally been removed from the catalog.');
  const snapshot=Object.values(Object.fromEntries(retained.map(p=>[p.category,p])));
+ if(!snapshot.some(p=>p.category==='hair'))snapshot.push(current.find(p=>p.category==='hair'));
  const selection=Object.fromEntries(snapshot.map(p=>[p.category,p.id]));
  const total=snapshot.reduce((sum,p)=>sum+p.price,0);
  await page.addInitScript(selection=>localStorage.setItem('teuilor-selection-v1',JSON.stringify(selection)),selection);
