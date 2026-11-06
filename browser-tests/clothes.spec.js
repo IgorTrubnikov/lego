@@ -30,11 +30,11 @@ test('all 37 reference outfits keep their hands, fit below the head and select a
 });
 
 test('a retired trial outfit resets to the new blazer and preserves all other choices',async({page})=>{
- await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({torso:'torso-3d-black-suit',face:'face-catalog-07',hair:'hair-catalog-long-golden',legs:'legs-3d-blue'})));
+ await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({torso:'torso-3d-black-suit',face:'face-catalog-07',hair:'hair-catalog-long-golden',legs:'legs-catalog-23'})));
  await page.goto('/');
  await expect(page.locator('#figure [data-layer="torso"]')).toHaveAttribute('href',/catalog-06__/);
  await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',/catalog-07__/);
  await expect(page.locator('#figure [data-layer="hair"]')).toHaveAttribute('href',/catalog-long-golden__/);
- await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/3d-blue__/);
+ await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-23__/);
  await page.locator('[data-category="torso"]').click();await expect(page.locator('[data-part="torso-3d-black-suit"]')).toHaveCount(0);
 });

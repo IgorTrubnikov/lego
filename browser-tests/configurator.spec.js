@@ -17,9 +17,12 @@ test('pants thumbnails cannot intercept category tabs',async({page})=>{
     return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('[role="tab"]')===button;
    });
    expect(receivesPointer,`${id}: ${category} receives pointer`).toBe(true);
-   await tab.click();
-   await expect(tab).toHaveAttribute('aria-selected','true');
   }
+ }
+ // Check every thumbnail against every tab, then exercise actual tab navigation once.
+ for(const category of [...allCategories.filter(c=>c!=='legs'),'legs']){
+  const tab=page.locator(`[data-category="${category}"]`);await tab.click();
+  await expect(tab).toHaveAttribute('aria-selected','true');
  }
 });
 
@@ -119,7 +122,7 @@ test('reference-based raster parts load with transparent background in their ass
    return {id:part.id,width:image.width,height:image.height,visible,outside};
   }));
  });
- expect(checks.length).toBeGreaterThanOrEqual(12);
+ expect(checks.length).toBeGreaterThanOrEqual(6);
  for(const check of checks){
   expect([check.width,check.height],check.id).toEqual([600,720]);
   expect(check.visible,check.id).toBeGreaterThan(500);
@@ -127,20 +130,20 @@ test('reference-based raster parts load with transparent background in their ass
  }
 });
 
-test('new catalog clothing combines with raster legs and pets and persists after reload',async({page})=>{
+test('new clothing and pants combine with pets and persist after reload',async({page})=>{
  await page.goto('/');
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
- const picks=[['torso','torso-catalog-18'],['legs','legs-3d-blue'],['animal','animal-3d-ginger-kitten']];
+ const picks=[['torso','torso-catalog-18'],['legs','legs-catalog-23'],['animal','animal-3d-ginger-kitten']];
  for(const [category,id] of picks){
   await page.locator(`[data-category="${category}"]`).click();
   await page.locator(`[data-part="${id}"]`).click();
-  await expect(page.locator(`#figure [data-layer="${category}"]`)).toHaveAttribute('href',category==='torso'?/catalog-18__/:/\.webp$/);
+  await expect(page.locator(`#figure [data-layer="${category}"]`)).toHaveAttribute('href',new RegExp(id.replace(category+'-','')+'__'));
  }
  await page.locator('[data-category="face"]').click();await page.locator('[data-part="face-catalog-07"]').click();
  await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',/catalog-07__/);
  await page.reload();
  for(const [category,id] of picks)await expect(page.locator(`#figure [data-layer="${category}"]`)).toHaveAttribute('href',new RegExp(id.replace(category+'-','')+'__'));
- await expect(page.locator('#figure image[href$=".webp"]')).toHaveCount(2);
+ await expect(page.locator('#figure image[href$=".webp"]')).toHaveCount(1);
  await page.locator('[data-category="torso"]').click();
  const scrollArea=page.locator('#catalog');
  expect(await scrollArea.evaluate(el=>el.scrollHeight>el.clientHeight)).toBe(true);
@@ -163,6 +166,7 @@ test('redrawn legacy assets preserve saved figures and their public URLs',async(
  if(!snapshot.some(p=>p.category==='hair'))snapshot.push(current.find(p=>p.category==='hair'));
  if(!snapshot.some(p=>p.category==='face'))snapshot.push(current.find(p=>p.category==='face'));
  if(!snapshot.some(p=>p.category==='torso'))snapshot.push(current.find(p=>p.category==='torso'));
+ if(!snapshot.some(p=>p.category==='legs'))snapshot.push(current.find(p=>p.category==='legs'));
  const selection=Object.fromEntries(snapshot.map(p=>[p.category,p.id]));
  const total=snapshot.reduce((sum,p)=>sum+p.price,0);
  await page.addInitScript(selection=>localStorage.setItem('teuilor-selection-v1',JSON.stringify(selection)),selection);
