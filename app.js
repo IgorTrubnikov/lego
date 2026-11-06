@@ -21,6 +21,7 @@ function toast(message){$('#toast').textContent=message;$('#toast').classList.ad
 function persist(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{toast('Не удалось сохранить: хранилище браузера заполнено или недоступно.');return false;}}
 function render(){
  $('#figure').innerHTML=renderFigure(selection,parts);
+ $('.preview-panel').classList.toggle('has-altar',parts.some(p=>p.id===selection.altar&&p.category==='altar'&&p.image));
  $('#figure').setAttribute('aria-label','Фигурка: '+categories.map(c=>parts.find(p=>p.id===selection[c.id])?.name).filter(Boolean).join(', '));
  $('#total').textContent=money(totalPrice(selection,parts));
  $('#breakdown').innerHTML=categories.map(c=>`<div>${c.singular}<strong>${money(parts.find(p=>p.id===selection[c.id])?.price||0)}</strong></div>`).join('');
@@ -47,7 +48,7 @@ function renderCatalog(){
  $('#catalog').scrollTop=scrollTop;renderedCategory=current;
 }
 $('#tabs').addEventListener('click',e=>{const btn=e.target.closest('[data-category]');if(btn){current=btn.dataset.category;renderCatalog();$('#tab-'+current).focus({preventScroll:true});}});
-$('#tabs').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const index=categories.findIndex(c=>c.id===current);current=categories[e.key==='Home'?0:e.key==='End'?categories.length-1:(index+(e.key==='ArrowRight'?1:categories.length-1))%categories.length].id;renderCatalog();$('#tab-'+current).focus({preventScroll:true});});
+$('#tabs').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const focused=e.target.closest('[data-category]');const index=categories.findIndex(c=>c.id===(focused?.dataset.category||current));current=categories[e.key==='Home'?0:e.key==='End'?categories.length-1:(index+(e.key==='ArrowRight'?1:categories.length-1))%categories.length].id;renderCatalog();$('#tab-'+current).focus({preventScroll:true});});
 $('#catalog').addEventListener('click',e=>{const btn=e.target.closest('[data-part]');if(btn){selection[current]=btn.dataset.part;render();document.querySelector(`[data-part="${selection[current]}"]`)?.focus({preventScroll:true});}});
 $('#reset').onclick=()=>{selection={...startingSelection};render();toast('Вернулись к первой истории');};
 $('#random').onclick=()=>{for(const c of categories){const list=parts.filter(p=>p.category===c.id);selection[c.id]=list[Math.floor(Math.random()*list.length)].id;}render();};

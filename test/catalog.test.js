@@ -45,8 +45,9 @@ test('checks PNG and WebP canvas headers',()=>{
 test('optional folders can be empty or absent',()=>fixture(async root=>{
  await rm(path.join(root,'accessories'),{recursive:true});
  await rm(path.join(root,'animals/test__250__Деталь.svg'));
+ await rm(path.join(root,'altars'),{recursive:true});
  const parts=await collectParts(root);assert.equal(parts.length,4);
- assert.ok(parts.every(p=>!['accessory','animal'].includes(p.category)));
+ assert.ok(parts.every(p=>!['accessory','animal','altar'].includes(p.category)));
 }));
 
 test('reserves the empty-choice identifiers for optional categories',()=>fixture(async root=>{

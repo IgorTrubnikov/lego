@@ -5,7 +5,7 @@ import {renderHeader,renderFooter,renderPage,pages} from './site-pages.mjs';
 import {readGallery,galleryPage,renderWorksPreview} from './gallery.mjs';
 import { fileURLToPath } from 'node:url';
 
-export const folders = { haircuts:'hair', faces:'face', clothes:'torso', pants:'legs', accessories:'accessory', animals:'animal' };
+export const folders = { haircuts:'hair', faces:'face', clothes:'torso', pants:'legs', accessories:'accessory', animals:'animal', altars:'altar' };
 const size = { width:600, height:720 };
 
 export function imageSize(data, extension) {
