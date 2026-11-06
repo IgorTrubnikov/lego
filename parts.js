@@ -7,7 +7,7 @@ export const categories = [
   { id: 'animal', name: 'Животные', singular: 'Животное', optional: true, emptyLabel: 'Без животного', icon: '<path d="M7 13c-2 2-4 6-1 7s4-1 6-1 3 2 6 1 1-5-1-7q-5-5-10 0Z"/><ellipse cx="4" cy="9" rx="2" ry="3"/><ellipse cx="10" cy="5" rx="2" ry="3"/><ellipse cx="16" cy="5" rx="2" ry="3"/><ellipse cx="21" cy="10" rx="2" ry="3"/>' },
   { id: 'altar', name: 'Алтари', singular: 'Композиция', optional: true, emptyLabel: 'Без композиции', icon: '<path d="M4 21V10a8 8 0 0 1 16 0v11M2 21h6m8 0h6M7 21V10a5 5 0 0 1 10 0v11"/><path d="m12 5-2-2a1.5 1.5 0 0 1 2-2 1.5 1.5 0 0 1 2 2Z"/>' }
 ];
-export const initialSelection = { hair:'hair-catalog-short-black-classic',face:'face-smile',torso:'torso-3d-ivory-blazer',legs:'legs-3d-ivory',accessory:'accessory-none',animal:'animal-none',altar:'altar-none' };
+export const initialSelection = { hair:'hair-catalog-short-black-classic',face:'face-catalog-58',torso:'torso-3d-ivory-blazer',legs:'legs-3d-ivory',accessory:'accessory-none',animal:'animal-none',altar:'altar-none' };
 // Empty choices are virtual: administrators only add actual images to the folders.
 export function withOptionalChoices(parts) {
  return [...categories.filter(c=>c.optional).map(c=>({id:c.id+'-none',category:c.id,name:c.emptyLabel,price:0})),...parts];

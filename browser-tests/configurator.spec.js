@@ -136,8 +136,8 @@ test('new clothes, legs and pets combine with legacy parts and persist after rel
   await page.locator(`[data-part="${id}"]`).click();
   await expect(page.locator(`#figure [data-layer="${category}"]`)).toHaveAttribute('href',/\.webp$/);
  }
- await page.locator('[data-category="face"]').click();await page.locator('[data-part="face-glasses"]').click();
- await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',/\.svg$/);
+ await page.locator('[data-category="face"]').click();await page.locator('[data-part="face-catalog-07"]').click();
+ await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',/catalog-07__/);
  await page.reload();
  for(const [category,id] of picks)await expect(page.locator(`#figure [data-layer="${category}"]`)).toHaveAttribute('href',new RegExp(id.replace(category+'-','')+'__'));
  await expect(page.locator('#figure image[href$=".webp"]')).toHaveCount(3);
@@ -161,6 +161,7 @@ test('redrawn legacy assets preserve saved figures and their public URLs',async(
  test.skip(!retained.length,'The original artwork has intentionally been removed from the catalog.');
  const snapshot=Object.values(Object.fromEntries(retained.map(p=>[p.category,p])));
  if(!snapshot.some(p=>p.category==='hair'))snapshot.push(current.find(p=>p.category==='hair'));
+ if(!snapshot.some(p=>p.category==='face'))snapshot.push(current.find(p=>p.category==='face'));
  const selection=Object.fromEntries(snapshot.map(p=>[p.category,p.id]));
  const total=snapshot.reduce((sum,p)=>sum+p.price,0);
  await page.addInitScript(selection=>localStorage.setItem('teuilor-selection-v1',JSON.stringify(selection)),selection);

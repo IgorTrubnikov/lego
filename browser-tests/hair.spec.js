@@ -77,10 +77,10 @@ test('all hairstyles select independently, keep the correct price and export lay
 });
 
 test('a retired test hairstyle resets to a new style while preserving other saved details',async({page})=>{
- await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({hair:'hair-wave',face:'face-glasses',torso:'torso-3d-black-suit',legs:'legs-3d-blue',accessory:'accessory-none',animal:'animal-none',altar:'altar-none'})));
+ await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({hair:'hair-wave',face:'face-catalog-07',torso:'torso-3d-black-suit',legs:'legs-3d-blue',accessory:'accessory-none',animal:'animal-none',altar:'altar-none'})));
  await page.goto('/');
  await expect(page.locator('#figure [data-layer="hair"]')).toHaveAttribute('href',/catalog-short-black-classic__/);
- await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',/glasses__/);
+ await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',/catalog-07__/);
  await expect(page.locator('#figure [data-layer="torso"]')).toHaveAttribute('href',/3d-black-suit__/);
  await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/3d-blue__/);
 });
