@@ -7,7 +7,7 @@ permissions:
   contents: read
 concurrency:
   group: github-pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,8 +18,17 @@ jobs:
           node-version: '22'
       - name: Install test tools
         run: npm ci
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Use the runner browser
+        timeout-minutes: 3
+        run: |
+          for browser_command in google-chrome google-chrome-stable chromium chromium-browser; do
+            if runtime_browser_path="$(command -v "$browser_command")"; then
+              echo "CHROMIUM_PATH=$runtime_browser_path" >> "$GITHUB_ENV"
+              "$runtime_browser_path" --version
+              exit 0
+            fi
+          done
+          npx playwright install --with-deps chromium
       - name: Test catalog and configurator
         run: npm test
       - name: Test pointer interaction and hairstyle alignment
