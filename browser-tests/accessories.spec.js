@@ -56,3 +56,29 @@ test('retired accessories clear from saved selections without dropping other par
  expect(saved.accessory).toBe(first.id);
  expect(failures).toEqual([]);
 });
+
+test('six wedding accessories add to the existing catalog at 200 rubles and survive PNG export',async({page})=>{
+ await page.goto('/');
+ const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
+ const accessories=catalog.filter(p=>p.category==='accessory');expect(accessories).toHaveLength(53);
+ const slugs=['married-sign','flowers-red-bouquet','heart-tile','ring-box','chocolate','heart-large'];
+ const amount=async()=>Number((await page.locator('#total').innerText()).replace(/\D/g,''));
+ const base=await amount();await page.locator('[data-category="accessory"]').click();
+ for(const slug of slugs){
+  const item=accessories.find(p=>p.id===`accessory-catalog-${slug}`);expect(item).toBeTruthy();expect(item.price).toBe(200);
+  await page.locator(`[data-part="${item.id}"]`).click();
+  await expect(page.locator('#figure [data-layer="accessory"]')).toHaveAttribute('href',item.image);
+  expect(await amount()).toBe(base+200);
+ }
+ await page.reload();await expect(page.locator('#figure [data-layer="accessory"]')).toHaveAttribute('href',/catalog-heart-large__/);
+ const pending=page.waitForEvent('download');await page.locator('#save-png').click();expect(await (await pending).failure()).toBeNull();
+ const exported=await page.evaluate(async()=>{
+  const img=new Image();img.src=document.querySelector('#png-link').href;await img.decode();
+  const c=document.createElement('canvas');c.width=1200;c.height=1440;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);
+  const pixels=ctx.getImageData(30,810,300,580).data;let red=0;
+  for(let i=0;i<pixels.length;i+=4)if(pixels[i]>150&&pixels[i+1]<90&&pixels[i+2]<90&&pixels[i+3]>128)red++;
+  return {size:[img.width,img.height],red};
+ });
+ expect(exported.size).toEqual([1200,1440]);expect(exported.red).toBeGreaterThan(5000);
+ await page.locator('[data-category="accessory"]').click();await page.locator('[data-part="accessory-none"]').click();expect(await amount()).toBe(base);
+});
