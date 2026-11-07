@@ -72,6 +72,7 @@ test('optional folders can be empty or absent',()=>fixture(async root=>{
  await rm(path.join(root,'animals/test__250__Деталь.svg'));
  await rm(path.join(root,'altars'),{recursive:true});
  await rm(path.join(root,'suits'),{recursive:true});
+ await rm(path.join(root,'transport'),{recursive:true});
  const parts=await collectParts(root);assert.equal(parts.length,4);
  assert.ok(parts.every(p=>!['suit','accessory','animal','altar'].includes(p.category)));
 }));

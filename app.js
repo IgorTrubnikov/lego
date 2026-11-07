@@ -12,6 +12,7 @@ function toast(message){$('#toast').textContent=message;$('#toast').classList.ad
 function persist(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{toast('Не удалось сохранить: хранилище браузера заполнено или недоступно.');return false;}}
 function render(){
  $('#figure').innerHTML=renderFigure(selection,parts);
+ $('#figure').classList.toggle('has-transport',!!parts.find(p=>p.id===selection.transport&&p.category==='transport'&&p.image));
  const addon=parts.find(p=>p.id===selection.altar&&p.category==='altar'&&p.image);
  const addonPanel=$('#order-addon'),addonArt=$('#addon-art'),addonName=$('#addon-name');
  if(addonPanel)addonPanel.hidden=!addon;

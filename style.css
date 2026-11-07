@@ -171,3 +171,9 @@
 @media(max-width:720px){.checkout-actions{width:100%;min-width:0}.checkout-actions .primary{font-size:11px}.order-addon{padding:16px 12px;gap:12px}.addon-art{width:75px;height:90px}.order-addon h2{font-size:19px}.order-addon .eyebrow{font-size:7px}.order-addon>button{padding:6px}.order-addon p{font-size:10px}}
 
 .outfit-note{font-size:11px;line-height:1.6;color:var(--wine);background:#f8e9ed;border-radius:7px;padding:10px 12px;margin:0 0 14px}.part-includes{display:block;font-size:8px;line-height:1.5;color:var(--wine);margin-top:4px}
+/* Transport has its own lower plane, leaving the character and both extras clear. */
+.figure-stage:has(#figure.has-transport){height:560px}
+#figure.has-transport{height:550px;width:324px;max-width:100%;transform:none}
+.figure-stage:has(#figure.has-transport) .pedestal{bottom:161px}
+.figure-stage:has(#figure.has-transport) .stage-note{display:none}
+@media(max-width:600px){.figure-stage:has(#figure.has-transport){height:510px}#figure.has-transport{height:500px;width:294px}.figure-stage:has(#figure.has-transport) .pedestal{bottom:146px}}
