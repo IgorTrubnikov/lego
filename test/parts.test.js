@@ -75,7 +75,7 @@ test('a complete suit replaces both body layers and prices without discarding se
  assert.equal(totalPrice(chosen,catalog),900); // Hair 250 + face 150 + suit 500.
  assert.equal(chosen.torso,selection.torso);assert.equal(chosen.legs,selection.legs);
  assert.deepEqual(selectedFigureParts(chosen,catalog).map(p=>p.category),['suit','face','hair']);
- assert.deepEqual(selectionCategories(chosen,catalog).map(c=>c.id),['hair','face','suit','accessory','animal','transport','altar']);
+ assert.deepEqual(selectionCategories(chosen,catalog).map(c=>c.id),['hair','face','suit','accessory','animal','transport','children','altar']);
  const svg=renderFigure(chosen,catalog);assert.match(svg,/suits\/full.svg/);assert.doesNotMatch(svg,/clothes\/|pants\//);
  assert.ok(svg.indexOf('suits/full.svg')<svg.indexOf('faces/test.png'));
  for(const category of ['torso','legs']){

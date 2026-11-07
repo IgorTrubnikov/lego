@@ -6,7 +6,7 @@ test('a new page bypasses cached scripts and loads one release including PNG exp
  await page.route('**/app.js',route=>route.fulfill({contentType:'text/javascript',body:'throw new Error("Cached script was used");'}));
  await page.goto('/');
  const manifest=await page.evaluate(async()=>(await fetch('asset-manifest.json')).json());
- await expect(page.locator('#tabs [role="tab"]')).toHaveCount(9);
+ await expect(page.locator('#tabs [role="tab"]')).toHaveCount(10);
  await expect(page.locator('#figure image')).toHaveCount(4);
  await page.locator('[data-category="legs"]').click();await page.locator('[data-part="legs-catalog-23"]').click();
  const pending=page.waitForEvent('download');await page.locator('#save-png').click();expect(await (await pending).failure()).toBeNull();
@@ -24,7 +24,7 @@ test('missing optional controls in a cached page cannot stop the constructor',as
  });
  await page.goto('/');
  await expect(page.locator('#figure image')).toHaveCount(4);
- await expect(page.locator('#tabs [role="tab"]')).toHaveCount(9);
+ await expect(page.locator('#tabs [role="tab"]')).toHaveCount(10);
  await page.locator('[data-category="legs"]').click();await page.locator('[data-part="legs-catalog-23"]').click();
  await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-23__/);
  await page.locator('[data-category="altar"]').click();await page.locator('[data-part="altar-altar-1"]').click();

@@ -13,6 +13,7 @@ function persist(key,value){try{localStorage.setItem(key,JSON.stringify(value));
 function render(){
  $('#figure').innerHTML=renderFigure(selection,parts);
  $('#figure').classList.toggle('has-transport',!!parts.find(p=>p.id===selection.transport&&p.category==='transport'&&p.image));
+ $('#figure').classList.toggle('has-children',!!parts.find(p=>p.id===selection.children&&p.category==='children'&&p.image));
  const addon=parts.find(p=>p.id===selection.altar&&p.category==='altar'&&p.image);
  const addonPanel=$('#order-addon'),addonArt=$('#addon-art'),addonName=$('#addon-name');
  if(addonPanel)addonPanel.hidden=!addon;

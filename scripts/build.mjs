@@ -6,7 +6,7 @@ import {readGallery,galleryPage,renderWorksPreview} from './gallery.mjs';
 import { fileURLToPath } from 'node:url';
 import {createHash} from 'node:crypto';
 
-export const folders = { haircuts:'hair', faces:'face', clothes:'torso', pants:'legs', suits:'suit', accessories:'accessory', animals:'animal', transport:'transport', altars:'altar' };
+export const folders = { haircuts:'hair', faces:'face', clothes:'torso', pants:'legs', suits:'suit', accessories:'accessory', animals:'animal', transport:'transport', children:'children', altars:'altar' };
 const size = { width:600, height:720 };
 
 export function imageSize(data, extension) {

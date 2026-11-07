@@ -172,8 +172,11 @@
 
 .outfit-note{font-size:11px;line-height:1.6;color:var(--wine);background:#f8e9ed;border-radius:7px;padding:10px 12px;margin:0 0 14px}.part-includes{display:block;font-size:8px;line-height:1.5;color:var(--wine);margin-top:4px}
 /* Transport has its own lower plane, leaving the character and both extras clear. */
-.figure-stage:has(#figure.has-transport){height:560px}
-#figure.has-transport{height:550px;width:324px;max-width:100%;transform:none}
-.figure-stage:has(#figure.has-transport) .pedestal{bottom:161px}
-.figure-stage:has(#figure.has-transport) .stage-note{display:none}
-@media(max-width:600px){.figure-stage:has(#figure.has-transport){height:510px}#figure.has-transport{height:500px;width:294px}.figure-stage:has(#figure.has-transport) .pedestal{bottom:146px}}
+.figure-stage:has(#figure.has-transport,#figure.has-children){height:560px}
+#figure.has-transport,#figure.has-children{height:550px;width:324px;max-width:100%;transform:none}
+.figure-stage:has(#figure.has-transport,#figure.has-children) .pedestal{bottom:161px}
+.figure-stage:has(#figure.has-transport,#figure.has-children) .stage-note{display:none}
+@media(max-width:600px){.figure-stage:has(#figure.has-transport,#figure.has-children){height:510px}#figure.has-transport,#figure.has-children{height:500px;width:294px}.figure-stage:has(#figure.has-transport,#figure.has-children) .pedestal{bottom:146px}}
+
+/* Keep the final optional category aligned with the three-column tab grid. */
+.tab[data-category="altar"]{grid-column:1/-1}
