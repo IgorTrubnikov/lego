@@ -1,4 +1,4 @@
-import {categories,initialSelection,money,totalPrice,escapeHtml,renderFigure,withOptionalChoices,selectedSuit,selectionCategories,choosePart} from './parts.js';
+import {categories,initialSelection,money,totalPrice,escapeHtml,renderFigure,withOptionalChoices,selectedSuit,selectedSkirt,selectionCategories,choosePart} from './parts.js';
 import catalog from './catalog.js';
 const parts=withOptionalChoices(catalog);
 const $=s=>document.querySelector(s);
@@ -42,16 +42,19 @@ function renderCatalog(){
  $('#variants-count').textContent=`${count} ${count%10===1&&count%100!==11?'вариант':count%10>=2&&count%10<=4&&(count%100<12||count%100>14)?'варианта':'вариантов'}`;
  $('#catalog').setAttribute('aria-labelledby','tab-'+current);
  const scrollTop=renderedCategory===current?$('#catalog').scrollTop:0;
- const suit=selectedSuit(selection,parts),bodyHidden=!!suit&&['torso','legs'].includes(current);
- const note=$('#outfit-note');if(note){note.hidden=!suit&&current!=='suit';note.textContent=suit?`Выбран комплект: тело и ноги входят в стоимость.${suit.includedLabel?' '+suit.includedLabel+'.':''} Выбор отдельной одежды или брюк заменит костюм.`:'Костюм включает тело и ноги. «Одежда по частям» возвращает выбранные отдельно детали.';}
- $('#catalog').innerHTML=list.map(p=>{const active=!bodyHidden&&selection[current]===p.id;return `<button title="${escapeHtml(p.name)}" class="part-card ${active?'selected':''}" data-part="${escapeHtml(p.id)}" aria-pressed="${active}" aria-label="${escapeHtml(p.name)}, ${money(p.price)}${p.includedLabel?', '+escapeHtml(p.includedLabel):''}">${p.id.includes('-3d-')?'<span class="part-badge">НОВОЕ</span>':''}<span class="part-art">${p.image?renderFigure({...selection,[current]:p.id},parts,current):'<span class="empty-choice" aria-hidden="true">∅</span>'}</span><span class="part-name">${escapeHtml(p.name)}</span>${p.includedLabel?`<span class="part-includes">${escapeHtml(p.includedLabel)}</span>`:''}<span class="part-price">${money(p.price)}</span></button>`;}).join('');
+ const suit=selectedSuit(selection,parts),skirt=selectedSkirt(selection,parts),bodyHidden=(!!suit&&['torso','legs','skirt'].includes(current))||(current==='legs'&&skirt?.skirtMode==='replace-legs');
+ const note=$('#outfit-note');if(note){
+  note.hidden=!suit&&!skirt&&!['suit','skirt'].includes(current);
+  note.textContent=suit?`Выбран комплект: тело и ноги входят в стоимость.${suit.includedLabel?' '+suit.includedLabel+'.':''} Выбор отдельной одежды, брюк или юбки заменит костюм.`:current==='skirt'||skirt?(skirt?.skirtMode==='replace-legs'?'Длинная юбка заменяет брюки в изображении и цене. Выбор брюк снимет длинную юбку.':'Короткие юбки надеваются поверх выбранных брюк. Длинная белая юбка заменяет брюки. Выбор юбки заменит готовый костюм одеждой по частям.'):'Костюм включает тело и ноги. «Одежда по частям» возвращает выбранные отдельно детали.';
+ }
+ $('#catalog').innerHTML=list.map(p=>{const active=!bodyHidden&&selection[current]===p.id;return `<button title="${escapeHtml(p.name)}" class="part-card ${active?'selected':''}" data-part="${escapeHtml(p.id)}" aria-pressed="${active}" aria-label="${escapeHtml(p.name)}, ${money(p.price)}${p.includedLabel?', '+escapeHtml(p.includedLabel):''}">${p.id.includes('-3d-')?'<span class="part-badge">НОВОЕ</span>':''}<span class="part-art">${p.image?renderFigure({...selection,[current]:p.id},parts,current):'<span class="empty-choice" aria-hidden="true">∅</span>'}</span><span class="part-name">${escapeHtml(p.name)}</span>${p.skirtMode?`<span class="part-includes">${p.skirtMode==='overlay'?'Поверх брюк':'Вместо брюк'}</span>`:''}${p.includedLabel?`<span class="part-includes">${escapeHtml(p.includedLabel)}</span>`:''}<span class="part-price">${money(p.price)}</span></button>`;}).join('');
  $('#catalog').scrollTop=scrollTop;renderedCategory=current;
 }
 $('#tabs').addEventListener('click',e=>{const btn=e.target.closest('[data-category]');if(btn){current=btn.dataset.category;renderCatalog();$('#tab-'+current).focus({preventScroll:true});}});
 $('#tabs').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const focused=e.target.closest('[data-category]');const index=categories.findIndex(c=>c.id===(focused?.dataset.category||current));current=categories[e.key==='Home'?0:e.key==='End'?categories.length-1:(index+(e.key==='ArrowRight'?1:categories.length-1))%categories.length].id;renderCatalog();$('#tab-'+current).focus({preventScroll:true});});
-$('#catalog').addEventListener('click',e=>{const btn=e.target.closest('[data-part]');if(btn){selection=choosePart(selection,current,btn.dataset.part);render();document.querySelector(`[data-part="${selection[current]}"]`)?.focus({preventScroll:true});}});
+$('#catalog').addEventListener('click',e=>{const btn=e.target.closest('[data-part]');if(btn){selection=choosePart(selection,current,btn.dataset.part,parts);render();document.querySelector(`[data-part="${selection[current]}"]`)?.focus({preventScroll:true});}});
 $('#reset').onclick=()=>{selection={...startingSelection};render();toast('Вернулись к первой истории');};
-$('#random').onclick=()=>{for(const c of categories){const list=parts.filter(p=>p.category===c.id);selection[c.id]=list[Math.floor(Math.random()*list.length)].id;}if(Math.random()<.5)selection.suit='suit-none';render();};
+$('#random').onclick=()=>{for(const c of categories){const list=parts.filter(p=>p.category===c.id);selection[c.id]=list[Math.floor(Math.random()*list.length)].id;}if(Math.random()<.5)selection.suit='suit-none';if(selectedSuit(selection,parts))selection.skirt='skirt-none';render();};
 $('#remove-addon')?.addEventListener('click',()=>{selection.altar='altar-none';render();});
 $('#catalog-help-open')?.addEventListener('click',()=>$('#catalog-help-dialog')?.showModal());
 let pngUrl;

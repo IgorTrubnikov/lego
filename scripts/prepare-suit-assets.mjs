@@ -46,6 +46,7 @@ export function prepare(sources,price=500){
     });
     const file=path.join(temp,index+'.webp');magick([...halves,'-append','-background','none','-gravity','northwest','-splice','139x317','-extent','600x720','-strip','-define','webp:lossless=true',file]);
     let art=`<image width="600" height="720" href="data:image/webp;base64,${readFileSync(file).toString('base64')}"/>`;
+    if(index===8)art='<g data-fit="mermaid-center" transform="translate(21 0)">'+art+'</g>';
     const included=s===3&&i===2;
     if(included){
      const bagCell=crop(source,3,cols,rows,w,h);
@@ -56,7 +57,7 @@ export function prepare(sources,price=500){
     }
     const number=String(index+1).padStart(2,'0'),name=number+' · '+suitNames[index];
     const version=createHash('sha256').update(art).digest('hex').slice(0,12);
-    outputs.push({filename:`catalog-${number}__${price}__${name}.svg`,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${version}" data-preview-box="133 311 ${included?453:334} 391"${included?' data-included-label="Рюкзак в комплекте"':''}><title>${escapeHtml(name)}</title>${art}</svg>\n`});
+    outputs.push({filename:`catalog-${number}__${price}__${name}.svg`,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${version}" data-preview-box="${index===8?154:133} 311 ${included?453:334} 391"${included?' data-included-label="Рюкзак в комплекте"':''}><title>${escapeHtml(name)}</title>${art}</svg>\n`});
    }
   }
   if(outputs.length!==49)throw Error('Expected 49 complete outfits');

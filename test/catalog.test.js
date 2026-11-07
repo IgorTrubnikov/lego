@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {collectParts,folders,imageSize} from '../scripts/build.mjs';
 const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 720"><rect x="224" y="190" width="152" height="130"/></svg>';
-async function fixture(fn){const root=await mkdtemp(path.join(os.tmpdir(),'teuilor-catalog-'));try{for(const f of Object.keys(folders)){await mkdir(path.join(root,f));await writeFile(path.join(root,f,'test__250__Деталь.svg'),svg);}await fn(root);}finally{await rm(root,{recursive:true,force:true});}}
+async function fixture(fn){const root=await mkdtemp(path.join(os.tmpdir(),'teuilor-catalog-'));try{for(const f of Object.keys(folders)){await mkdir(path.join(root,f));await writeFile(path.join(root,f,'test__250__Деталь.svg'),f==='skirts'?svg.replace('<svg ','<svg data-skirt-mode="overlay" '):svg);}await fn(root);}finally{await rm(root,{recursive:true,force:true});}}
 test('discovers all folders and encodes file URLs for GitHub project pages',()=>fixture(async root=>{
  const parts=await collectParts(root);assert.equal(parts.length,Object.keys(folders).length);
  assert.equal(parts[0].id,'hair-test');assert.equal(parts[0].price,250);assert.equal(parts[0].name,'Деталь');
@@ -72,6 +72,7 @@ test('optional folders can be empty or absent',()=>fixture(async root=>{
  await rm(path.join(root,'animals/test__250__Деталь.svg'));
  await rm(path.join(root,'altars'),{recursive:true});
  await rm(path.join(root,'suits'),{recursive:true});
+ await rm(path.join(root,'skirts'),{recursive:true});
  await rm(path.join(root,'transport'),{recursive:true});
  await rm(path.join(root,'children'),{recursive:true});
  const parts=await collectParts(root);assert.equal(parts.length,4);
@@ -106,3 +107,16 @@ test('retained legacy catalog URLs keep their IDs and self-contained glossy artw
   assert.match(svg,/data:image\/webp;base64,/);
  }
 });
+
+test('skirt behavior must explicitly distinguish overlays from leg replacements',()=>fixture(async root=>{
+ const file=path.join(root,'skirts/test__250__Деталь.svg');
+ for(const mode of ['overlay','replace-legs']){
+  await writeFile(file,svg.replace('<svg ',`<svg data-skirt-mode="${mode}" `));
+  assert.equal((await collectParts(root)).find(p=>p.category==='skirt').skirtMode,mode);
+ }
+ await writeFile(file,svg);await assert.rejects(collectParts(root),/data-skirt-mode/);
+ await writeFile(file,svg.replace('<svg ','<svg data-skirt-mode="unknown" '));await assert.rejects(collectParts(root),/неверный режим юбки/);
+ await writeFile(file,svg.replace('<svg ','<svg data-skirt-mode="overlay" '));
+ await writeFile(path.join(root,'pants/test__250__Деталь.svg'),svg.replace('<svg ','<svg data-skirt-mode="overlay" '));
+ await assert.rejects(collectParts(root),/неверный режим юбки/);
+}));

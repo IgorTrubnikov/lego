@@ -177,6 +177,3 @@
 .figure-stage:has(#figure.has-transport,#figure.has-children) .pedestal{bottom:161px}
 .figure-stage:has(#figure.has-transport,#figure.has-children) .stage-note{display:none}
 @media(max-width:600px){.figure-stage:has(#figure.has-transport,#figure.has-children){height:510px}#figure.has-transport,#figure.has-children{height:500px;width:294px}.figure-stage:has(#figure.has-transport,#figure.has-children) .pedestal{bottom:146px}}
-
-/* Keep the final optional category aligned with the three-column tab grid. */
-.tab[data-category="altar"]{grid-column:1/-1}

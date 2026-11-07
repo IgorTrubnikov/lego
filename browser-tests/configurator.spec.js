@@ -107,7 +107,7 @@ test('reference-based raster parts load with transparent background in their ass
  await page.goto('/');
  const checks=await page.evaluate(async()=>{
   const {default:catalog}=await import('./catalog.js');
-  const slots={torso:[139,285,322,257],legs:[212,451,176,232],animal:[430,435,170,265]};
+  const slots={torso:[139,285,322,257],legs:[212,451,176,232],animal:[409,435,191,267]};
   return Promise.all(catalog.filter(p=>p.id.includes('-3d-')).map(async part=>{
    const image=new Image();image.src=part.image;await image.decode();
    const canvas=document.createElement('canvas');canvas.width=600;canvas.height=720;

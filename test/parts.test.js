@@ -100,3 +100,23 @@ test('transport extends only its own scene plane and keeps extras and suit layer
  const plain={...chosen,transport:'transport-none'};
  assert.equal(figureScene(plain,catalog).height,720);assert.equal(totalPrice(plain,catalog),1500);
 });
+
+test('short skirts overlay chosen pants while long skirts replace their layer and price',()=>{
+ const short={id:'short',category:'skirt',skirtMode:'overlay',price:200,image:'short.svg'};
+ const long={id:'long',category:'skirt',skirtMode:'replace-legs',price:200,image:'long.svg'};
+ const suit={id:'suit',category:'suit',price:500,image:'suit.svg'};
+ const catalog=withOptionalChoices([...parts,short,long,suit]);
+ const over=choosePart(selection,'skirt','short',catalog);
+ assert.equal(over.legs,selection.legs);assert.equal(totalPrice(over,catalog),1200);
+ assert.deepEqual(selectedFigureParts(over,catalog).map(p=>p.category),['legs','skirt','torso','face','hair']);
+ assert.equal(choosePart(over,'legs','l',catalog).skirt,'short');
+ const instead=choosePart(over,'skirt','long',catalog);
+ assert.equal(instead.legs,selection.legs);assert.equal(totalPrice(instead,catalog),950);
+ assert.deepEqual(selectedFigureParts(instead,catalog).map(p=>p.category),['skirt','torso','face','hair']);
+ assert.equal(choosePart(instead,'legs','l',catalog).skirt,'skirt-none');
+ assert.equal(totalPrice(choosePart(instead,'skirt','skirt-none',catalog),catalog),1000);
+ const suited=choosePart(instead,'suit','suit',catalog);assert.equal(suited.skirt,'skirt-none');
+ assert.equal(totalPrice({...suited,skirt:'long'},catalog),900);
+ assert.equal(choosePart(suited,'skirt','short',catalog).suit,'suit-none');
+ assert.equal(choosePart(suited,'skirt','skirt-none',catalog).suit,'suit');
+});

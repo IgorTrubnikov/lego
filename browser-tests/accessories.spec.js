@@ -60,7 +60,7 @@ test('retired accessories clear from saved selections without dropping other par
 test('six wedding accessories add to the existing catalog at 200 rubles and survive PNG export',async({page})=>{
  await page.goto('/');
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
- const accessories=catalog.filter(p=>p.category==='accessory');expect(accessories).toHaveLength(53);
+ const accessories=catalog.filter(p=>p.category==='accessory');expect(accessories).toHaveLength(54);
  const slugs=['married-sign','flowers-red-bouquet','heart-tile','ring-box','chocolate','heart-large'];
  const amount=async()=>Number((await page.locator('#total').innerText()).replace(/\D/g,''));
  const base=await amount();await page.locator('[data-category="accessory"]').click();

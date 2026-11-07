@@ -6,7 +6,7 @@ import {readGallery,galleryPage,renderWorksPreview} from './gallery.mjs';
 import { fileURLToPath } from 'node:url';
 import {createHash} from 'node:crypto';
 
-export const folders = { haircuts:'hair', faces:'face', clothes:'torso', pants:'legs', suits:'suit', accessories:'accessory', animals:'animal', transport:'transport', children:'children', altars:'altar' };
+export const folders = { haircuts:'hair', faces:'face', clothes:'torso', pants:'legs', skirts:'skirt', suits:'suit', accessories:'accessory', animals:'animal', transport:'transport', children:'children', altars:'altar' };
 const size = { width:600, height:720 };
 
 export function imageSize(data, extension) {
@@ -67,6 +67,9 @@ export async function collectParts(root) {
         if(box.length!==4||!box.every(Number.isFinite)||x<0||y<0||w<=0||h<=0||x+w>size.width||y+h>size.height)throw new Error(`${folder}/${filename}: неверная область предпросмотра`);
         previewBox=box.join(' ');
       }
+      const skirtMode=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-skirt-mode=["']([^"']*)["']/)?.[1]:undefined;
+      if(skirtMode!==undefined&&(category!=='skirt'||!['overlay','replace-legs'].includes(skirtMode)))throw new Error(folder+'/'+filename+': неверный режим юбки');
+      if(category==='skirt'&&!skirtMode)throw new Error(folder+'/'+filename+': укажите data-skirt-mode="overlay" или "replace-legs"');
       const backImage=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-back-image=["']([^"']*)["']/)?.[1]:undefined;
       const assetVersion=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-asset-version=["']([^"']*)["']/)?.[1]:undefined;
       if(assetVersion!==undefined&&!/^[a-z0-9-]{1,32}$/.test(assetVersion))throw new Error(`${folder}/${filename}: неверная версия изображения`);
@@ -80,7 +83,7 @@ export async function collectParts(root) {
         if(back.length>2*1024*1024||dimensions.width!==size.width||dimensions.height!==size.height)throw new Error(`${folder}/${filename}: неверный размер заднего слоя причёски`);
       }
       ids.add(id);count++;
-      parts.push({id,category,name,price,image:`./${folder}/${encodeURIComponent(filename)}`+versionQuery,...(previewBox?{previewBox}:{}),...(backImage?{backImage:backImage+versionQuery}:{}),...(includedLabel?{includedLabel}:{})});
+      parts.push({id,category,name,price,image:`./${folder}/${encodeURIComponent(filename)}`+versionQuery,...(previewBox?{previewBox}:{}),...(backImage?{backImage:backImage+versionQuery}:{}),...(includedLabel?{includedLabel}:{}),...(skirtMode?{skirtMode}:{})});
     }
     if(!count&&!optional)throw new Error(`Добавьте хотя бы одну деталь в ${folder}/`);
   }
