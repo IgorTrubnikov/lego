@@ -1,0 +1,145 @@
+[
+  {
+    "id": "review-01",
+    "title": "Отзывы покупателей · 01",
+    "alt": "Скриншот отзывов покупателей LEGO.FROM.TEUILOR, лист 1",
+    "thumb": "assets/reviews/thumbs/review-01.webp",
+    "full": "assets/reviews/full/review-01.webp",
+    "width": 640,
+    "height": 553,
+    "fullWidth": 1320,
+    "fullHeight": 1140
+  },
+  {
+    "id": "review-02",
+    "title": "Отзывы покупателей · 02",
+    "alt": "Скриншот отзывов покупателей LEGO.FROM.TEUILOR, лист 2",
+    "thumb": "assets/reviews/thumbs/review-02.webp",
+    "full": "assets/reviews/full/review-02.webp",
+    "width": 640,
+    "height": 730,
+    "fullWidth": 1320,
+    "fullHeight": 1506
+  },
+  {
+    "id": "review-03",
+    "title": "Отзывы покупателей · 03",
+    "alt": "Скриншот отзывов покупателей LEGO.FROM.TEUILOR, лист 3",
+    "thumb": "assets/reviews/thumbs/review-03.webp",
+    "full": "assets/reviews/full/review-03.webp",
+    "width": 640,
+    "height": 671,
+    "fullWidth": 1298,
+    "fullHeight": 1360
+  },
+  {
+    "id": "review-04",
+    "title": "Отзывы покупателей · 04",
+    "alt": "Скриншот отзывов покупателей LEGO.FROM.TEUILOR, лист 4",
+    "thumb": "assets/reviews/thumbs/review-04.webp",
+    "full": "assets/reviews/full/review-04.webp",
+    "width": 640,
+    "height": 853,
+    "fullWidth": 1320,
+    "fullHeight": 1760
+  },
+  {
+    "id": "review-05",
+    "title": "Отзывы покупателей · 05",
+    "alt": "Скриншот отзывов покупателей LEGO.FROM.TEUILOR, лист 5",
+    "thumb": "assets/reviews/thumbs/review-05.webp",
+    "full": "assets/reviews/full/review-05.webp",
+    "width": 640,
+    "height": 853,
+    "fullWidth": 1320,
+    "fullHeight": 1760
+  },
+  {
+    "id": "review-06",
+    "title": "Отзывы покупателей · 06",
+    "alt": "Скриншот отзывов покупателей LEGO.FROM.TEUILOR, лист 6",
+    "thumb": "assets/reviews/thumbs/review-06.webp",
+    "full": "assets/reviews/full/review-06.webp",
+    "width": 640,
+    "height": 853,
+    "fullWidth": 1320,
+    "fullHeight": 1760
+  },
+  {
+    "id": "review-07",
+    "title": "Отзывы покупателей · 07",
+    "alt": "Скриншот отзывов покупателей LEGO.FROM.TEUILOR, лист 7",
+    "thumb": "assets/reviews/thumbs/review-07.webp",
+    "full": "assets/reviews/full/review-07.webp",
+    "width": 640,
+    "height": 640,
+    "fullWidth": 1320,
+    "fullHeight": 1320
+  },
+  {
+    "id": "review-08",
+    "title": "Отзывы покупателей · 08",
+    "alt": "Скриншот отзывов покупателей LEGO.FROM.TEUILOR, лист 8",
+    "thumb": "assets/reviews/thumbs/review-08.webp",
+    "full": "assets/reviews/full/review-08.webp",
+    "width": 640,
+    "height": 640,
+    "fullWidth": 1320,
+    "fullHeight": 1320
+  },
+  {
+    "id": "review-09",
+    "title": "Отзывы покупателей · 09",
+    "alt": "Скриншот отзывов покупателей LEGO.FROM.TEUILOR, лист 9",
+    "thumb": "assets/reviews/thumbs/review-09.webp",
+    "full": "assets/reviews/full/review-09.webp",
+    "width": 640,
+    "height": 640,
+    "fullWidth": 1320,
+    "fullHeight": 1320
+  },
+  {
+    "id": "review-10",
+    "title": "Отзывы покупателей · 10",
+    "alt": "Скриншот отзывов покупателей LEGO.FROM.TEUILOR, лист 10",
+    "thumb": "assets/reviews/thumbs/review-10.webp",
+    "full": "assets/reviews/full/review-10.webp",
+    "width": 640,
+    "height": 640,
+    "fullWidth": 1320,
+    "fullHeight": 1320
+  },
+  {
+    "id": "review-11",
+    "title": "Отзывы покупателей · 11",
+    "alt": "Скриншот отзывов покупателей LEGO.FROM.TEUILOR, лист 11",
+    "thumb": "assets/reviews/thumbs/review-11.webp",
+    "full": "assets/reviews/full/review-11.webp",
+    "width": 640,
+    "height": 1139,
+    "fullWidth": 1319,
+    "fullHeight": 2347
+  },
+  {
+    "id": "review-12",
+    "title": "Отзывы покупателей · 12",
+    "alt": "Скриншот отзывов покупателей LEGO.FROM.TEUILOR, лист 12",
+    "thumb": "assets/reviews/thumbs/review-12.webp",
+    "full": "assets/reviews/full/review-12.webp",
+    "width": 640,
+    "height": 640,
+    "fullWidth": 1320,
+    "fullHeight": 1320
+  },
+  {
+    "id": "review-13",
+    "title": "Отзывы покупателей · 13",
+    "alt": "Скриншот отзывов покупателей LEGO.FROM.TEUILOR, лист 13",
+    "thumb": "assets/reviews/thumbs/review-13.webp",
+    "full": "assets/reviews/full/review-13.webp",
+    "width": 640,
+    "height": 640,
+    "fullWidth": 1320,
+    "fullHeight": 1320
+  }
+]

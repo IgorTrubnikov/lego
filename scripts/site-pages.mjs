@@ -5,7 +5,7 @@ export const socialLinks = {
  tiktok: 'https://www.tiktok.com/@lego.from.teuilor?_r=1&_t=ZP-9B99yHdgIUJ',
 };
 const arrow='<svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg>';
-const navigation=[['home','./#studio','Конструктор'],['works','works.html','Готовые работы'],['delivery','delivery.html','Доставка и оплата'],['faq','faq.html','Вопросы и ответы'],['contacts','contacts.html','Контакты']];
+const navigation=[['home','./#studio','Конструктор'],['works','works.html','Готовые работы'],['reviews','reviews.html','Отзывы'],['delivery','delivery.html','Доставка и оплата'],['faq','faq.html','Вопросы и ответы'],['contacts','contacts.html','Контакты']];
 const links=active=>navigation.map(([id,url,label])=>`<a href="${url}"${active===id?' class="active" aria-current="page"':''}>${label}</a>`).join('');
 export function renderHeader(active){
  const action=active==='home'?'<a class="header-create" href="'+socialLinks.telegram+'" target="_blank" rel="noopener noreferrer">Написать в Telegram '+arrow+'</a>':'<a class="header-create" href="./#studio">Собрать персонажа '+arrow+'</a>';
