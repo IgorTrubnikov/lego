@@ -10,7 +10,7 @@ export async function createFigurePng(selection,parts){
   await image.decode();
   return {image,x:part.x,y:part.y,scale:part.scale};
  }));
- const canvas=document.createElement('canvas');canvas.width=1200;canvas.height=scene.height*2;
+ const canvas=document.createElement('canvas');canvas.width=scene.width*2;canvas.height=scene.height*2;
  const context=canvas.getContext('2d');if(!context)throw new Error('Canvas недоступен.');
  for(const {image,x,y,scale} of images)context.drawImage(image,x*2,y*2,1200*scale,1440*scale);
  return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('Не удалось создать PNG.')),'image/png'));

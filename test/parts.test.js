@@ -120,3 +120,16 @@ test('short skirts overlay chosen pants while long skirts replace their layer an
  assert.equal(choosePart(suited,'skirt','short',catalog).suit,'suit-none');
  assert.equal(choosePart(suited,'skirt','skirt-none',catalog).suit,'suit');
 });
+
+test('large dogs get room beside the figure and an assembly scale independent of thumbnails',()=>{
+ const dog={id:'animal-3d-shepherd',category:'animal',image:'dog.svg',price:500};
+ const catalog=[...parts,dog],chosen={...selection,animal:dog.id};
+ const scene=figureScene(chosen,catalog),layer=scene.layers.find(p=>p.category==='animal');
+ assert.equal(scene.width,760);assert.equal(scene.height,720);
+ assert.ok(Math.abs(415*layer.scale+layer.x-450)<.001);
+ assert.ok(Math.abs(595*layer.scale+layer.x-730)<.001);
+ assert.ok(Math.abs(695*layer.scale+layer.y-695)<.001);
+ assert.ok(scene.layers.filter(p=>p.category!=='animal').every(p=>p.x===0&&p.y===0&&p.scale===1));
+ assert.doesNotMatch(renderFigure(chosen,catalog,'animal'),/transform=/);
+ assert.equal(figureScene({...chosen,animal:'animal-none'},catalog).width,600);
+});

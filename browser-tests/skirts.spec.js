@@ -31,10 +31,10 @@ test('mermaid collar is centered below the face and the two larger dogs retain s
  await page.goto('/');const result=await page.evaluate(async()=>{
   const {default:catalog}=await import('./catalog.js');
   const draw=async id=>{const part=catalog.find(p=>p.id===id),img=new Image();img.src=part.image;await img.decode();const c=document.createElement('canvas');c.width=600;c.height=720;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);return {part,ctx};};
-  const {ctx}=await draw('suit-catalog-09'),neck=ctx.getImageData(0,320,600,1).data;let min=600,max=0;for(let x=0;x<600;x++)if(neck[x*4+3]>128){min=Math.min(min,x);max=x;}
+  const neckCenters=[];for(const id of ['suit-catalog-07','suit-catalog-09']){const {ctx}=await draw(id),neck=ctx.getImageData(0,320,600,1).data;let min=600,max=0;for(let x=0;x<600;x++)if(neck[x*4+3]>128){min=Math.min(min,x);max=x;}neckCenters.push((min+max)/2);}
   const dogs=[];for(const id of ['animal-3d-shepherd','animal-3d-labrador']){const {part,ctx}=await draw(id);const data=ctx.getImageData(0,0,600,720).data;let left=600,right=0,top=720,bottom=0;for(let y=0;y<720;y++)for(let x=0;x<600;x++)if(data[(y*600+x)*4+3]>128){left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);}dogs.push({id,price:part.price,left,right,top,bottom,width:right-left+1,height:bottom-top+1});}
-  return {neckCenter:(min+max)/2,dogs};
+  return {neckCenters,dogs};
  });
- expect(Math.abs(result.neckCenter-300)).toBeLessThan(3);
+ for(const center of result.neckCenters)expect(Math.abs(center-300)).toBeLessThan(3);
  for(const dog of result.dogs){expect(dog.width,dog.id).toBeGreaterThanOrEqual(178);expect(dog.left).toBeGreaterThanOrEqual(410);expect(dog.right).toBeLessThan(600);expect(dog.bottom).toBeLessThan(700);expect(dog.height).toBeGreaterThan(dog.id.includes('shepherd')?180:145);expect(dog.price).toBe(dog.id.includes('shepherd')?500:450);}
 });
