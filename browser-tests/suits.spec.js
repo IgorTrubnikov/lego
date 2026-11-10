@@ -52,8 +52,8 @@ test('army backpack is included in the suit, price and PNG while independent ext
 });
 
 test('a missing saved suit falls back to separate parts and old saved figures stay usable',async({page})=>{
- await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({suit:'suit-removed',face:'face-catalog-07',hair:'hair-catalog-long-golden',torso:'torso-catalog-12',legs:'legs-catalog-23'})));
+ await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({suit:'suit-removed',face:'face-catalog-07',hair:'hair-catalog-long-golden',torso:'torso-catalog-12',legs:'legs-catalog-21'})));
  await page.goto('/');await expect(page.locator('#figure [data-layer="suit"]')).toHaveCount(0);
- for(const [layer,id] of [['face','catalog-07'],['hair','catalog-long-golden'],['torso','catalog-12'],['legs','catalog-23']])await expect(page.locator(`#figure [data-layer="${layer}"]`)).toHaveAttribute('href',new RegExp(id+'__'));
+ for(const [layer,id] of [['face','catalog-07'],['hair','catalog-long-golden'],['torso','catalog-12'],['legs','catalog-21']])await expect(page.locator(`#figure [data-layer="${layer}"]`)).toHaveAttribute('href',new RegExp(id+'__'));
  await page.locator('[data-category="suit"]').click();await expect(page.locator('[data-part="suit-none"]')).toHaveAttribute('aria-pressed','true');
 });

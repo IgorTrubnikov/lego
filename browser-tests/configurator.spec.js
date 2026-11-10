@@ -133,7 +133,7 @@ test('reference-based raster parts load with transparent background in their ass
 test('new clothing and pants combine with pets and persist after reload',async({page})=>{
  await page.goto('/');
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
- const picks=[['torso','torso-catalog-18'],['legs','legs-catalog-23'],['animal','animal-3d-ginger-kitten']];
+ const picks=[['torso','torso-catalog-18'],['legs','legs-catalog-21'],['animal','animal-3d-ginger-kitten']];
  for(const [category,id] of picks){
   await page.locator(`[data-category="${category}"]`).click();
   await page.locator(`[data-part="${id}"]`).click();

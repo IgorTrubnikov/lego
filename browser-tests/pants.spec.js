@@ -1,11 +1,11 @@
 import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 
-test('all 28 reference pants have a wider waist, complete feet and a transparent background',async({page})=>{
+test('all 20 retained reference pants have a wider waist, complete feet and a transparent background',async({page})=>{
  test.setTimeout(90_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');await page.locator('[data-category="legs"]').click();
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
- const pants=catalog.filter(p=>p.category==='legs');expect(pants).toHaveLength(28);
+ const pants=catalog.filter(p=>p.category==='legs');expect(pants).toHaveLength(20);
  expect(pants.every(p=>p.price===200&&/^legs-catalog-\d\d$/.test(p.id))).toBe(true);
  const artwork=await page.evaluate(async list=>Promise.all(list.map(async part=>{
   const img=new Image();img.src=part.image;await img.decode();
@@ -30,7 +30,7 @@ test('all 28 reference pants have a wider waist, complete feet and a transparent
   await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',part.image);await expect(page.locator('#total')).toHaveText(before);
  }
  await page.reload();await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',pants.at(-1).image);
- for(const id of ['legs-catalog-22','legs-catalog-28']){
+ for(const id of ['legs-catalog-21','legs-catalog-28']){
   await page.locator('[data-category="legs"]').click();await page.locator(`[data-part="${id}"]`).click();
   const pending=page.waitForEvent('download');await page.locator('#save-png').click();const download=await pending;
   expect(await download.failure()).toBeNull();const bytes=await readFile(await download.path());

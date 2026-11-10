@@ -1,10 +1,10 @@
 import {test,expect} from '@playwright/test';
 
-test('all 37 reference outfits keep their hands, fit below the head and select at 200 rubles',async({page})=>{
+test('all 34 retained reference outfits keep their hands, fit below the head and select at 200 rubles',async({page})=>{
  test.setTimeout(90_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');await page.locator('[data-category="torso"]').click();
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
- const clothes=catalog.filter(p=>p.category==='torso');expect(clothes).toHaveLength(37);
+ const clothes=catalog.filter(p=>p.category==='torso');expect(clothes).toHaveLength(34);
  expect(clothes.every(p=>p.price===200&&/^torso-catalog-\d\d$/.test(p.id))).toBe(true);
  const artwork=await page.evaluate(async list=>Promise.all(list.map(async part=>{
   const img=new Image();img.src=part.image;await img.decode();
@@ -30,11 +30,11 @@ test('all 37 reference outfits keep their hands, fit below the head and select a
 });
 
 test('a retired trial outfit resets to the new blazer and preserves all other choices',async({page})=>{
- await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({torso:'torso-3d-black-suit',face:'face-catalog-07',hair:'hair-catalog-long-golden',legs:'legs-catalog-23'})));
+ await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({torso:'torso-3d-black-suit',face:'face-catalog-07',hair:'hair-catalog-long-golden',legs:'legs-catalog-21'})));
  await page.goto('/');
  await expect(page.locator('#figure [data-layer="torso"]')).toHaveAttribute('href',/catalog-06__/);
  await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',/catalog-07__/);
  await expect(page.locator('#figure [data-layer="hair"]')).toHaveAttribute('href',/catalog-long-golden__/);
- await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-23__/);
+ await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-21__/);
  await page.locator('[data-category="torso"]').click();await expect(page.locator('[data-part="torso-3d-black-suit"]')).toHaveCount(0);
 });

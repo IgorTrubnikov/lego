@@ -52,8 +52,8 @@ export function prepare(sources){
   const folder=path.join(root,'accessories');mkdirSync(folder,{recursive:true});
   // Replace only after every sprite has been prepared successfully.
   for(const name of readdirSync(folder))if(/\.(svg|png|webp)$/i.test(name))rmSync(path.join(folder,name));
-  for(const {filename,svg} of outputs)writeFileSync(path.join(folder,filename),svg);
-  console.log(`Prepared ${outputs.length} accessories at 200 ₽ each.`);
+  for(const {filename,svg} of outputs.filter(out=>!/^catalog-mug-(blue|yellow)__/.test(out.filename)))writeFileSync(path.join(folder,filename),svg);
+  console.log(`Prepared ${outputs.length-2} accessories at 200 ₽ each.`);
  }finally{rmSync(temp,{recursive:true,force:true});}
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))prepare(process.argv.slice(2));

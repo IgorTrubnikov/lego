@@ -31,7 +31,7 @@ test('downloads the full character with mixed SVG and WebP layers, independently
  await page.locator('[data-category="altar"]').click();await page.locator('[data-part="altar-altar-3"]').click();
  await expect(page.locator('#png-ready')).toBeHidden();
  const withAltar=await downloadPng(page);expect(withAltar.equals(initial)).toBe(true);
- await page.locator('[data-category="legs"]').click();await page.locator('[data-part="legs-catalog-23"]').click();
+ await page.locator('[data-category="legs"]').click();await page.locator('[data-part="legs-catalog-21"]').click();
  const blue=await downloadPng(page);expect(blue.equals(initial)).toBe(false);
  await expect(page.locator('#png-link')).toHaveAttribute('target','_blank');
  await expect(page.locator('#order-telegram')).toHaveAttribute('href','https://t.me/teuilor');
@@ -46,8 +46,8 @@ test('an export error leaves the constructor usable and allows saving again',asy
  await expect(page.locator('#toast')).toContainText('Не удалось сохранить изображение');
  await expect(page.locator('#save-png')).toBeEnabled();
  await expect(page.locator('#png-ready')).toBeHidden();
- await page.locator('[data-category="legs"]').click();await page.locator('[data-part="legs-catalog-23"]').click();
- await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-23__/);
+ await page.locator('[data-category="legs"]').click();await page.locator('[data-part="legs-catalog-21"]').click();
+ await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-21__/);
  await page.evaluate(()=>{HTMLCanvasElement.prototype.toBlob=window.originalToBlob;});
  await downloadPng(page);await expect(page.locator('#png-ready')).toBeVisible();
 });

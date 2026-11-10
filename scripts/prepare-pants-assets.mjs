@@ -35,7 +35,7 @@ export function prepare(source,price=200){
    const art=`<image width="600" height="720" href="data:image/webp;base64,${data}"/>`;
    const version=createHash('sha256').update(art).digest('hex').slice(0,12);
    return {filename:`catalog-${number}__${price}__${title}.svg`,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${version}" data-preview-box="182 441 236 261"><title>${escapeHtml(title)}</title>${art}</svg>\n`};
-  });
+  }).filter(out=>!/^catalog-(01|15|17|24|18|19|23|22)__/.test(out.filename));
   // Do not replace the trial category until all 28 new variants are prepared.
   for(const f of readdirSync(path.join(root,'pants')))if(/\.(svg|png|webp)$/i.test(f))rmSync(path.join(root,'pants',f));
   for(const out of outputs)writeFileSync(path.join(root,'pants',out.filename),out.svg);
