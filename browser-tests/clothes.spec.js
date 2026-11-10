@@ -1,10 +1,10 @@
 import {test,expect} from '@playwright/test';
 
-test('all 34 retained reference outfits keep their hands, fit below the head and select at 200 rubles',async({page})=>{
+test('all 37 available outfits keep their hands, fit below the head and select at 200 rubles',async({page})=>{
  test.setTimeout(90_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');await page.locator('[data-category="torso"]').click();
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
- const clothes=catalog.filter(p=>p.category==='torso');expect(clothes).toHaveLength(34);
+ const clothes=catalog.filter(p=>p.category==='torso');expect(clothes).toHaveLength(37);
  expect(clothes.every(p=>p.price===200&&/^torso-catalog-\d\d$/.test(p.id))).toBe(true);
  const artwork=await page.evaluate(async list=>Promise.all(list.map(async part=>{
   const img=new Image();img.src=part.image;await img.decode();

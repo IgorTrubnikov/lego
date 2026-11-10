@@ -13,7 +13,7 @@ async function pixels(page){
 }
 test('15 motorcycles remain independent of suits, accessories and pets and export below the complete character',async({page})=>{
  test.setTimeout(90_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');
- for(const [category,id] of [['suit','suit-catalog-37'],['hair','hair-catalog-long-golden'],['accessory','accessory-catalog-married-sign'],['animal','animal-3d-ginger-kitten']]){
+ for(const [category,id] of [['suit','suit-catalog-37'],['hair','hair-catalog-long-golden'],['accessory','accessory-catalog-married-sign'],['animal','animal-cat-kitten-ginger']]){
   await page.locator(`[data-category="${category}"]`).click();await page.locator(`[data-part="${id}"]`).click();
  }
  const before=await pixels(page),base=await amount(page);expect(before.size).toEqual([1200,1440]);

@@ -41,7 +41,7 @@ test('army backpack is included in the suit, price and PNG while independent ext
  await page.locator('[data-category="hair"]').click();await page.locator('[data-part="hair-catalog-long-golden"]').click();
  await expect(page.locator('#figure image').first()).toHaveAttribute('data-layer','hair-back');await expect(page.locator('#figure [data-layer="suit"]')).toHaveCount(1);
  await page.locator('[data-category="accessory"]').click();await page.locator('[data-part="accessory-catalog-gamepad"]').click();
- await page.locator('[data-category="animal"]').click();await page.locator('[data-part="animal-3d-ginger-kitten"]').click();
+ await page.locator('[data-category="animal"]').click();await page.locator('[data-part="animal-cat-kitten-ginger"]').click();
  await expect(page.locator('#figure [data-layer="accessory"], #figure [data-layer="animal"]')).toHaveCount(2);
  await page.reload();await expect(page.locator('#figure [data-layer="suit"]')).toHaveCount(1);
  const military=await download(page);expect([military.width,military.height]).toEqual([1200,1440]);expect(military.bag).toBeGreaterThan(5000);

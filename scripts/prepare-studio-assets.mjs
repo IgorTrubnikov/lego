@@ -32,6 +32,7 @@ for(const [index,group] of groups.entries()){
  if(magick(['identify','-format','%wx%h',source])!=='1536x1024')throw new Error('Expected 1536x1024 sheet: '+source);
  mkdirSync(group.folder,{recursive:true});
  for(const [i,[slug,price,name]] of group.items.entries()){
+  if(group.folder==='animals'&&[1,2].includes(i))continue; // Retired cats are replaced by the new cat catalog.
   const cell=`512x512+${(i%3)*512}+${Math.floor(i/3)*512}`;
   const crop=magick([source,'-crop',cell,'+repage','-alpha','extract','-threshold','15%','-format','%@','info:']);
   const base=[source,'-crop',cell,'+repage','-crop',crop,'+repage','-filter','Lanczos','-resize',`${group.width}x${group.height}${group.folder==='animals'?'':'!'}`];

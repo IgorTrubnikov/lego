@@ -122,7 +122,7 @@ test('reference-based raster parts load with transparent background in their ass
    return {id:part.id,width:image.width,height:image.height,visible,outside};
   }));
  });
- expect(checks.length).toBeGreaterThanOrEqual(6);
+ expect(checks.length).toBeGreaterThanOrEqual(4);
  for(const check of checks){
   expect([check.width,check.height],check.id).toEqual([600,720]);
   expect(check.visible,check.id).toBeGreaterThan(500);
@@ -133,7 +133,7 @@ test('reference-based raster parts load with transparent background in their ass
 test('new clothing and pants combine with pets and persist after reload',async({page})=>{
  await page.goto('/');
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
- const picks=[['torso','torso-catalog-18'],['legs','legs-catalog-21'],['animal','animal-3d-ginger-kitten']];
+ const picks=[['torso','torso-catalog-18'],['legs','legs-catalog-21'],['animal','animal-cat-kitten-ginger']];
  for(const [category,id] of picks){
   await page.locator(`[data-category="${category}"]`).click();
   await page.locator(`[data-part="${id}"]`).click();
@@ -143,7 +143,7 @@ test('new clothing and pants combine with pets and persist after reload',async({
  await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',/catalog-07__/);
  await page.reload();
  for(const [category,id] of picks)await expect(page.locator(`#figure [data-layer="${category}"]`)).toHaveAttribute('href',new RegExp(id.replace(category+'-','')+'__'));
- await expect(page.locator('#figure image[href$=".webp"]')).toHaveCount(1);
+ await expect(page.locator('#figure image[href$=".webp"]')).toHaveCount(0);
  await page.locator('[data-category="torso"]').click();
  const scrollArea=page.locator('#catalog');
  expect(await scrollArea.evaluate(el=>el.scrollHeight>el.clientHeight)).toBe(true);
