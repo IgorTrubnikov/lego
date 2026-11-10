@@ -85,7 +85,7 @@ test('a retired test hairstyle resets to a new style while preserving other save
  await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-21__/);
 });
 
-test('caramel curls preserve their natural proportions and have no straight cut at the cheeks',async({page})=>{
+test('caramel curls keep the fitted head contour and complete shortened ends',async({page})=>{
  await page.goto('/');
  const result=await page.evaluate(async()=>{
   const catalog=(await import('./catalog.js')).default,hair=catalog.find(p=>p.id==='hair-catalog-long-caramel-center-curls');
@@ -96,6 +96,6 @@ test('caramel curls preserve their natural proportions and have no straight cut 
   const jump=Math.max(...edges.slice(1).flatMap((e,i)=>e.map((x,j)=>Math.abs(x-edges[i][j]))));
   return {ratio:(right-left+1)/(bottom-top+1),bottom,outside,jump};
  });
- expect(result.ratio).toBeGreaterThan(.72);expect(result.ratio).toBeLessThan(.75);
- expect(result.bottom).toBeGreaterThan(465);expect(result.outside).toBe(0);expect(result.jump).toBeLessThanOrEqual(3);
+ expect(result.ratio).toBeGreaterThan(.79);expect(result.ratio).toBeLessThan(.82);
+ expect(result.bottom).toBeGreaterThan(440);expect(result.bottom).toBeLessThan(451);expect(result.outside).toBe(0);expect(result.jump).toBeLessThanOrEqual(3);
 });

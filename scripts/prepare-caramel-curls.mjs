@@ -17,11 +17,11 @@ export function prepare(source){
   magick([source,'-crop',components[0][1],'+repage','-filter','Lanczos','-resize','250x','-background','none','-gravity','northwest','-splice','175x136','-extent','600x720','-channel','A','-fx','u<0.01?0:u','+channel','-strip','-define','webp:lossless=true',file]);
   // Discard the source matte below 1% opacity, without cutting a face-shaped hole.
   const raster=readFileSync(file);
-  // Preserve the natural aspect ratio and the existing curved face opening.
-  // A rectangular cutout at the cheeks creates a visible step in the hairline.
-  const art=`<image width="600" height="720" href="data:image/webp;base64,${raster.toString('base64')}"/>`;
+  // Keep the fitted crown and face framing unchanged; shorten only below y=330.
+  // Both complete curl tips remain visible, with no crop through the silhouette.
+  const art=`<defs><image id="curls" width="600" height="720" href="data:image/webp;base64,${raster.toString('base64')}"/><clipPath id="crown"><rect width="600" height="330"/></clipPath><clipPath id="ends"><rect y="330" width="600" height="390"/></clipPath></defs><use href="#curls" clip-path="url(#crown)"/><g transform="translate(0 66) scale(1 .8)"><use href="#curls" clip-path="url(#ends)"/></g>`;
   const version=createHash('sha256').update(art).digest('hex').slice(0,12);
-  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${version}" data-preview-box="169 130 262 352"><title>Длинные карамельные локоны</title>${art}</svg>\n`;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${version}" data-preview-box="169 130 262 324"><title>Длинные карамельные локоны</title>${art}</svg>\n`;
   writeFileSync(path.join(root,'haircuts/catalog-long-caramel-center-curls__200__Длинные карамельные локоны.svg'),svg);
   console.log('Added full-length caramel curls at 200 ₽.');
  }finally{rmSync(temp,{recursive:true,force:true});}
