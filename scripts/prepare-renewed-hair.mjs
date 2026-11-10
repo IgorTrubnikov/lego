@@ -20,10 +20,11 @@ export function prepare(sourceDir){
    // Uniform resizing preserves the original contour, face opening and complete strand tips.
    magick([source,'-crop',`${bw}x${bh}+${bx}+${by}`,'+repage','-filter','Lanczos','-resize',part.width+'x','-background','none','-gravity','northwest','-splice',`${part.x}x${part.y}`,'-extent','600x720','-channel','A','-fx',`u<${part.matteThreshold||0.01}?0:u`,'+channel','-strip','-define','webp:lossless=true',rasterFile]);
    const raster=readFileSync(rasterFile),height=Math.round(bh*part.width/bw);
+   const label=String(part.displayNumber).padStart(2,'0')+' · '+part.name;
    const box=[part.x-6,part.y-6,part.width+12,height+12].join(' ');
    const art=`<image width="600" height="720" href="data:image/webp;base64,${raster.toString('base64')}"/>`;
-   const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${hash(art).slice(0,12)}" data-preview-box="${box}"><title>${part.name}</title>${art}</svg>\n`;
-   writeFileSync(path.join(temp,`renewed-${number}__200__${part.name}.svg`),svg);
+   const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${hash(art).slice(0,12)}" data-preview-box="${box}"><title>${label}</title>${art}</svg>\n`;
+   writeFileSync(path.join(temp,`renewed-${number}__200__${label}.svg`),svg);
   }
   for(const name of readdirSync(path.join(root,'haircuts')))if(/\.(svg|png|webp)$/i.test(name)&&!/^catalog-cap-(white|black)__/.test(name))rmSync(path.join(root,'haircuts',name));
   for(const name of readdirSync(temp))if(name.endsWith('.svg'))renameSync(path.join(temp,name),path.join(root,'haircuts',name));

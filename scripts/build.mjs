@@ -44,7 +44,9 @@ export async function collectParts(root) {
     let entries;
     try { entries=await readdir(path.join(root,folder),{withFileTypes:true}); }
     catch(error){if(optional&&error.code==='ENOENT')continue;throw error;}
-    entries.sort((a,b)=>a.name.localeCompare(b.name,'en'));
+    // Hair labels carry display numbers; stable slugs preserve saved selections.
+    const sortName=entry=>category==='hair'?(entry.name.split('__')[2]||entry.name):entry.name;
+    entries.sort((a,b)=>category==='hair'?sortName(a).localeCompare(sortName(b),'ru',{numeric:true}):a.name.localeCompare(b.name,'en'));
     let count=0;
     for(const entry of entries) {
       if(entry.name.startsWith('.')||entry.name==='README.md')continue;
