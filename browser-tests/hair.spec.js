@@ -84,3 +84,18 @@ test('a retired test hairstyle resets to a new style while preserving other save
  await expect(page.locator('#figure [data-layer="torso"]')).toHaveAttribute('href',/catalog-12__/);
  await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-21__/);
 });
+
+test('caramel curls preserve their natural proportions and have no straight cut at the cheeks',async({page})=>{
+ await page.goto('/');
+ const result=await page.evaluate(async()=>{
+  const catalog=(await import('./catalog.js')).default,hair=catalog.find(p=>p.id==='hair-catalog-long-caramel-center-curls');
+  const img=new Image();img.src=hair.image;await img.decode();const c=document.createElement('canvas');c.width=600;c.height=720;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);
+  const data=ctx.getImageData(0,0,600,720).data,[px,py,pw,ph]=hair.previewBox.split(' ').map(Number);let left=600,right=0,top=720,bottom=0,outside=0;
+  for(let y=0;y<720;y++)for(let x=0;x<600;x++)if(data[(y*600+x)*4+3]>32){left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);if(x<px||x>=px+pw||y<py||y>=py+ph)outside++;}
+  const edges=[];for(let y=306;y<=332;y++){let innerLeft=0,innerRight=600;for(let x=185;x<290;x++)if(data[(y*600+x)*4+3]>200)innerLeft=x;for(let x=310;x<415;x++)if(data[(y*600+x)*4+3]>200){innerRight=x;break;}edges.push([innerLeft,innerRight]);}
+  const jump=Math.max(...edges.slice(1).flatMap((e,i)=>e.map((x,j)=>Math.abs(x-edges[i][j]))));
+  return {ratio:(right-left+1)/(bottom-top+1),bottom,outside,jump};
+ });
+ expect(result.ratio).toBeGreaterThan(.72);expect(result.ratio).toBeLessThan(.75);
+ expect(result.bottom).toBeGreaterThan(465);expect(result.outside).toBe(0);expect(result.jump).toBeLessThanOrEqual(3);
+});
