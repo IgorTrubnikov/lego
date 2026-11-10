@@ -25,7 +25,7 @@ export function prepare(sourceDir){
    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${hash(art).slice(0,12)}" data-preview-box="${box}"><title>${part.name}</title>${art}</svg>\n`;
    writeFileSync(path.join(temp,`renewed-${number}__200__${part.name}.svg`),svg);
   }
-  for(const name of readdirSync(path.join(root,'haircuts')))if(/\.(svg|png|webp)$/i.test(name))rmSync(path.join(root,'haircuts',name));
+  for(const name of readdirSync(path.join(root,'haircuts')))if(/\.(svg|png|webp)$/i.test(name)&&!/^catalog-cap-(white|black)__/.test(name))rmSync(path.join(root,'haircuts',name));
   for(const name of readdirSync(temp))if(name.endsWith('.svg'))renameSync(path.join(temp,name),path.join(root,'haircuts',name));
   rmSync(path.join(root,'assets/hair-backs'),{recursive:true,force:true});
   console.log(`Replaced the hair catalog with ${manifest.length} original hairpieces at 200 ₽ each.`);

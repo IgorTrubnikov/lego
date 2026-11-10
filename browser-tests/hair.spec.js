@@ -6,7 +6,7 @@ test('all renewed hairstyles keep facial features clear, cover the stud and reta
  const failures=await page.evaluate(async()=>{
   const catalog=(await import('./catalog.js')).default,failures=[];
   const hairs=catalog.filter(p=>p.category==='hair');
-  if(hairs.length!==53||hairs.some(p=>!p.id.startsWith('hair-renewed-')))failures.push('obsolete or missing hairstyles');
+  if(hairs.length!==55||hairs.filter(p=>p.id.startsWith('hair-renewed-')).length!==53||hairs.filter(p=>/hair-catalog-cap-(black|white)$/.test(p.id)).length!==2)failures.push('obsolete or missing hairstyles');
   for(const hair of hairs){
    const image=new Image();image.src=hair.image;await image.decode();
    const canvas=document.createElement('canvas');canvas.width=600;canvas.height=720;
@@ -15,9 +15,10 @@ test('all renewed hairstyles keep facial features clear, cover the stud and reta
    for(const [x,y] of [[274,232],[326,232],[274,250],[326,250],[300,277],[274,293],[326,293]])
     if(pixels[(y*600+x)*4+3]!==0)failures.push(hair.id+': obscured facial feature');
    if(pixels[(182*600+300)*4+3]<245)failures.push(hair.id+': exposed stud');
-   const [x,y,w,h]=hair.previewBox.split(' ').map(Number);let outside=0,count=0;
-   for(let py=0;py<720;py++)for(let px=0;px<600;px++)if(pixels[(py*600+px)*4+3]>32){count++;if(px<x||py<y||px>=x+w||py>=y+h)outside++;}
+   const [x,y,w,h]=hair.previewBox.split(' ').map(Number);let outside=0,count=0,left=600,right=0,top=720;
+   for(let py=0;py<720;py++)for(let px=0;px<600;px++)if(pixels[(py*600+px)*4+3]>32){count++;left=Math.min(left,px);right=Math.max(right,px);top=Math.min(top,py);if(px<x||py<y||px>=x+w||py>=y+h)outside++;}
    if(!count||outside)failures.push(hair.id+': empty or cropped preview');
+   if(hair.id.startsWith('hair-renewed-')&&(right-left+1>225||top<100))failures.push(hair.id+': oversized on the 152px head');
   }
   return failures;
  });
@@ -42,7 +43,7 @@ test('all hairstyles select independently, keep the correct price and export lon
   }
   expect(Number((await page.locator('#total').innerText()).replace(/\D/g,''))).toBe(base+hair.price);
  }
- for(const id of ['hair-renewed-07','hair-renewed-14']){
+ for(const id of ['hair-renewed-07','hair-renewed-14','hair-catalog-cap-white','hair-catalog-cap-black']){
   await page.locator(`[data-part="${id}"]`).click();
   const pending=page.waitForEvent('download');await page.locator('#save-png').click();
   const download=await pending;expect(await download.failure()).toBeNull();
