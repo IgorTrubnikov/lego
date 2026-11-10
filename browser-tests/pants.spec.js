@@ -40,11 +40,11 @@ test('all 20 retained reference pants have a wider waist, complete feet and a tr
 });
 
 test('removed trial pants reset to new white pants while preserving the rest of the character',async({page})=>{
- await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({legs:'legs-3d-blue',torso:'torso-catalog-12',face:'face-catalog-07',hair:'hair-catalog-long-golden'})));
+ await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({legs:'legs-3d-blue',torso:'torso-catalog-12',face:'face-catalog-07',hair:'hair-renewed-07'})));
  await page.goto('/');
  await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-04__/);
  await expect(page.locator('#figure [data-layer="torso"]')).toHaveAttribute('href',/catalog-12__/);
  await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',/catalog-07__/);
- await expect(page.locator('#figure [data-layer="hair"]')).toHaveAttribute('href',/catalog-long-golden__/);
+ await expect(page.locator('#figure [data-layer="hair"]')).toHaveAttribute('href',/renewed-07__/);
  await page.locator('[data-category="legs"]').click();await expect(page.locator('[data-part="legs-3d-blue"]')).toHaveCount(0);
 });

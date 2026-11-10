@@ -38,8 +38,8 @@ test('army backpack is included in the suit, price and PNG while independent ext
  await expect(page.locator('#outfit-note')).toContainText('Рюкзак в комплекте');await expect(page.locator('[data-part="suit-catalog-37"] .part-includes')).toHaveText('Рюкзак в комплекте');
  expect(await amount(page)).toBe(base-400+500);
  await page.locator('[data-category="face"]').click();await page.locator('[data-part="face-catalog-07"]').click();
- await page.locator('[data-category="hair"]').click();await page.locator('[data-part="hair-catalog-long-golden"]').click();
- await expect(page.locator('#figure image').first()).toHaveAttribute('data-layer','hair-back');await expect(page.locator('#figure [data-layer="suit"]')).toHaveCount(1);
+ await page.locator('[data-category="hair"]').click();await page.locator('[data-part="hair-renewed-07"]').click();
+ await expect(page.locator('#figure image').first()).toHaveAttribute('data-layer','suit');await expect(page.locator('#figure [data-layer="suit"]')).toHaveCount(1);
  await page.locator('[data-category="accessory"]').click();await page.locator('[data-part="accessory-catalog-gamepad"]').click();
  await page.locator('[data-category="animal"]').click();await page.locator('[data-part="animal-cat-kitten-ginger"]').click();
  await expect(page.locator('#figure [data-layer="accessory"], #figure [data-layer="animal"]')).toHaveCount(2);
@@ -52,8 +52,8 @@ test('army backpack is included in the suit, price and PNG while independent ext
 });
 
 test('a missing saved suit falls back to separate parts and old saved figures stay usable',async({page})=>{
- await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({suit:'suit-removed',face:'face-catalog-07',hair:'hair-catalog-long-golden',torso:'torso-catalog-12',legs:'legs-catalog-21'})));
+ await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({suit:'suit-removed',face:'face-catalog-07',hair:'hair-renewed-07',torso:'torso-catalog-12',legs:'legs-catalog-21'})));
  await page.goto('/');await expect(page.locator('#figure [data-layer="suit"]')).toHaveCount(0);
- for(const [layer,id] of [['face','catalog-07'],['hair','catalog-long-golden'],['torso','catalog-12'],['legs','catalog-21']])await expect(page.locator(`#figure [data-layer="${layer}"]`)).toHaveAttribute('href',new RegExp(id+'__'));
+ for(const [layer,id] of [['face','catalog-07'],['hair','renewed-07'],['torso','catalog-12'],['legs','catalog-21']])await expect(page.locator(`#figure [data-layer="${layer}"]`)).toHaveAttribute('href',new RegExp(id+'__'));
  await page.locator('[data-category="suit"]').click();await expect(page.locator('[data-part="suit-none"]')).toHaveAttribute('aria-pressed','true');
 });
