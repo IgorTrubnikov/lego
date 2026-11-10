@@ -18,7 +18,17 @@ test('all renewed hairstyles keep facial features clear, cover the stud and reta
    const [x,y,w,h]=hair.previewBox.split(' ').map(Number);let outside=0,count=0,left=600,right=0,top=720;
    for(let py=0;py<720;py++)for(let px=0;px<600;px++)if(pixels[(py*600+px)*4+3]>32){count++;left=Math.min(left,px);right=Math.max(right,px);top=Math.min(top,py);if(px<x||py<y||px>=x+w||py>=y+h)outside++;}
    if(!count||outside)failures.push(hair.id+': empty or cropped preview');
-   if(hair.id.startsWith('hair-renewed-')&&(right-left+1>225||top<100))failures.push(hair.id+': oversized on the 152px head');
+   if(hair.id.startsWith('hair-renewed-')){
+    if(right-left+1>205||top<115)failures.push(hair.id+': oversized on the 152px head');
+    const centers=[];
+    for(let py=175;py<210;py++){
+     let l=600,r=0,count=0;for(let px=0;px<600;px++)if(pixels[(py*600+px)*4+3]>40){l=Math.min(l,px);r=px;count++;}
+     if(count>30)centers.push((l+r)/2);
+    }
+    centers.sort((a,b)=>a-b);
+    if(!centers.length||Math.abs(centers[Math.floor(centers.length/2)]-300)>10)failures.push(hair.id+': crown shifted off the head');
+    if(['hair-renewed-02','hair-renewed-41','hair-renewed-48'].includes(hair.id)&&y+h-6>395)failures.push(hair.id+': straight locks longer than the physical reference');
+   }
   }
   return failures;
  });
