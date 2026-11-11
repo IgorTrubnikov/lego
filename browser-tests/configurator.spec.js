@@ -103,12 +103,12 @@ test('extras appear beside the figure, add to price, persist and reset to none',
 });
 
 
-test('reference-based raster parts load with transparent background in their assembly slots',async({page})=>{
+test('retained cats load with transparent backgrounds inside their assembly slot',async({page})=>{
  await page.goto('/');
  const checks=await page.evaluate(async()=>{
   const {default:catalog}=await import('./catalog.js');
   const slots={torso:[139,285,322,257],legs:[212,451,176,232],animal:[409,435,191,267]};
-  return Promise.all(catalog.filter(p=>p.id.includes('-3d-')).map(async part=>{
+  return Promise.all(catalog.filter(p=>p.category==='animal').map(async part=>{
    const image=new Image();image.src=part.image;await image.decode();
    const canvas=document.createElement('canvas');canvas.width=600;canvas.height=720;
    const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0);
@@ -122,7 +122,7 @@ test('reference-based raster parts load with transparent background in their ass
    return {id:part.id,width:image.width,height:image.height,visible,outside};
   }));
  });
- expect(checks.length).toBeGreaterThanOrEqual(4);
+ expect(checks).toHaveLength(10);
  for(const check of checks){
   expect([check.width,check.height],check.id).toEqual([600,720]);
   expect(check.visible,check.id).toBeGreaterThan(500);

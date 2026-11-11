@@ -28,6 +28,7 @@ const groups=[
  ]},
 ];
 for(const [index,group] of groups.entries()){
+ if(group.folder==='animals')continue; // Only the current cat catalog is available.
  const source=path.resolve(sheets[index]);
  if(magick(['identify','-format','%wx%h',source])!=='1536x1024')throw new Error('Expected 1536x1024 sheet: '+source);
  mkdirSync(group.folder,{recursive:true});

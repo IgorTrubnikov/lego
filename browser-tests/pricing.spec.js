@@ -12,7 +12,7 @@ test('one 550 ruble figure includes all core choices and every addition uses the
  await expect(page.locator('#breakdown')).toContainText('Фигурка с костюмом');
  const choose=async(category,id)=>{await page.locator(`[data-category="${category}"]`).click();await page.locator(`[data-part="${id}"]`).click();};
  await choose('accessory','accessory-catalog-gamepad');expect(await amount(page)).toBe(650);
- await choose('animal','animal-3d-shepherd');expect(await amount(page)).toBe(850);
+ await choose('animal','animal-cat-standing-gray');expect(await amount(page)).toBe(850);
  await choose('transport','transport-catalog-01');expect(await amount(page)).toBe(1000);
  await choose('children','children-catalog-stroller-black');expect(await amount(page)).toBe(1300);
  await choose('children','children-catalog-infant');expect(await amount(page)).toBe(1250);

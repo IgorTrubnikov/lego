@@ -12,10 +12,10 @@ async function downloadPng(page){
  return bytes;
 }
 
-test('downloads the full character with mixed SVG and WebP layers, independently of wedding additions',async({page})=>{
+test('downloads the full character with a cat and accessory, independently of wedding additions',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');
- for(const [category,id] of [['face','face-catalog-07'],['torso','torso-catalog-12'],['legs','legs-catalog-03'],['accessory','accessory-catalog-gamepad'],['animal','animal-3d-bulldog']]){
+ for(const [category,id] of [['face','face-catalog-07'],['torso','torso-catalog-12'],['legs','legs-catalog-03'],['accessory','accessory-catalog-gamepad'],['animal','animal-cat-kitten-ginger']]){
   await page.locator(`[data-category="${category}"]`).click();await page.locator(`[data-part="${id}"]`).click();
  }
  const initial=await downloadPng(page);

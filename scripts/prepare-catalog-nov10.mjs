@@ -1,4 +1,4 @@
-// Add the supplied bags, bear, ice creams and plain shirts; replace only the four old cats.
+// Add the supplied bags, bear, ice creams and plain shirts; keep only the ten current cats.
 // Usage: node scripts/prepare-catalog-nov10.mjs accessories.png cats.png shirts.png
 import {spawnSync} from 'node:child_process';
 import {readFileSync,writeFileSync,readdirSync,mkdirSync,mkdtempSync,rmSync} from 'node:fs';
@@ -25,7 +25,7 @@ export function prepare(sources){
   const outputs=[];
   for(const [s,group] of [
    {folder:'accessories',cols:4,rows:2,columns:[0,438,783,1159,1536],price:200,items:extras,center:90,bottom:683},
-   {folder:'animals',cols:5,rows:2,columns:[0,337,633,929,1221,1536],bands:[0,590,1024],price:350,items:cats,center:515,bottom:683},
+   {folder:'animals',cols:5,rows:2,columns:[0,337,633,929,1221,1536],bands:[0,590,1024],price:200,items:cats,center:515,bottom:683},
    {folder:'clothes',cols:3,rows:1,price:200,items:shirts,x:139,y:317}
   ].entries()){
    const source=path.resolve(sources[s]),[width,height]=magick(['identify','-format','%w %h',source]).split(' ').map(Number);
@@ -49,7 +49,7 @@ export function prepare(sources){
   }
   if(outputs.length!==21)throw Error('Expected 8 accessories, 10 cats and 3 shirts.');
   for(const folder of ['accessories','animals','clothes'])mkdirSync(path.join(root,folder),{recursive:true});
-  for(const file of readdirSync(path.join(root,'animals')))if(/^(?:black-cat|ginger-cat|3d-ginger-kitten|3d-ivory-kitten)__/.test(file))rmSync(path.join(root,'animals',file));
+  for(const file of readdirSync(path.join(root,'animals')))if(/\.(?:svg|png|webp)$/i.test(file)&&!/^cat-(?:kitten|standing)-/.test(file))rmSync(path.join(root,'animals',file));
   for(const file of readdirSync(path.join(root,'accessories')))if(file.startsWith('catalog-shoulder-bag__'))rmSync(path.join(root,'accessories',file));
   for(const {folder,filename,svg} of outputs)writeFileSync(path.join(root,folder,filename),svg);
   console.log('Prepared 8 accessories (7 new, brown shoulder bag updated), 10 replacement cats and 3 shirts.');
