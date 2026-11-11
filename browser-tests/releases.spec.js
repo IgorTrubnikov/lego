@@ -10,6 +10,8 @@ test('a new page bypasses cached scripts and loads one release including PNG exp
  await expect(page.locator('#figure image')).toHaveCount(4);
  await page.locator('[data-category="legs"]').click();await page.locator('[data-part="legs-catalog-21"]').click();
  await page.locator('#add-cart').click();await expect(page.locator('.cart-item')).toHaveCount(1);await page.locator('#cart-packaging').selectOption('flask');
+ const flask=await page.locator('[data-group]').evaluateAll(nodes=>nodes.find(n=>n.getAttribute('aria-label').startsWith('Колба')).dataset.group);
+ await page.locator('[data-cart-group]').selectOption(flask);
  const pending=page.waitForEvent('download');await page.locator('#save-png').click();expect(await (await pending).failure()).toBeNull();
  for(const name of ['app.js','parts.js','catalog.js','cart.js','export-order.js','export-image.js','navigation.js','style.css'])expect(scripts.some(url=>url.endsWith('/'+manifest.assets[name])),name).toBe(true);
  expect(errors).toEqual([]);

@@ -1,5 +1,5 @@
-import {cartStorageKey,newCart,restoreCart,packagingOptions,characterBasePrice,cartTotals,snapshotDetails,detailIsExtra,refreshCart} from './cart.js';
-import {categories,initialSelection,money,totalPrice,priceBreakdown,includedInFigure,escapeHtml,renderFigure,withOptionalChoices,largeAnimalIds,selectedSuit,selectedSkirt,selectionCategories,choosePart} from './parts.js';
+import {cartStorageKey,newCart,restoreCart,packagingOptions,newGroup,assignGroup,cartTotals,snapshotDetails,detailIsExtra,refreshCart} from './cart.js';
+import {categories,initialSelection,figurePrice,money,totalPrice,priceBreakdown,includedInFigure,escapeHtml,renderFigure,withOptionalChoices,largeAnimalIds,selectedSuit,selectedSkirt,selectionCategories,choosePart} from './parts.js';
 import catalog from './catalog.js';
 const parts=withOptionalChoices(catalog);
 const $=s=>document.querySelector(s);
@@ -63,7 +63,7 @@ $('#remove-addon')?.addEventListener('click',()=>{selection.altar='altar-none';r
 $('#catalog-help-open')?.addEventListener('click',()=>$('#catalog-help-dialog')?.showModal());
 let cart=refreshCart(restoreCart(read(cartStorageKey,null)),parts),editingId=null,previousDraft=null,cartSaved=true,cartRevision=0,orderUrls=[],adding=false,exporting=false;
 const hasUnavailable=()=>cart.items.some(i=>i.unavailable);
-const draftBasePrice=()=>characterBasePrice(editingId?Math.max(0,cart.items.findIndex(i=>i.id===editingId)):cart.items.length);
+const draftBasePrice=()=>figurePrice;
 function invalidateOrderFiles(){for(const url of orderUrls)URL.revokeObjectURL(url);orderUrls=[];$('#png-ready')?.setAttribute('hidden','');if($('#order-downloads'))$('#order-downloads').innerHTML='';}
 function changedCart(){cartRevision++;invalidateOrderFiles();cartSaved=persist(cartStorageKey,cart);}
 function renderCart(){
@@ -71,33 +71,38 @@ function renderCart(){
  const totals=cartTotals(cart);
  if($('#cart-count'))$('#cart-count').textContent=cart.items.length;
  $('#cart-status').textContent=cart.items.length?(cartSaved?'Сохранено в этом браузере':'Скачайте заказ перед закрытием страницы'):'';
- $('#cart-items').innerHTML=totals.lines.length?totals.lines.map(line=>`<article class="cart-item" data-cart-item="${escapeHtml(line.item.id)}"><div class="cart-item-art"><img class="cart-thumb" src="${escapeHtml(line.item.preview)}" alt="Персонаж ${line.index+1}" loading="lazy">${line.item.altarPreview?`<img class="cart-altar" src="${escapeHtml(line.item.altarPreview)}" alt="Свадебная композиция для персонажа ${line.index+1}" loading="lazy">`:''}</div><div class="cart-item-content"><h3>Персонаж ${line.index+1}</h3>${line.item.unavailable?'<p class="cart-unavailable">Некоторые детали удалены из каталога. Нажмите «Изменить» и сохраните персонажа заново.</p>':''}<p class="cart-item-prices">Фигурка <span class="price-amount">${money(line.base)}</span> · дополнения <span class="price-amount">${money(line.extras)}</span></p><details><summary>Все выбранные детали (${line.item.details.length})</summary><ul>${line.item.details.map(p=>`<li><strong>${escapeHtml(p.label)}:</strong> ${escapeHtml(p.name)}<small>${escapeHtml(p.id)} · ${detailIsExtra(p)?money(p.price):'Входит в фигурку'}${p.includedLabel?' · '+escapeHtml(p.includedLabel):''}</small></li>`).join('')}</ul></details></div><div class="cart-item-actions"><strong>${money(line.total)}</strong><button type="button" data-cart-edit="${escapeHtml(line.item.id)}">Изменить</button><button type="button" data-cart-remove="${escapeHtml(line.item.id)}" aria-label="Удалить персонажа ${line.index+1}">Удалить</button></div></article>`).join(''):'<div class="cart-empty">Ваша история начинается с первого персонажа.<br>Соберите его в конструкторе и нажмите «Добавить персонажа в корзину».</div>';
+ const renderItem=line=>`<article class="cart-item" data-cart-item="${escapeHtml(line.item.id)}"><div class="cart-item-art"><img class="cart-thumb" src="${escapeHtml(line.item.preview)}" alt="Персонаж ${line.index+1}" loading="lazy">${line.item.altarPreview?`<img class="cart-altar" src="${escapeHtml(line.item.altarPreview)}" alt="Свадебная композиция для персонажа ${line.index+1}" loading="lazy">`:''}</div><div class="cart-item-content"><h3>Персонаж ${line.index+1}</h3>${line.item.unavailable?'<p class="cart-unavailable">Некоторые детали удалены из каталога. Нажмите «Изменить» и сохраните персонажа заново.</p>':''}<p class="cart-item-prices">${line.included?'Фигурка входит в стоимость оформления':`Фигурка <span class="price-amount">${money(line.base)}</span>`} · дополнения <span class="price-amount">${money(line.extras)}</span></p><label class="cart-destination">Куда добавить<select data-cart-group="${escapeHtml(line.item.id)}" aria-label="Оформление персонажа ${line.index+1}">${totals.groups.map(g=>`<option value="${escapeHtml(g.id)}"${g.id===line.groupId?' selected':''}${g.capacity&&g.id!==line.groupId&&g.lines.length>=g.capacity?' disabled':''}>${escapeHtml(g.name)}${g.capacity&&g.id!==line.groupId&&g.lines.length>=g.capacity?' — занят':''}</option>`).join('')}</select></label><details><summary>Все выбранные детали (${line.item.details.length})</summary><ul>${line.item.details.map(p=>`<li><strong>${escapeHtml(p.label)}:</strong> ${escapeHtml(p.name)}<small>${escapeHtml(p.id)} · ${detailIsExtra(p)?money(p.price):'Входит в фигурку'}${p.includedLabel?' · '+escapeHtml(p.includedLabel):''}</small></li>`).join('')}</ul></details></div><div class="cart-item-actions"><strong>${line.included&&!line.extras?'Включён':money(line.total)}</strong><button type="button" data-cart-edit="${escapeHtml(line.item.id)}">Изменить</button><button type="button" data-cart-remove="${escapeHtml(line.item.id)}" aria-label="Удалить персонажа ${line.index+1}">Удалить</button></div></article>`;
+ const groupRule=g=>g.type==='none'?'Каждая фигурка — 550 ₽.':g.type==='keychain'?'650 ₽ с одним персонажем. Дополнения отдельно.':g.type==='flask'?'1500 ₽ с первой фигуркой. Вторая и третья — по 400 ₽, с четвёртой — по 350 ₽.':`${money(g.price)} за рамку. Первые три фигурки — по 400 ₽, с четвёртой — по 350 ₽.`;
+ $('#cart-items').innerHTML=!totals.lines.length&&!cart.groups.length?'<div class="cart-empty">Ваша история начинается с первого персонажа.<br>Соберите его в конструкторе и нажмите «Добавить персонажа в корзину».</div>':totals.groups.filter(g=>g.id!=='none'||g.lines.length).map(g=>`<section class="cart-group" data-group="${escapeHtml(g.id)}" aria-label="${escapeHtml(g.name)}"><div class="cart-group-heading"><div><h3>${escapeHtml(g.name)}</h3><p>${escapeHtml(groupRule(g))}</p></div><strong>${money(g.total)}</strong>${g.id!=='none'?`<button type="button" data-group-remove="${escapeHtml(g.id)}" aria-label="Удалить ${escapeHtml(g.name)}">Убрать оформление</button>`:''}</div>${g.lines.length?g.lines.map(renderItem).join(''):'<p class="group-empty">Выберите эту группу в поле «Куда добавить» у персонажа или удалите оформление.</p>'}${g.lines.length?`<p class="group-calculation">${g.type==='none'?'':`Оформление ${money(g.price)} + `}фигурки ${money(g.figures)} + дополнения ${money(g.extras)} = <strong>${money(g.total)}</strong></p>`:''}</section>`).join('');
  const select=$('#cart-packaging');
- if(select.options.length===1)select.innerHTML+='<option disabled>──────────</option>'+packagingOptions.map(p=>`<option value="${p.id}">${escapeHtml(p.name)}${p.price?' — '+money(p.price):''}</option>`).join('');
- select.value=cart.packagingId;select.disabled=!cart.items.length;
- if($('#packaging-items'))$('#packaging-items').innerHTML=totals.packagingLines.map(p=>`<div class="packaging-line"><div><strong>${escapeHtml(p.name)}</strong><small>${money(p.price)} / шт. · итого ${money(p.total)}</small></div><div class="packaging-stepper"><button type="button" data-format-step="${p.id}" data-step="-1" aria-label="Уменьшить количество: ${escapeHtml(p.name)}"${p.quantity===1?' disabled':''}>−</button><input type="number" min="1" max="999" step="1" inputmode="numeric" data-format-quantity="${p.id}" aria-label="Количество: ${escapeHtml(p.name)}" value="${p.quantity}"><button type="button" data-format-step="${p.id}" data-step="1" aria-label="Увеличить количество: ${escapeHtml(p.name)}"${p.quantity===999?' disabled':''}>+</button></div><button type="button" class="packaging-remove" data-format-remove="${p.id}" aria-label="Убрать оформление: ${escapeHtml(p.name)}">×</button></div>`).join('');
- $('#cart-summary').innerHTML=`<div>Фигурки (${cart.items.length})<strong>${money(totals.figures)}</strong></div><div>Дополнения<strong>${money(totals.extras)}</strong></div><div>Оформление<strong>${totals.packaging&&cart.items.length?money(totals.format):'Не выбрано'}</strong></div><div class="cart-grand-total">Итого<strong id="cart-total">${money(totals.total)}</strong></div>`;
- const ready=!!cart.items.length&&!!totals.packaging&&!hasUnavailable();
- $('#save-png').disabled=!ready||exporting;
- $('#order-telegram').setAttribute('aria-disabled',String(!ready));
- $('#cart-guide').textContent=!cart.items.length?'Добавьте хотя бы одного персонажа.':hasUnavailable()?'Проверьте персонажей с удалёнными деталями перед сохранением заказа.':!totals.packaging?'Выберите оформление, чтобы сохранить полный заказ.':'Сохраните лист заказа в PNG, затем прикрепите файл в Telegram. Если листов несколько, отправьте все.';
+ if(select){select.innerHTML='<option value="">Добавить рамку, колбу или брелок</option>'+packagingOptions.filter(p=>p.id!=='none').map(p=>`<option value="${p.id}">${escapeHtml(p.name)} — ${money(p.price)}${p.includesFirst?' с персонажем':' без фигурок'}</option>`).join('');select.disabled=false;}
+ if($('#packaging-items'))$('#packaging-items').innerHTML=packagingOptions.filter(p=>p.id!=='none'&&cart.groups.some(g=>g.type===p.id)).map(p=>{const quantity=cart.groups.filter(g=>g.type===p.id).length;return `<div class="packaging-line"><strong>${escapeHtml(p.name)}</strong><div class="packaging-stepper"><button type="button" data-format-step="${p.id}" data-step="-1" aria-label="Уменьшить количество: ${escapeHtml(p.name)}">−</button><input type="number" min="0" max="999" step="1" inputmode="numeric" data-format-quantity="${p.id}" aria-label="Количество: ${escapeHtml(p.name)}" value="${quantity}"><button type="button" data-format-step="${p.id}" data-step="1" aria-label="Увеличить количество: ${escapeHtml(p.name)}"${quantity===999?' disabled':''}>+</button></div></div>`;}).join('');
+ $('#cart-summary').innerHTML=`<div>Фигурки сверх включённых<strong>${money(totals.figures)}</strong></div><div>Дополнения<strong>${money(totals.extras)}</strong></div><div>Оформление с включёнными фигурками<strong>${money(totals.format)}</strong></div><div class="cart-grand-total">Итого<strong id="cart-total">${money(totals.total)}</strong></div>`;
+ $('#save-png').disabled=!totals.ready||exporting;
+ $('#order-telegram').setAttribute('aria-disabled',String(!totals.ready));
+ $('#cart-guide').textContent=!cart.items.length?'Добавьте хотя бы одного персонажа.':hasUnavailable()?'Проверьте персонажей с удалёнными деталями перед сохранением заказа.':cart.needsReview?'В старой корзине было несколько оформлений. Распределите персонажей по группам и подтвердите выбор.':!totals.ready?'В каждой рамке, колбе и брелке должен быть персонаж. Заполните пустые группы или удалите их.':'Сохраните лист заказа в PNG, затем прикрепите файл в Telegram. Если листов несколько, отправьте все.';
+ if($('#cart-review'))$('#cart-review').hidden=!cart.needsReview;
+}
+function removeGroup(id){cart.groups=cart.groups.filter(g=>g.id!==id);for(const item of cart.items)if(item.groupId===id)item.groupId='none';}
+function setFormatQuantity(type,quantity){
+ if(!Number.isSafeInteger(quantity)||quantity<0||quantity>999){toast('Количество — целое число от 0 до 999.');renderCart();return;}
+ const groups=cart.groups.filter(g=>g.type===type);
+ if(quantity<groups.length)for(const g of groups.slice(quantity))removeGroup(g.id);
+ else for(let i=groups.length;i<quantity;i++)cart.groups.push(newGroup(type));
+ changedCart();renderCart();
 }
 $('#cart-packaging')?.addEventListener('change',e=>{
- const id=e.target.value,formats=cartTotals(cart).packagingLines.map(p=>({id:p.id,quantity:p.quantity}));
- if(id==='none'){cart.packagingId='none';cart.packagingItems=[];}
- else if(packagingOptions.some(p=>p.id===id&&p.id!=='none')){if(!formats.some(p=>p.id===id))formats.push({id,quantity:1});cart.packagingId=id;cart.packagingItems=formats;}
- else{renderCart();return;}
- changedCart();renderCart();
+ const type=e.target.value;if(!packagingOptions.some(p=>p.id===type&&p.id!=='none'))return;
+ setFormatQuantity(type,cart.groups.filter(g=>g.type===type).length+1);
+ toast('Оформление добавлено. Выберите его у нужных персонажей.');
 });
-function setFormatQuantity(id,quantity){
- if(!Number.isSafeInteger(quantity)||quantity<1||quantity>999){toast('Количество — целое число от 1 до 999.');renderCart();return;}
- cart.packagingItems=cartTotals(cart).packagingLines.map(p=>({id:p.id,quantity:p.id===id?quantity:p.quantity}));changedCart();renderCart();
-}
 $('#packaging-items')?.addEventListener('change',e=>{if(e.target.matches('[data-format-quantity]'))setFormatQuantity(e.target.dataset.formatQuantity,Number(e.target.value));});
-$('#packaging-items')?.addEventListener('click',e=>{
- const step=e.target.closest('[data-format-step]'),remove=e.target.closest('[data-format-remove]');
- if(step){const p=cartTotals(cart).packagingLines.find(p=>p.id===step.dataset.formatStep);if(p){setFormatQuantity(p.id,p.quantity+Number(step.dataset.step));$('#packaging-items').querySelector(`[data-format-step="${p.id}"][data-step="${step.dataset.step}"]`)?.focus({preventScroll:true});}}
- if(remove){cart.packagingItems=cartTotals(cart).packagingLines.filter(p=>p.id!==remove.dataset.formatRemove).map(p=>({id:p.id,quantity:p.quantity}));cart.packagingId=cart.packagingItems.at(-1)?.id||'none';changedCart();renderCart();}
+$('#packaging-items')?.addEventListener('click',e=>{const step=e.target.closest('[data-format-step]');if(step){const type=step.dataset.formatStep;setFormatQuantity(type,cart.groups.filter(g=>g.type===type).length+Number(step.dataset.step));$('#packaging-items').querySelector(`[data-format-step="${type}"][data-step="${step.dataset.step}"]`)?.focus({preventScroll:true});}});
+$('#cart-review')?.addEventListener('click',()=>{cart.needsReview=false;changedCart();renderCart();});
+$('#cart-items')?.addEventListener('change',e=>{
+ if(!e.target.matches('[data-cart-group]'))return;
+ if(!assignGroup(cart,e.target.dataset.cartGroup,e.target.value))toast('В брелок можно добавить только одного персонажа.');
+ changedCart();renderCart();
 });
 $('#add-cart')?.addEventListener('click',async()=>{
  if(adding)return;adding=true;const button=$('#add-cart'),snapshot={...selection},editAtClick=editingId;
@@ -106,11 +111,12 @@ $('#add-cart')?.addEventListener('click',async()=>{
   const {createCartPreviews}=await import('./export-order.js');
   const previews=await createCartPreviews(snapshot,parts);
   if(editAtClick!==editingId){toast('Выбор изменился. Добавьте персонажа ещё раз.');return;}
-  const item={id:editAtClick||globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+Math.random().toString(36).slice(2),selection:snapshot,details:snapshotDetails(snapshot,parts),...previews};
+  const groupId=editAtClick?cart.items.find(i=>i.id===editAtClick)?.groupId||'none':'none';
+  const item={groupId,id:editAtClick||globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+Math.random().toString(36).slice(2),selection:snapshot,details:snapshotDetails(snapshot,parts),...previews};
   if(editAtClick){
    const index=cart.items.findIndex(i=>i.id===editAtClick);if(index<0)throw Error('Персонаж удалён.');cart.items[index]=item;selection=previousDraft||{...startingSelection};editingId=null;previousDraft=null;
   }else{
-   if(!cart.items.length)cart={...newCart(),packagingId:cart.packagingId,packagingItems:cart.packagingItems,items:[]};
+   if(!cart.items.length)cart={...newCart(),groups:cart.groups,needsReview:cart.needsReview,items:[]};
    cart.items.push(item);if(JSON.stringify(selection)===JSON.stringify(snapshot))selection={...startingSelection};
   }
   changedCart();renderCart();render();
@@ -119,6 +125,7 @@ $('#add-cart')?.addEventListener('click',async()=>{
  finally{adding=false;button.disabled=false;button.textContent=editingId?'Сохранить изменения':'Добавить персонажа в корзину';}
 });
 $('#cart-items')?.addEventListener('click',e=>{
+ const groupRemove=e.target.closest('[data-group-remove]');if(groupRemove){removeGroup(groupRemove.dataset.groupRemove);changedCart();renderCart();return;}
  const remove=e.target.closest('[data-cart-remove]'),edit=e.target.closest('[data-cart-edit]');
  if(remove){
   const id=remove.dataset.cartRemove;cart.items=cart.items.filter(i=>i.id!==id);
@@ -136,7 +143,7 @@ $('#cart-items')?.addEventListener('click',e=>{
 $('#cancel-edit')?.addEventListener('click',()=>{selection=previousDraft||{...startingSelection};editingId=null;previousDraft=null;render();});
 function downloadFile(url,filename){const a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();}
 $('#save-png')?.addEventListener('click',async()=>{
- const button=$('#save-png');if(exporting||!cart.items.length||!cartTotals(cart).packaging||hasUnavailable())return;exporting=true;
+ const button=$('#save-png');if(exporting||!cartTotals(cart).ready)return;exporting=true;
  const snapshot=JSON.parse(JSON.stringify(cart)),revision=cartRevision;button.disabled=true;button.textContent='Готовлю лист заказа…';
  try{
   const {createOrderPngs}=await import('./export-order.js');const files=await createOrderPngs(snapshot);
@@ -146,9 +153,9 @@ $('#save-png')?.addEventListener('click',async()=>{
   $('#order-downloads').innerHTML=links.map(file=>`<a${file.index===0?' id="png-link"':''} href="${file.url}" download="${file.filename}" target="_blank" rel="noopener noreferrer">${links.length>1?`Лист ${file.index+1} из ${links.length}`:'Открыть PNG заказа'}</a>`).join('');
   $('#png-ready').hidden=false;downloadFile(links[0].url,links[0].filename);
  }catch(error){toast(error.message?.includes('изменилась')?error.message:'Не удалось сохранить PNG. Попробуйте ещё раз.');}
- finally{exporting=false;button.disabled=!cart.items.length||!cartTotals(cart).packaging||hasUnavailable();button.textContent='Сохранить заказ в PNG';}
+ finally{exporting=false;button.disabled=!cartTotals(cart).ready;button.textContent='Сохранить заказ в PNG';}
 });
-$('#order-telegram')?.addEventListener('click',e=>{if(!cart.items.length||!cartTotals(cart).packaging||hasUnavailable()){e.preventDefault();toast(hasUnavailable()?'Проверьте персонажей с удалёнными деталями.':cart.items.length?'Выберите оформление заказа.':'Сначала добавьте персонажа в корзину.');}});
+$('#order-telegram')?.addEventListener('click',e=>{if(!cartTotals(cart).ready){e.preventDefault();toast(hasUnavailable()?'Проверьте персонажей с удалёнными деталями.':cart.items.length?'Заполните группы оформления и проверьте распределение.':'Сначала добавьте персонажа в корзину.');}});
 
 for(const d of document.querySelectorAll('dialog')){d.querySelector('.close')?.addEventListener('click',()=>d.close());d.addEventListener('click',e=>{if(e.target!==d)return;const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close();});}
 render();renderCart();
