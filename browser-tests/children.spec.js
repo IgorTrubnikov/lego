@@ -20,7 +20,7 @@ test('children options have separate infant and stroller prices, preserve every 
  const original=await exportPixels(page),base=await amount(page);expect(original.size).toEqual([1200,1440]);
  await page.locator('[data-category="children"]').click();
  for(const child of children){
-  expect(child.price).toBe(child.id==='children-catalog-infant'?100:300);await page.locator(`[data-part="${child.id}"]`).click();
+  expect(child.price).toBe(child.id==='children-catalog-infant'?250:300);await page.locator(`[data-part="${child.id}"]`).click();
   await expect(page.locator('#figure [data-layer="children"]')).toHaveAttribute('href',child.image);expect(await amount(page)).toBe(base+child.price);
  }
  const solo=await exportPixels(page);expect(solo.size).toEqual([1200,2040]);expect(solo.upper).toBe(original.upper);

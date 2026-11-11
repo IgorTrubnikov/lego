@@ -9,7 +9,7 @@ for(const folder of [...Object.keys(prices),'children'])for(const filename of aw
  const match=filename.match(/^(.+)__(\d+)__(.+)\.(svg|webp|png)$/);
  if(!match)continue;
  const [,slug,,name,ext]=match;
- const price=folder==='children'?(slug==='catalog-infant'?100:300):prices[folder];
+ const price=folder==='children'?(slug==='catalog-infant'?250:300):prices[folder];
  const target=`${slug}__${price}__${name}.${ext}`;
  if(target!==filename){await rename(path.join(root,folder,filename),path.join(root,folder,target));changed++;}
 }

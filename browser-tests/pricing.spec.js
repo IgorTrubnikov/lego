@@ -15,9 +15,9 @@ test('one 550 ruble figure includes all core choices and every addition uses the
  await choose('animal','animal-3d-shepherd');expect(await amount(page)).toBe(850);
  await choose('transport','transport-catalog-01');expect(await amount(page)).toBe(1000);
  await choose('children','children-catalog-stroller-black');expect(await amount(page)).toBe(1300);
- await choose('children','children-catalog-infant');expect(await amount(page)).toBe(1100);
- await page.reload();expect(await amount(page)).toBe(1100);
- await choose('suit','suit-none');expect(await amount(page)).toBe(1100);
+ await choose('children','children-catalog-infant');expect(await amount(page)).toBe(1250);
+ await page.reload();expect(await amount(page)).toBe(1250);
+ await choose('suit','suit-none');expect(await amount(page)).toBe(1250);
  for(const category of ['accessory','animal','transport','children'])await choose(category,category+'-none');
  expect(await amount(page)).toBe(550);
  await expect(page.locator('#breakdown > div')).toHaveCount(1);
