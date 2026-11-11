@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {mkdtemp,mkdir,writeFile,readFile,rm,rename} from 'node:fs/promises';
 import os from 'node:os';
@@ -133,3 +134,17 @@ test('hair display order is independent of permanent numbers and rejects invalid
   await assert.rejects(collectParts(root),/неверный порядок карточки/);
  }
 }));
+
+
+test('all six current altars embed the exact uploaded PNGs in the requested order',async()=>{
+ const manifest=JSON.parse(await readFile(new URL('../scripts/wedding-photo-manifest.json',import.meta.url),'utf8'));
+ const parts=await collectParts(new URL('../',import.meta.url).pathname),altars=parts.filter(p=>p.category==='altar');
+ assert.deepEqual(altars.map(p=>p.name),['Алтарь 1','Алтарь 2','Алтарь 3','Алтарь 4','Алтарь 5','Алтарь 6']);
+ assert.ok(altars.every(p=>p.price===400&&/^altar-photo-0[1-6]$/.test(p.id)));
+ for(const entry of manifest){
+  const file=new URL(`../altars/photo-${String(entry.number).padStart(2,'0')}__400__Алтарь ${entry.number}.svg`,import.meta.url);
+  const svg=await readFile(file,'utf8'),original=Buffer.from(svg.match(/href="data:image\/png;base64,([^"]+)"/)[1],'base64');
+  assert.equal(createHash('sha256').update(original).digest('hex'),entry.sha256);
+  assert.match(svg,/preserveAspectRatio="xMidYMid meet"/);
+ }
+});

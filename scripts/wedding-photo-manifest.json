@@ -1,0 +1,32 @@
+[
+  {
+    "number": 1,
+    "source": "Алтарь 1.png",
+    "sha256": "6ac31f4d1e7ddd50ea15624de53e19c5d76636f8b220875b0e3d38d92efce77b"
+  },
+  {
+    "number": 2,
+    "source": "Алтарь 2.png",
+    "sha256": "730b6d98458b2ca623879fa798611662a36d9944b16732ec59993f4a97cb283f"
+  },
+  {
+    "number": 3,
+    "source": "Алтарь 3.png",
+    "sha256": "09075b3062a4a915c3094c7100b04ab32c0bf10fc79c298c2c9cd9ccd9139f10"
+  },
+  {
+    "number": 4,
+    "source": "Балкон.png",
+    "sha256": "9d89c0d1cf1ed980425f5bd6e8cb50bbb3328ca9676b74b656ea7ce47092aa9d"
+  },
+  {
+    "number": 5,
+    "source": "Беседка.png",
+    "sha256": "d41076fea66904cb642e543ba2b717c9b21513c85f654920df0dbc38ec04cc9b"
+  },
+  {
+    "number": 6,
+    "source": "Качели.png",
+    "sha256": "47b0e8ad1b4c9d663d2230228dbc1dbfe275b2892d277625407ca3e2dea97e92"
+  }
+]

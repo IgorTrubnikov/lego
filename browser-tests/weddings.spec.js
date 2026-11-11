@@ -5,7 +5,8 @@ test('wedding additions change the order price without changing the assembled ch
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
  const scenes=catalog.filter(p=>p.category==='altar');
- expect(scenes.length).toBeGreaterThan(0);
+ expect(scenes.map(p=>p.name)).toEqual(['Алтарь 1','Алтарь 2','Алтарь 3','Алтарь 4','Алтарь 5','Алтарь 6']);
+ expect(scenes.every(p=>p.price===400)).toBe(true);
  await expect(page.locator('#figure [data-layer="altar"]')).toHaveCount(0);
  for(const category of ['accessory','animal']){
   await page.locator(`[data-category="${category}"]`).click();
@@ -45,7 +46,7 @@ test('wedding additions change the order price without changing the assembled ch
  expect(errors).toEqual([]);
 });
 
-test('wedding artwork has a transparent background, clear central opening and safe canvas bounds',async({page})=>{
+test('uploaded altar photos retain transparent canvas margins, full silhouettes and safe bounds',async({page})=>{
  await page.goto('/');
  const checks=await page.evaluate(async()=>{
   const catalog=(await import('./catalog.js')).default;
@@ -65,6 +66,17 @@ test('wedding artwork has a transparent background, clear central opening and sa
  for(const c of checks){
   expect(c.size,c.name).toEqual([600,720]);expect(c.visible,c.name).toBeGreaterThan(5000);
   expect(c.outside,c.name).toBe(0);expect(c.corners,c.name).toEqual([0,0,0,0]);
-  expect(c.opening,c.name+' leaves the character visible').toBeLessThan(15);
+  // Uploaded photographs include their own figures and backdrops; they are separate add-ons.
+  // Their central area is intentionally preserved rather than cut out for the constructor.
  }
+});
+
+
+test('retired altar selections reset without changing the configured character',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({altar:'altar-altar-3',hair:'hair-renewed-14',face:'face-catalog-58'})));
+ await page.goto('/');await expect(page.locator('#order-addon')).toBeHidden();
+ await expect(page.locator('#figure [data-layer="hair"]')).toHaveAttribute('href',/renewed-14__/);
+ await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',/catalog-58__/);
+ await page.locator('[data-category="altar"]').click();await expect(page.locator('[data-part="altar-none"]')).toHaveAttribute('aria-pressed','true');
+ for(const id of ['altar-altar-1','altar-altar-2','altar-altar-3','altar-altar-4','altar-swing','altar-balcony'])await expect(page.locator(`[data-part="${id}"]`)).toHaveCount(0);
 });

@@ -29,7 +29,7 @@ test('downloads the full character with mixed SVG and WebP layers, independently
   })};
  });
  expect(pixels.corners).toEqual([0,0,0,0]);for(const r of pixels.regions)expect(r.visible,r.name).toBeGreaterThan(1000);
- await page.locator('[data-category="altar"]').click();await page.locator('[data-part="altar-altar-3"]').click();
+ await page.locator('[data-category="altar"]').click();await page.locator('[data-part="altar-photo-03"]').click();
  await expect(page.locator('#png-ready')).toBeHidden();
  const withAltar=await downloadPng(page);expect(withAltar.equals(initial)).toBe(true);
  await page.locator('[data-category="legs"]').click();await page.locator('[data-part="legs-catalog-21"]').click();

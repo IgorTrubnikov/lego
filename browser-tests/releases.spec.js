@@ -31,7 +31,7 @@ test('missing optional controls in a cached page cannot stop the constructor',as
  await expect(page.locator('#tabs [role="tab"]')).toHaveCount(11);
  await page.locator('[data-category="legs"]').click();await page.locator('[data-part="legs-catalog-21"]').click();
  await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-21__/);
- await page.locator('[data-category="altar"]').click();await page.locator('[data-part="altar-altar-1"]').click();
+ await page.locator('[data-category="altar"]').click();await page.locator('[data-part="altar-photo-01"]').click();
  await page.locator('#reset').click();
  await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-04__/);
  expect(errors).toEqual([]);

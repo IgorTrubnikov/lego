@@ -15,7 +15,7 @@ test('children options have separate infant and stroller prices, preserve every 
  test.setTimeout(60_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default),children=catalog.filter(p=>p.category==='children');
  expect(children).toHaveLength(3);
- for(const [category,id] of [['suit','suit-catalog-37'],['accessory','accessory-catalog-gamepad'],['animal','animal-cat-kitten-ginger'],['altar','altar-altar-1']]){
+ for(const [category,id] of [['suit','suit-catalog-37'],['accessory','accessory-catalog-gamepad'],['animal','animal-cat-kitten-ginger'],['altar','altar-photo-01']]){
   await page.locator(`[data-category="${category}"]`).click();await page.locator(`[data-part="${id}"]`).click();
  }
  const original=await exportPixels(page),base=await amount(page);expect(original.size).toEqual([1200,1440]);
