@@ -14,9 +14,12 @@ export function prepare(sourceDir){
  try{
   // Stage every image before replacing the live catalog, so a failed import leaves it intact.
   for(const part of manifest){
-   const number=String(part.number).padStart(2,'0'),source=path.join(sourceDir,number+'.png');
-   if(hash(readFileSync(source))!==part.sha256)throw Error('Unexpected source image '+number);
-   const [bx,by,bw,bh]=part.bbox,rasterFile=path.join(temp,number+'.webp');
+   const number=String(part.number).padStart(2,'0');
+   const original=part.renderFrom?manifest.find(p=>p.number===part.renderFrom):part;
+   if(!original)throw Error('Unknown source hairpiece '+part.renderFrom);
+   const source=path.join(sourceDir,String(original.number).padStart(2,'0')+'.png');
+   if(hash(readFileSync(source))!==original.sha256)throw Error('Unexpected source image '+number);
+   const [bx,by,bw,bh]=original.bbox,rasterFile=path.join(temp,number+'.webp');
    // Matched color variants share an explicit rectangle; other styles keep their source ratio.
    magick([source,'-crop',`${bw}x${bh}+${bx}+${by}`,'+repage','-filter','Lanczos','-resize',part.height?`${part.width}x${part.height}!`:part.width+'x','-background','none','-gravity','northwest','-splice',`${part.x}x${part.y}`,'-extent','600x720','-channel','A','-fx',`u<${part.matteThreshold||0.01}?0:u`,'+channel','-strip','-define','webp:lossless=true',rasterFile]);
    const raster=readFileSync(rasterFile),height=part.height||Math.round(bh*part.width/bw);
@@ -28,6 +31,11 @@ export function prepare(sourceDir){
     // Extend only the lower framing to the jaw; crown and forehead fit remain unchanged.
     const pivot=part.tailFit.fromY,factor=(part.tailFit.toY-pivot)/(part.y+height-pivot);
     art=`<defs><image id="hair" width="600" height="720" href="data:image/webp;base64,${raster.toString('base64')}"/><clipPath id="upper"><rect width="600" height="${pivot}"/></clipPath><clipPath id="lower"><rect y="${pivot}" width="600" height="${720-pivot}"/></clipPath></defs><use href="#hair" clip-path="url(#upper)"/><g transform="translate(0 ${pivot*(1-factor)}) scale(1 ${factor})"><use href="#hair" clip-path="url(#lower)"/></g>`;
+   }
+   if(part.material==='black'){
+    // The same source and alpha silhouette as the brown model, rendered as glossy black.
+    // Only RGB changes; coordinates, texture and transparent contour remain identical.
+    art=`<defs><filter id="black-hair" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".2126 .7152 .0722 0 0 .2126 .7152 .0722 0 0 .2126 .7152 .0722 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="gamma" amplitude=".92" exponent="1.8" offset=".008"/><feFuncG type="gamma" amplitude=".92" exponent="1.8" offset=".008"/><feFuncB type="gamma" amplitude=".92" exponent="1.8" offset=".008"/></feComponentTransfer></filter></defs><g filter="url(#black-hair)">${art}</g>`;
    }
    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${hash(art).slice(0,12)}" data-preview-box="${box}" data-catalog-order="${part.catalogOrder}"><title>${label}</title>${art}</svg>\n`;
    writeFileSync(path.join(temp,`renewed-${number}__200__${label}.svg`),svg);

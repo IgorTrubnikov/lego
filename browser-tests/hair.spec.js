@@ -99,3 +99,24 @@ test('hairline joins every head without a transparent forehead gap',async({page}
  });
  expect(failures).toEqual([]);
 });
+
+test('15 uses exactly the silhouette of 10 in black and 28 retains its natural proportions',async({page})=>{
+ await page.goto('/');
+ const result=await page.evaluate(async()=>{
+  const catalog=(await import('./catalog.js')).default;
+  const find=n=>catalog.find(p=>p.category==='hair'&&p.name.startsWith(n+' ·'));
+  const pixels=async part=>{const i=new Image();i.src=part.image;await i.decode();const c=document.createElement('canvas');c.width=600;c.height=720;const ctx=c.getContext('2d');ctx.drawImage(i,0,0);return ctx.getImageData(0,0,600,720).data;};
+  const [brown,black]=await Promise.all([pixels(find('10')),pixels(find('15'))]);
+  let alphaDifference=0,blackLight=0,brownLight=0,count=0,nonNeutral=0;
+  for(let i=0;i<brown.length;i+=4){
+   alphaDifference=Math.max(alphaDifference,Math.abs(brown[i+3]-black[i+3]));
+   if(brown[i+3]>245){count++;brownLight+=brown[i]+brown[i+1]+brown[i+2];blackLight+=black[i]+black[i+1]+black[i+2];if(Math.max(black[i],black[i+1],black[i+2])-Math.min(black[i],black[i+1],black[i+2])>1)nonNeutral++;}
+  }
+  const b28=find('28').previewBox.split(' ').map(Number),p27=find('27').previewBox;
+  return {alphaDifference,darker:blackLight<brownLight,nonNeutral,count,ratio:(b28[2]-12)/(b28[3]-12),matched:[find('44'),find('45')].every(p=>p.previewBox===p27)};
+ });
+ expect(result.alphaDifference).toBeLessThanOrEqual(1);expect(result.darker).toBe(true);
+ expect(result.count).toBeGreaterThan(1000);expect(result.nonNeutral).toBe(0);
+ expect(result.ratio).toBeGreaterThan(1.19);expect(result.ratio).toBeLessThan(1.22);
+ expect(result.matched).toBe(true);
+});

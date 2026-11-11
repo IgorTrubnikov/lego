@@ -141,9 +141,9 @@
       1001,
       767
     ],
-    "width": 205,
-    "x": 197,
-    "y": 169,
+    "width": 220,
+    "x": 190,
+    "y": 157,
     "name": "Каштановое каре с боковым пробором",
     "displayNumber": 32,
     "catalogOrder": 32
@@ -638,12 +638,13 @@
       772,
       848
     ],
-    "width": 185,
-    "x": 210,
-    "y": 127,
+    "width": 175,
+    "x": 215,
+    "y": 136,
     "name": "Каштановая с передними прядями",
     "displayNumber": 44,
-    "catalogOrder": 44
+    "catalogOrder": 44,
+    "height": 175
   },
   {
     "number": 36,
@@ -674,12 +675,14 @@
       773,
       846
     ],
-    "width": 185,
-    "x": 211,
-    "y": 127,
+    "width": 175,
+    "x": 215,
+    "y": 136,
     "name": "Бордовая с боковыми прядями",
     "displayNumber": 45,
-    "catalogOrder": 45
+    "catalogOrder": 45,
+    "height": 175,
+    "matteThreshold": 0.02
   },
   {
     "number": 38,
@@ -862,7 +865,9 @@
     "name": "Чёрная с аккуратным боковым пробором",
     "displayNumber": 15,
     "height": 136,
-    "catalogOrder": 11
+    "catalogOrder": 11,
+    "renderFrom": 9,
+    "material": "black"
   },
   {
     "number": 48,
@@ -971,10 +976,6 @@
     "y": 130,
     "name": "Светлая с волнистой чёлкой",
     "displayNumber": 28,
-    "tailFit": {
-      "fromY": 240,
-      "toY": 320
-    },
     "catalogOrder": 27
   }
 ]
