@@ -33,7 +33,7 @@ test('selection preserves tab elements, keyboard navigation and price updates',a
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
  const expectSelectedPrice=async()=>{
   const selected=await page.evaluate(()=>JSON.parse(localStorage.getItem('teuilor-selection-v1')));
-  const expected=catalog.filter(p=>Object.values(selected).includes(p.id)).reduce((sum,p)=>sum+p.price,0);
+  const expected=550+catalog.filter(p=>['accessory','animal','transport','children','altar','skirt'].includes(p.category)&&Object.values(selected).includes(p.id)).reduce((sum,p)=>sum+p.price,0);
   expect(Number((await page.locator('#total').innerText()).replace(/\D/g,''))).toBe(expected);
  };
  const pants=catalog.filter(p=>p.category==='legs').at(-1);
@@ -168,7 +168,7 @@ test('redrawn legacy assets preserve saved figures and their public URLs',async(
  if(!snapshot.some(p=>p.category==='torso'))snapshot.push(current.find(p=>p.category==='torso'));
  if(!snapshot.some(p=>p.category==='legs'))snapshot.push(current.find(p=>p.category==='legs'));
  const selection=Object.fromEntries(snapshot.map(p=>[p.category,p.id]));
- const total=snapshot.reduce((sum,p)=>sum+p.price,0);
+ const total=550+snapshot.filter(p=>['accessory','animal'].includes(p.category)).reduce((sum,p)=>sum+p.price,0);
  await page.addInitScript(selection=>localStorage.setItem('teuilor-selection-v1',JSON.stringify(selection)),selection);
  await page.goto('/');
  expect(Number((await page.locator('#total').innerText()).replace(/\D/g,''))).toBe(total);

@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import { totalPrice,renderFigure,escapeHtml,withOptionalChoices,selectedFigureParts,choosePart,selectionCategories,figureScene } from '../parts.js';
 const parts=[{id:'h',category:'hair',price:250,image:'./haircuts/test.svg'},{id:'f',category:'face',price:150,image:'./faces/test.png'},{id:'t',category:'torso',price:350,image:'./clothes/test.webp'},{id:'l',category:'legs',price:250,image:'./pants/test.svg'}];
 const selection={hair:'h',face:'f',torso:'t',legs:'l'};
-test('price sums selected parts, including a zero-priced replacement',()=>{
- assert.equal(totalPrice(selection,parts),1000);
- assert.equal(totalPrice({...selection,hair:'new'},[...parts,{id:'new',category:'hair',price:0}]),750);
+test('figure price includes all four core details even with legacy part prices',()=>{
+ assert.equal(totalPrice(selection,parts),550);
+ assert.equal(totalPrice({...selection,hair:'new'},[...parts,{id:'new',category:'hair',price:0}]),550);
 });
 test('renders external layers in assembly order and crops category previews',()=>{
  const svg=renderFigure(selection,parts);
@@ -25,11 +25,11 @@ test('optional extras add to the price, render beside the figure and can be remo
   {id:'bag',category:'accessory',price:300,image:'./accessories/bag.svg'},
   {id:'cat',category:'animal',price:350,image:'./animals/cat.svg'}]);
  const chosen={...selection,accessory:'bag',animal:'cat'};
- assert.equal(totalPrice(chosen,extras),1650);
+ assert.equal(totalPrice(chosen,extras),1200);
  const svg=renderFigure(chosen,extras);assert.match(svg,/data-layer="accessory"/);assert.match(svg,/data-layer="animal"/);
  assert.ok(svg.indexOf('./haircuts/')<svg.indexOf('./accessories/'));
  const empty={...chosen,accessory:'accessory-none',animal:'animal-none'};
- assert.equal(totalPrice(empty,extras),1000);
+ assert.equal(totalPrice(empty,extras),550);
  assert.doesNotMatch(renderFigure(empty,extras),/data-layer="(?:animal|accessory)"/);
  assert.match(renderFigure(chosen,extras,'animal'),/viewBox="430 435 170 265"/);
 });
@@ -45,7 +45,7 @@ test('asset-specific preview bounds enlarge thumbnails without moving assembled 
 test('wedding additions affect the price and their cards without changing the character',()=>{
  const scene={id:'altar-test',category:'altar',name:'Алтарь',price:400,image:'./altars/test.svg',previewBox:'14 70 572 636'};
  const catalog=withOptionalChoices([...parts,scene]),chosen={...selection,altar:scene.id};
- assert.equal(totalPrice(chosen,catalog),1400);
+ assert.equal(totalPrice(chosen,catalog),950);
  const svg=renderFigure(chosen,catalog);
  assert.equal(svg,renderFigure(selection,catalog));
  assert.doesNotMatch(svg,/data-layer="altar"|transform=/);
@@ -53,7 +53,7 @@ test('wedding additions affect the price and their cards without changing the ch
  assert.match(card,/viewBox="14 70 572 636"/);
  assert.match(card,/data-layer="altar"/);assert.doesNotMatch(card,/data-layer="(?:legs|face|torso|hair)"/);
  const plain={...chosen,altar:'altar-none'};
- assert.equal(totalPrice(plain,catalog),1000);
+ assert.equal(totalPrice(plain,catalog),550);
  assert.doesNotMatch(renderFigure(plain,catalog),/data-figure-in-altar|data-layer="altar"/);
 });
 
@@ -70,9 +70,9 @@ test('long hair uses the same back-first layers in the preview, thumbnails and P
 });
 
 test('a complete suit replaces both body layers and prices without discarding separate choices',()=>{
- const suit={id:'suit-test',category:'suit',price:500,image:'./suits/full.svg',includedLabel:'Рюкзак в комплекте'};
+ const suit={id:'suit-test',category:'suit',price:550,image:'./suits/full.svg',includedLabel:'Рюкзак в комплекте'};
  const catalog=withOptionalChoices([...parts,suit]),chosen=choosePart(selection,'suit',suit.id);
- assert.equal(totalPrice(chosen,catalog),900); // Hair 250 + face 150 + suit 500.
+ assert.equal(totalPrice(chosen,catalog),550); // One complete figure, including head and hair.
  assert.equal(chosen.torso,selection.torso);assert.equal(chosen.legs,selection.legs);
  assert.deepEqual(selectedFigureParts(chosen,catalog).map(p=>p.category),['suit','face','hair']);
  assert.deepEqual(selectionCategories(chosen,catalog).map(c=>c.id),['hair','face','suit','accessory','animal','transport','children','altar']);
@@ -80,10 +80,10 @@ test('a complete suit replaces both body layers and prices without discarding se
  assert.ok(svg.indexOf('suits/full.svg')<svg.indexOf('faces/test.png'));
  for(const category of ['torso','legs']){
   const restored=choosePart(chosen,category,selection[category]);
-  assert.equal(restored.suit,'suit-none');assert.equal(totalPrice(restored,catalog),1000);
+  assert.equal(restored.suit,'suit-none');assert.equal(totalPrice(restored,catalog),550);
   assert.deepEqual(selectedFigureParts(restored,catalog).map(p=>p.category),['legs','torso','face','hair']);
  }
- assert.equal(totalPrice({...chosen,suit:'suit-removed'},catalog),1000);
+ assert.equal(totalPrice({...chosen,suit:'suit-removed'},catalog),550);
  assert.equal(choosePart(chosen,'face','another-face').suit,suit.id);
 });
 
@@ -91,32 +91,32 @@ test('transport extends only its own scene plane and keeps extras and suit layer
  const bike={id:'bike',category:'transport',price:500,image:'./transport/bike.svg'};
  const catalog=withOptionalChoices([...parts,bike,{id:'bag',category:'accessory',price:200,image:'bag.svg'},{id:'cat',category:'animal',price:300,image:'cat.svg'}]);
  const chosen={...selection,transport:'bike',accessory:'bag',animal:'cat'};
- assert.equal(totalPrice(chosen,catalog),2000);
+ assert.equal(totalPrice(chosen,catalog),1550);
  const scene=figureScene(chosen,catalog);assert.equal(scene.height,1020);
  assert.equal(scene.layers[0].category,'transport');assert.equal(scene.layers[0].y,300);
  assert.ok(scene.layers.slice(1).every(p=>p.y===0));
  assert.match(renderFigure(chosen,catalog),/data-layer="transport" transform="translate\(0 300\)"/);
  assert.doesNotMatch(renderFigure(chosen,catalog,'transport'),/transform=/);
  const plain={...chosen,transport:'transport-none'};
- assert.equal(figureScene(plain,catalog).height,720);assert.equal(totalPrice(plain,catalog),1500);
+ assert.equal(figureScene(plain,catalog).height,720);assert.equal(totalPrice(plain,catalog),1050);
 });
 
 test('short skirts overlay chosen pants while long skirts replace their layer and price',()=>{
  const short={id:'short',category:'skirt',skirtMode:'overlay',price:200,image:'short.svg'};
  const long={id:'long',category:'skirt',skirtMode:'replace-legs',price:200,image:'long.svg'};
- const suit={id:'suit',category:'suit',price:500,image:'suit.svg'};
+ const suit={id:'suit',category:'suit',price:550,image:'suit.svg'};
  const catalog=withOptionalChoices([...parts,short,long,suit]);
  const over=choosePart(selection,'skirt','short',catalog);
- assert.equal(over.legs,selection.legs);assert.equal(totalPrice(over,catalog),1200);
+ assert.equal(over.legs,selection.legs);assert.equal(totalPrice(over,catalog),750);
  assert.deepEqual(selectedFigureParts(over,catalog).map(p=>p.category),['legs','skirt','torso','face','hair']);
  assert.equal(choosePart(over,'legs','l',catalog).skirt,'short');
  const instead=choosePart(over,'skirt','long',catalog);
- assert.equal(instead.legs,selection.legs);assert.equal(totalPrice(instead,catalog),950);
+ assert.equal(instead.legs,selection.legs);assert.equal(totalPrice(instead,catalog),750);
  assert.deepEqual(selectedFigureParts(instead,catalog).map(p=>p.category),['skirt','torso','face','hair']);
  assert.equal(choosePart(instead,'legs','l',catalog).skirt,'skirt-none');
- assert.equal(totalPrice(choosePart(instead,'skirt','skirt-none',catalog),catalog),1000);
+ assert.equal(totalPrice(choosePart(instead,'skirt','skirt-none',catalog),catalog),550);
  const suited=choosePart(instead,'suit','suit',catalog);assert.equal(suited.skirt,'skirt-none');
- assert.equal(totalPrice({...suited,skirt:'long'},catalog),900);
+ assert.equal(totalPrice({...suited,skirt:'long'},catalog),550);
  assert.equal(choosePart(suited,'skirt','short',catalog).suit,'suit-none');
  assert.equal(choosePart(suited,'skirt','skirt-none',catalog).suit,'suit');
 });

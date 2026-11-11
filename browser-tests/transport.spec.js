@@ -21,9 +21,9 @@ test('15 motorcycles remain independent of suits, accessories and pets and expor
  const bikes=await page.evaluate(async()=>(await import('./catalog.js')).default.filter(p=>p.category==='transport'));
  expect(bikes).toHaveLength(15);await page.locator('[data-category="transport"]').click();
  for(const bike of bikes){
-  expect(bike.price).toBe(500);await page.locator(`[data-part="${bike.id}"]`).click();
+  expect(bike.price).toBe(150);await page.locator(`[data-part="${bike.id}"]`).click();
   await expect(page.locator('#figure [data-layer="transport"]')).toHaveAttribute('href',bike.image);
-  expect(await amount(page)).toBe(base+500);
+  expect(await amount(page)).toBe(base+150);
  }
  await expect(page.locator('#figure svg')).toHaveAttribute('viewBox','0 0 600 1020');
  const chosen=await page.evaluate(()=>JSON.parse(localStorage.getItem('teuilor-selection-v1')));

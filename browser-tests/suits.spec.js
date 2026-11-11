@@ -7,18 +7,18 @@ test('49 suits replace body and legs once in price and restore separate clothing
  test.setTimeout(90_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default),suits=catalog.filter(p=>p.category==='suit');
- expect(suits).toHaveLength(49);expect(suits.every(p=>p.price===500)).toBe(true);
+ expect(suits).toHaveLength(49);expect(suits.every(p=>p.price===550)).toBe(true);
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('teuilor-selection-v1')));
- const original=await amount(page),bodyPrice=catalog.filter(p=>[saved.torso,saved.legs].includes(p.id)).reduce((sum,p)=>sum+p.price,0);
+ const original=await amount(page);
  await page.locator('[data-category="suit"]').click();
  await expect(page.locator('[data-part="suit-none"]')).toHaveAttribute('aria-pressed','true');
  for(const suit of suits){
   const card=page.locator(`[data-part="${suit.id}"]`);await card.click();await expect(card).toHaveAttribute('aria-pressed','true');
   await expect(page.locator('#figure [data-layer="suit"]')).toHaveAttribute('href',suit.image);
   await expect(page.locator('#figure [data-layer="torso"], #figure [data-layer="legs"]')).toHaveCount(0);
-  expect(await amount(page)).toBe(original-bodyPrice+500);
+  expect(await amount(page)).toBe(original);
  }
- await expect(page.locator('#breakdown')).toContainText('Костюм');await expect(page.locator('#breakdown')).not.toContainText('Одежда');await expect(page.locator('#breakdown')).not.toContainText('Брюки');
+ await expect(page.locator('#breakdown')).toContainText('костюмом');await expect(page.locator('#breakdown')).not.toContainText('Одежда');await expect(page.locator('#breakdown')).not.toContainText('Брюки');
  const chosen=await page.evaluate(()=>JSON.parse(localStorage.getItem('teuilor-selection-v1')));expect(chosen.torso).toBe(saved.torso);expect(chosen.legs).toBe(saved.legs);
  await page.reload();await expect(page.locator('#figure [data-layer="suit"]')).toHaveAttribute('href',suits.at(-1).image);
  await page.locator('[data-category="suit"]').click();await page.locator('[data-part="suit-none"]').click();
@@ -36,7 +36,7 @@ test('army backpack is included in the suit, price and PNG while independent ext
  test.setTimeout(60_000);await page.goto('/');const base=await amount(page);
  await page.locator('[data-category="suit"]').click();await page.locator('[data-part="suit-catalog-37"]').click();
  await expect(page.locator('#outfit-note')).toContainText('Рюкзак в комплекте');await expect(page.locator('[data-part="suit-catalog-37"] .part-includes')).toHaveText('Рюкзак в комплекте');
- expect(await amount(page)).toBe(base-400+500);
+ expect(await amount(page)).toBe(base);
  await page.locator('[data-category="face"]').click();await page.locator('[data-part="face-catalog-07"]').click();
  await page.locator('[data-category="hair"]').click();await page.locator('[data-part="hair-renewed-07"]').click();
  await expect(page.locator('#figure image').first()).toHaveAttribute('data-layer','suit');await expect(page.locator('#figure [data-layer="suit"]')).toHaveCount(1);

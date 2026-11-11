@@ -189,3 +189,6 @@
 @media(max-width:1150px){.header .desktop-nav{gap:12px;font-size:9px;margin-left:0}.header-create{padding:10px;font-size:10px}}
 @media(max-width:900px){.reviews-grid{columns:2}}
 @media(max-width:600px){.reviews-grid{columns:1}.reviews-heading{align-items:flex-start;font-size:10px;gap:12px}.review-viewer{padding:10px}.review-navigation h2{font-size:11px}.review-navigation>button{font-size:10px;padding:8px}.review-toolbar{font-size:10px;gap:10px}.review-scroll{max-height:calc(100dvh - 150px)}}
+
+.checkout{flex-wrap:wrap}.price-info{flex-shrink:0}.breakdown strong{white-space:nowrap}.figure-price-note{order:1;flex:0 0 100%;margin:0}
+@media(max-width:760px){.checkout-actions{order:2}}

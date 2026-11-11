@@ -5,7 +5,7 @@ test('all 66 reference heads load transparently, select, update price and surviv
  await page.goto('/');await page.locator('[data-category="face"]').click();
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
  const faces=catalog.filter(p=>p.category==='face');expect(faces).toHaveLength(66);
- expect(faces.every(p=>p.price===200&&/^face-catalog-\d\d$/.test(p.id))).toBe(true);
+ expect(faces.every(p=>p.price===0&&/^face-catalog-\d\d$/.test(p.id))).toBe(true);
  const artwork=await page.evaluate(async faces=>Promise.all(faces.map(async face=>{
   const img=new Image();img.src=face.image;await img.decode();
   const c=document.createElement('canvas');c.width=600;c.height=720;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);

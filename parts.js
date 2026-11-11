@@ -31,7 +31,15 @@ export function choosePart(selection,category,id,parts=[]){
  if(category==='legs'&&selectedSkirt(selection,parts)?.skirtMode==='replace-legs')next.skirt='skirt-none';
  return next;
 }
-export function totalPrice(selection, parts) { return selectionCategories(selection,parts).reduce((sum,c)=>sum+(parts.find(p=>p.id===selection[c.id]&&p.category===c.id)?.price||0),0); }
+export const figurePrice=550;
+export const includedInFigure=new Set(['hair','face','torso','legs']);
+export function priceBreakdown(selection,parts){
+ const suit=selectedSuit(selection,parts);
+ const extras=selectionCategories(selection,parts).filter(c=>!includedInFigure.has(c.id)&&c.id!=='suit').map(c=>({category:c.id,label:c.singular,part:parts.find(p=>p.id===selection[c.id]&&p.category===c.id)})).filter(row=>row.part?.image&&row.part.price>0).map(row=>({category:row.category,label:row.label,price:row.part.price}));
+ return [{category:'figure',label:suit?'Фигурка с костюмом':'Фигурка',price:suit?.price??figurePrice},...extras];
+}
+export function totalPrice(selection,parts){return priceBreakdown(selection,parts).reduce((sum,row)=>sum+row.price,0);}
+
 export function escapeHtml(value) { return String(value).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 export const figureCategories=['transport','legs','skirt','torso','face','hair','accessory','animal','children'];
 export function selectedFigureParts(selection,parts){

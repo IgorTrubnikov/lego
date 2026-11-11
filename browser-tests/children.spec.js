@@ -10,7 +10,7 @@ async function exportPixels(page){
   return {size:[img.width,img.height],upper,left:visible(0,680),right:visible(700,500)};
  });
 }
-test('children options cost 300, preserve every other addition and export together with transport',async({page})=>{
+test('children options have separate infant and stroller prices, preserve every other addition and export together with transport',async({page})=>{
  test.setTimeout(60_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default),children=catalog.filter(p=>p.category==='children');
  expect(children).toHaveLength(3);
@@ -20,16 +20,16 @@ test('children options cost 300, preserve every other addition and export togeth
  const original=await exportPixels(page),base=await amount(page);expect(original.size).toEqual([1200,1440]);
  await page.locator('[data-category="children"]').click();
  for(const child of children){
-  expect(child.price).toBe(300);await page.locator(`[data-part="${child.id}"]`).click();
-  await expect(page.locator('#figure [data-layer="children"]')).toHaveAttribute('href',child.image);expect(await amount(page)).toBe(base+300);
+  expect(child.price).toBe(child.id==='children-catalog-infant'?100:300);await page.locator(`[data-part="${child.id}"]`).click();
+  await expect(page.locator('#figure [data-layer="children"]')).toHaveAttribute('href',child.image);expect(await amount(page)).toBe(base+child.price);
  }
  const solo=await exportPixels(page);expect(solo.size).toEqual([1200,2040]);expect(solo.upper).toBe(original.upper);
- await page.locator('[data-category="transport"]').click();await page.locator('[data-part="transport-catalog-01"]').click();expect(await amount(page)).toBe(base+800);
+ await page.locator('[data-category="transport"]').click();await page.locator('[data-part="transport-catalog-01"]').click();expect(await amount(page)).toBe(base+450);
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('teuilor-selection-v1')));await page.reload();
  for(const category of ['suit','accessory','animal','transport','children'])await expect(page.locator(`#figure [data-layer="${category}"]`)).toHaveCount(1);
  await expect(page.locator('#order-addon')).toBeVisible();
  const together=await exportPixels(page);expect(together.size).toEqual([1200,2040]);expect(together.upper).toBe(original.upper);expect(together.left).toBeGreaterThan(10000);expect(together.right).toBeGreaterThan(10000);
- await page.locator('[data-category="children"]').click();await page.locator('[data-part="children-none"]').click();expect(await amount(page)).toBe(base+500);
+ await page.locator('[data-category="children"]').click();await page.locator('[data-part="children-none"]').click();expect(await amount(page)).toBe(base+150);
  await expect(page.locator('#figure [data-layer="transport"]')).toHaveAttribute('transform','translate(0 300)');
  await page.evaluate(()=>{const s=JSON.parse(localStorage.getItem('teuilor-selection-v1'));s.children='children-retired';localStorage.setItem('teuilor-selection-v1',JSON.stringify(s));});
  await page.reload();await expect(page.locator('#figure [data-layer="children"]')).toHaveCount(0);

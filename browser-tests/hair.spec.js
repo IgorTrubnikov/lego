@@ -41,7 +41,7 @@ test('all hairstyles select independently, keep the correct price and export lon
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
  const hairs=catalog.filter(p=>p.category==='hair');expect(hairs.length).toBeGreaterThan(0);
  const start=await page.evaluate(()=>JSON.parse(localStorage.getItem('teuilor-selection-v1')));
- const base=catalog.filter(p=>p.category!=='hair'&&Object.values(start).includes(p.id)).reduce((sum,p)=>sum+p.price,0);
+ const base=550;
  for(const hair of hairs){
   const card=page.locator(`[data-part="${hair.id}"]`);await card.click();
   await expect(card).toHaveAttribute('aria-pressed','true');

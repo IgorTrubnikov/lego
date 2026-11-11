@@ -38,12 +38,12 @@ export function prepare(sourceDir){
     art=`<defs><filter id="black-hair" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".2126 .7152 .0722 0 0 .2126 .7152 .0722 0 0 .2126 .7152 .0722 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="gamma" amplitude=".92" exponent="1.8" offset=".008"/><feFuncG type="gamma" amplitude=".92" exponent="1.8" offset=".008"/><feFuncB type="gamma" amplitude=".92" exponent="1.8" offset=".008"/></feComponentTransfer></filter></defs><g filter="url(#black-hair)">${art}</g>`;
    }
    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${hash(art).slice(0,12)}" data-preview-box="${box}" data-catalog-order="${part.catalogOrder}"><title>${label}</title>${art}</svg>\n`;
-   writeFileSync(path.join(temp,`renewed-${number}__200__${label}.svg`),svg);
+   writeFileSync(path.join(temp,`renewed-${number}__0__${label}.svg`),svg);
   }
   for(const name of readdirSync(path.join(root,'haircuts')))if(/\.(svg|png|webp)$/i.test(name)&&!/^catalog-cap-(white|black)__/.test(name))rmSync(path.join(root,'haircuts',name));
   for(const name of readdirSync(temp))if(name.endsWith('.svg'))renameSync(path.join(temp,name),path.join(root,'haircuts',name));
   rmSync(path.join(root,'assets/hair-backs'),{recursive:true,force:true});
-  console.log(`Replaced the hair catalog with ${manifest.length} original hairpieces at 200 ₽ each.`);
+  console.log(`Replaced the hair catalog with ${manifest.length} original hairpieces included in the figure price.`);
  }finally{rmSync(temp,{recursive:true,force:true});}
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))prepare(process.argv[2]);

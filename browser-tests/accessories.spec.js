@@ -38,7 +38,7 @@ test('retired accessories clear from saved selections without dropping other par
  test.skip(!removed,'No retired accessory in this catalog.');
  const snapshot=[...['hair','face','torso','legs','animal'].map(category=>catalog.find(p=>p.category===category)).filter(Boolean),removed];
  const selection=Object.fromEntries(snapshot.map(p=>[p.category,p.id]));
- const total=snapshot.reduce((sum,p)=>sum+p.price,0),expected=total-removed.price;
+ const expected=550+snapshot.filter(p=>p.category==='animal').reduce((sum,p)=>sum+p.price,0);
  await page.addInitScript(selection=>localStorage.setItem('teuilor-selection-v1',JSON.stringify(selection)),selection);
  const failures=[];page.on('response',r=>{if(r.status()>=400)failures.push(r.url());});
  await page.goto('/');
@@ -57,7 +57,7 @@ test('retired accessories clear from saved selections without dropping other par
  expect(failures).toEqual([]);
 });
 
-test('six wedding accessories add to the existing catalog at 200 rubles and survive PNG export',async({page})=>{
+test('six wedding accessories add to the existing catalog at 100 rubles and survive PNG export',async({page})=>{
  await page.goto('/');
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
  const accessories=catalog.filter(p=>p.category==='accessory');expect(accessories).toHaveLength(59);
@@ -65,10 +65,10 @@ test('six wedding accessories add to the existing catalog at 200 rubles and surv
  const amount=async()=>Number((await page.locator('#total').innerText()).replace(/\D/g,''));
  const base=await amount();await page.locator('[data-category="accessory"]').click();
  for(const slug of slugs){
-  const item=accessories.find(p=>p.id===`accessory-catalog-${slug}`);expect(item).toBeTruthy();expect(item.price).toBe(200);
+  const item=accessories.find(p=>p.id===`accessory-catalog-${slug}`);expect(item).toBeTruthy();expect(item.price).toBe(100);
   await page.locator(`[data-part="${item.id}"]`).click();
   await expect(page.locator('#figure [data-layer="accessory"]')).toHaveAttribute('href',item.image);
-  expect(await amount()).toBe(base+200);
+  expect(await amount()).toBe(base+100);
  }
  await page.reload();await expect(page.locator('#figure [data-layer="accessory"]')).toHaveAttribute('href',/catalog-heart-large__/);
  const pending=page.waitForEvent('download');await page.locator('#save-png').click();expect(await (await pending).failure()).toBeNull();

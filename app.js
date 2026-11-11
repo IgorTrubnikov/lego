@@ -1,4 +1,4 @@
-import {categories,initialSelection,money,totalPrice,escapeHtml,renderFigure,withOptionalChoices,largeAnimalIds,selectedSuit,selectedSkirt,selectionCategories,choosePart} from './parts.js';
+import {categories,initialSelection,money,totalPrice,priceBreakdown,includedInFigure,escapeHtml,renderFigure,withOptionalChoices,largeAnimalIds,selectedSuit,selectedSkirt,selectionCategories,choosePart} from './parts.js';
 import catalog from './catalog.js';
 const parts=withOptionalChoices(catalog);
 const $=s=>document.querySelector(s);
@@ -23,7 +23,7 @@ function render(){
  $('#png-ready')?.setAttribute('hidden','');
  $('#figure').setAttribute('aria-label','Фигурка: '+selectionCategories(selection,parts).filter(c=>c.id!=='altar').map(c=>parts.find(p=>p.id===selection[c.id])?.name).filter(Boolean).join(', '));
  $('#total').textContent=money(totalPrice(selection,parts));
- $('#breakdown').innerHTML=selectionCategories(selection,parts).map(c=>`<div>${c.singular}<strong>${money(parts.find(p=>p.id===selection[c.id])?.price||0)}</strong></div>`).join('');
+ $('#breakdown').innerHTML=priceBreakdown(selection,parts).map(row=>`<div>${escapeHtml(row.label)}<strong>${money(row.price)}</strong></div>`).join('');
  renderCatalog();persist('teuilor-selection-v1',selection);
 }
 function renderTabs(){
@@ -48,7 +48,7 @@ function renderCatalog(){
   note.hidden=!suit&&!skirt&&!['suit','skirt'].includes(current);
   note.textContent=suit?`Выбран комплект: тело и ноги входят в стоимость.${suit.includedLabel?' '+suit.includedLabel+'.':''} Выбор отдельной одежды, брюк или юбки заменит костюм.`:current==='skirt'||skirt?(skirt?.skirtMode==='replace-legs'?'Длинная юбка заменяет брюки в изображении и цене. Выбор брюк снимет длинную юбку.':'Короткие юбки надеваются поверх выбранных брюк. Длинная белая юбка заменяет брюки. Выбор юбки заменит готовый костюм одеждой по частям.'):'Костюм включает тело и ноги. «Одежда по частям» возвращает выбранные отдельно детали.';
  }
- $('#catalog').innerHTML=list.map(p=>{const active=!bodyHidden&&selection[current]===p.id;return `<button title="${escapeHtml(p.name)}" class="part-card ${active?'selected':''}" data-part="${escapeHtml(p.id)}" aria-pressed="${active}" aria-label="${escapeHtml(p.name)}, ${money(p.price)}${p.includedLabel?', '+escapeHtml(p.includedLabel):''}">${p.id.includes('-3d-')?'<span class="part-badge">НОВОЕ</span>':''}<span class="part-art">${p.image?renderFigure({...selection,[current]:p.id},parts,current):'<span class="empty-choice" aria-hidden="true">∅</span>'}</span><span class="part-name">${escapeHtml(p.name)}</span>${p.skirtMode?`<span class="part-includes">${p.skirtMode==='overlay'?'Поверх брюк':'Вместо брюк'}</span>`:''}${p.includedLabel?`<span class="part-includes">${escapeHtml(p.includedLabel)}</span>`:''}<span class="part-price">${money(p.price)}</span></button>`;}).join('');
+ $('#catalog').innerHTML=list.map(p=>{const active=!bodyHidden&&selection[current]===p.id;const priceText=includedInFigure.has(p.category)?'Входит в фигурку':money(p.price);return `<button title="${escapeHtml(p.name)}" class="part-card ${active?'selected':''}" data-part="${escapeHtml(p.id)}" aria-pressed="${active}" aria-label="${escapeHtml(p.name)}, ${escapeHtml(priceText)}${p.includedLabel?', '+escapeHtml(p.includedLabel):''}">${p.id.includes('-3d-')?'<span class="part-badge">НОВОЕ</span>':''}<span class="part-art">${p.image?renderFigure({...selection,[current]:p.id},parts,current):'<span class="empty-choice" aria-hidden="true">∅</span>'}</span><span class="part-name">${escapeHtml(p.name)}</span>${p.skirtMode?`<span class="part-includes">${p.skirtMode==='overlay'?'Поверх брюк':'Вместо брюк'}</span>`:''}${p.includedLabel?`<span class="part-includes">${escapeHtml(p.includedLabel)}</span>`:''}<span class="part-price">${escapeHtml(priceText)}</span></button>`;}).join('');
  $('#catalog').scrollTop=scrollTop;renderedCategory=current;
 }
 $('#tabs').addEventListener('click',e=>{const btn=e.target.closest('[data-category]');if(btn){current=btn.dataset.category;renderCatalog();$('#tab-'+current).focus({preventScroll:true});}});
