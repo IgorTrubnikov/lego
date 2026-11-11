@@ -40,14 +40,16 @@ export async function createOrderPngs(cart){
  if(current.length)pages.push(current);
  const results=[];
  for(let page=0;page<pages.length;page++){
-  const group=pages[page],canvas=document.createElement('canvas');canvas.width=1400;canvas.height=320+group.reduce((sum,c)=>sum+c.height,0)+190;
+  const group=pages[page],formats=t.packagingLines.length?t.packagingLines.map(p=>`${p.name} × ${p.quantity} · ${money(p.price)} / шт. = ${money(p.total)}`):['Без оформления — 0 ₽'];
+  const formatOffset=(formats.length-1)*32;
+  const canvas=document.createElement('canvas');canvas.width=1400;canvas.height=320+formatOffset+group.reduce((sum,c)=>sum+c.height,0)+190;
   const ctx=canvas.getContext('2d');ctx.fillStyle='#fcfaf7';ctx.fillRect(0,0,canvas.width,canvas.height);
   ctx.fillStyle='#791e36';ctx.font='bold 38px Arial';ctx.fillText('LEGO.FROM.TEUILOR',55,65);
   ctx.font='27px Arial';ctx.fillText(`Заказ ${cart.id} · лист ${page+1} из ${pages.length}`,55,110);
-  ctx.fillStyle='#38252a';ctx.font='25px Arial';ctx.fillText(`Оформление: ${t.packaging.name} — ${money(t.format)}`,55,158);
-  ctx.font='bold 30px Arial';ctx.fillText(`Итого за весь заказ: ${money(t.total)}`,55,205);
-  ctx.font='19px Arial';ctx.fillStyle='#746169';ctx.fillText(`Фигурки ${money(t.figures)} · дополнения ${money(t.extras)} · оформление ${money(t.format)}`,55,245);
-  let top=290;
+  ctx.fillStyle='#38252a';ctx.font='25px Arial';formats.forEach((text,index)=>ctx.fillText((index===0?'Оформление: ':'')+text,55,158+index*32));
+  ctx.font='bold 30px Arial';ctx.fillText(`Итого за весь заказ: ${money(t.total)}`,55,205+formatOffset);
+  ctx.font='19px Arial';ctx.fillStyle='#746169';ctx.fillText(`Фигурки ${money(t.figures)} · дополнения ${money(t.extras)} · оформление ${money(t.format)}`,55,245+formatOffset);
+  let top=290+formatOffset;
   for(const card of group){
    ctx.fillStyle='#ffffff';ctx.fillRect(35,top,1330,card.height-20);ctx.strokeStyle='#eadfe0';ctx.strokeRect(35,top,1330,card.height-20);
    ctx.fillStyle='#791e36';ctx.font='bold 27px Arial';ctx.fillText(`Персонаж ${card.index+1} — ${money(card.total)}`,65,top+45);

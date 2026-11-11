@@ -20,6 +20,7 @@ test('missing optional controls in a cached page cannot stop the constructor',as
  await page.route('http://127.0.0.1:3100/',async route=>{
   const response=await route.fetch();let html=await response.text();
   html=html.replace(/<section id="order-addon"[\s\S]*?<\/section>/,'').replace(/<div id="png-ready"[\s\S]*?<\/div>/,'').replace(/<div class="checkout-actions">[\s\S]*?<\/div>/,'').replace(/<button id="catalog-help-open">[\s\S]*?<\/button>/,'');
+  html=html.replace(/<div id="packaging-items"[^>]*><\/div>/,'');
   html=html.replace(/src="app\.js\?v=[^"]+"/,'src="app.js"');
   await route.fulfill({response,body:html});
  });

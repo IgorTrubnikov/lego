@@ -16,25 +16,24 @@ test('cart keeps independent characters, applies positional prices, edits, repri
  await page.locator('.cart-item').first().locator('summary').click();await expect(page.locator('.cart-item').first()).toContainText('Рюкзак в комплекте');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
-test('cart exports a complete PNG and readable detail list including formatting and wedding extras',async({page})=>{
+test('cart exports a complete PNG including formatting and wedding extras',async({page})=>{
  await page.goto('/');await expect(page.locator('#save-png')).toBeDisabled();
  await choose(page,'hair','hair-renewed-53');await choose(page,'altar','altar-altar-3');await choose(page,'transport','transport-catalog-01');await add(page,1);
  await expect(page.locator('.cart-altar')).toHaveCount(1);await expect(page.locator('#save-png')).toBeDisabled();
  await page.locator('#cart-packaging').selectOption('flask');expect(await amount(page,'#cart-total')).toBe(2600);
- let pending=page.waitForEvent('download');await page.locator('#save-order-text').click();let file=await pending;const text=await readFile(await file.path(),'utf8');
- for(const part of ['hair-renewed-53','28 ·','altar-altar-3','transport-catalog-01','Колба','ИТОГО: 2'])expect(text).toContain(part);
- pending=page.waitForEvent('download');await page.locator('#save-png').click();file=await pending;expect(await file.failure()).toBeNull();const png=await readFile(await file.path());expect(png.subarray(0,8).toString('hex')).toBe('89504e470d0a1a0a');expect(png.readUInt32BE(16)).toBe(1400);expect(png.readUInt32BE(20)).toBeGreaterThan(1000);
+ const pending=page.waitForEvent('download');await page.locator('#save-png').click();const file=await pending;expect(await file.failure()).toBeNull();const png=await readFile(await file.path());expect(png.subarray(0,8).toString('hex')).toBe('89504e470d0a1a0a');expect(png.readUInt32BE(16)).toBe(1400);expect(png.readUInt32BE(20)).toBeGreaterThan(1000);
  await expect(page.locator('#png-link')).toBeVisible();await expect(page.locator('#order-telegram')).toHaveAttribute('href','https://t.me/teuilor');await expect(page.locator('#order-telegram')).toHaveAttribute('aria-disabled','false');
- await page.locator('#cart-packaging').selectOption('keychain');await expect(page.locator('#png-ready')).toBeHidden();expect(await amount(page,'#cart-total')).toBe(1750);
+ await page.locator('#cart-packaging').selectOption('keychain');await expect(page.locator('#png-ready')).toBeHidden();expect(await amount(page,'#cart-total')).toBe(3250);
+ await page.locator('[data-format-remove="flask"]').click();expect(await amount(page,'#cart-total')).toBe(1750);
 });
-test('failed PNG export leaves cart intact and text download available',async({page})=>{
+test('failed PNG export leaves cart intact and allows retry',async({page})=>{
  await page.goto('/');await add(page,1);await page.locator('#cart-packaging').selectOption('keychain');
  await page.evaluate(()=>{window.originalToBlob=HTMLCanvasElement.prototype.toBlob;HTMLCanvasElement.prototype.toBlob=cb=>cb(null);});
  await page.locator('#save-png').click();await expect(page.locator('#toast')).toContainText('Не удалось сохранить PNG');await expect(page.locator('#save-png')).toBeEnabled();await expect(page.locator('.cart-item')).toHaveCount(1);
- const pending=page.waitForEvent('download');await page.locator('#save-order-text').click();expect(await (await pending).failure()).toBeNull();
  await page.evaluate(()=>{HTMLCanvasElement.prototype.toBlob=window.originalToBlob;});
+ const retry=page.waitForEvent('download');await page.locator('#save-png').click();expect(await (await retry).failure()).toBeNull();
 });
-test('large carts produce numbered PNG pages and browser storage failure still permits a text order',async({page})=>{
+test('large carts produce numbered PNG pages and browser storage failure still permits a PNG order',async({page})=>{
  await page.goto('/');
  for(let i=1;i<=5;i++)await add(page,i);
  await page.locator('#cart-packaging').selectOption('keychain');expect(await amount(page,'#cart-total')).toBe(2650);
@@ -44,5 +43,22 @@ test('large carts produce numbered PNG pages and browser storage failure still p
  for(const size of sizes){expect(size[0]).toBe(1400);expect(size[1]).toBeLessThan(3500);}
  await page.evaluate(()=>{const original=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){if(key==='teuilor-cart-v1')throw new Error('Quota');return original.call(this,key,value);};});
  await add(page,6);await expect(page.locator('#cart-status')).toContainText('Скачайте заказ');
- const textFile=page.waitForEvent('download');await page.locator('#save-order-text').click();expect(await (await textFile).failure()).toBeNull();
+ const file=page.waitForEvent('download');await page.locator('#save-png').click();expect(await (await file).failure()).toBeNull();
+});
+
+test('different formats have independent quantities and no-format orders can be saved',async({page})=>{
+ await page.goto('/');await add(page,1);await expect(page.locator('#save-order-text')).toHaveCount(0);
+ await page.locator('#cart-packaging').selectOption('flask');
+ await page.locator('[data-format-quantity="flask"]').fill('2');await page.locator('[data-format-quantity="flask"]').dispatchEvent('change');
+ await page.locator('#cart-packaging').selectOption('keychain');
+ await page.locator('[data-format-quantity="keychain"]').fill('3');await page.locator('[data-format-quantity="keychain"]').dispatchEvent('change');
+ expect(await amount(page,'#cart-total')).toBe(5500);await page.reload();
+ await expect(page.locator('[data-format-quantity="flask"]')).toHaveValue('2');await expect(page.locator('[data-format-quantity="keychain"]')).toHaveValue('3');expect(await amount(page,'#cart-total')).toBe(5500);
+ await page.evaluate(()=>{window.__orderTexts=[];const fill=CanvasRenderingContext2D.prototype.fillText;CanvasRenderingContext2D.prototype.fillText=function(text,...args){window.__orderTexts.push(String(text));return fill.call(this,text,...args);};});
+ let file=page.waitForEvent('download');await page.locator('#save-png').click();expect(await (await file).failure()).toBeNull();
+ const text=await page.evaluate(()=>window.__orderTexts.join('\n'));expect(text).toContain('Колба × 2');expect(text).toContain('Брелок × 3');
+ await page.locator('#cart-packaging').selectOption('none');expect(await amount(page,'#cart-total')).toBe(550);await expect(page.locator('.packaging-line')).toHaveCount(0);await expect(page.locator('#png-ready')).toBeHidden();await expect(page.locator('#save-png')).toBeEnabled();
+ await page.reload();await expect(page.locator('#cart-packaging')).toHaveValue('none');expect(await amount(page,'#cart-total')).toBe(550);
+ file=page.waitForEvent('download');await page.locator('#save-png').click();expect(await (await file).failure()).toBeNull();await expect(page.locator('#order-telegram')).toHaveAttribute('aria-disabled','false');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
