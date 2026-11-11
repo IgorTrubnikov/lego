@@ -10,11 +10,13 @@
       792,
       733
     ],
-    "width": 175,
-    "x": 215,
-    "y": 123,
+    "width": 190,
+    "x": 205,
+    "y": 126,
     "name": "Блонд с косой чёлкой",
-    "displayNumber": 26
+    "displayNumber": 26,
+    "height": 170,
+    "catalogOrder": 26
   },
   {
     "number": 2,
@@ -31,7 +33,8 @@
     "x": 209,
     "y": 149,
     "name": "Прямые оливково-бежевые",
-    "displayNumber": 46
+    "displayNumber": 46,
+    "catalogOrder": 46
   },
   {
     "number": 3,
@@ -48,7 +51,8 @@
     "x": 215,
     "y": 136,
     "name": "Короткая светлая с зачёсом",
-    "displayNumber": 27
+    "displayNumber": 27,
+    "catalogOrder": 43
   },
   {
     "number": 4,
@@ -61,11 +65,13 @@
       1301,
       919
     ],
-    "width": 205,
-    "x": 196,
-    "y": 172,
+    "width": 220,
+    "x": 190,
+    "y": 159,
     "name": "Светлое каре с волнами",
-    "displayNumber": 31
+    "displayNumber": 31,
+    "height": 165,
+    "catalogOrder": 30
   },
   {
     "number": 5,
@@ -83,7 +89,8 @@
     "y": 153,
     "name": "Светлые локоны с боковым пробором",
     "matteThreshold": 0.08,
-    "displayNumber": 40
+    "displayNumber": 40,
+    "catalogOrder": 39
   },
   {
     "number": 6,
@@ -97,10 +104,12 @@
       546
     ],
     "width": 185,
-    "x": 205,
-    "y": 154,
+    "x": 208,
+    "y": 141,
     "name": "Короткая русая волнистая",
-    "displayNumber": 6
+    "displayNumber": 6,
+    "height": 134,
+    "catalogOrder": 6
   },
   {
     "number": 7,
@@ -113,11 +122,13 @@
       881,
       1049
     ],
-    "width": 195,
-    "x": 205,
-    "y": 166,
+    "width": 205,
+    "x": 198,
+    "y": 158,
     "name": "Длинные карамельные локоны",
-    "displayNumber": 49
+    "displayNumber": 49,
+    "height": 244,
+    "catalogOrder": 49
   },
   {
     "number": 8,
@@ -134,7 +145,8 @@
     "x": 197,
     "y": 169,
     "name": "Каштановое каре с боковым пробором",
-    "displayNumber": 32
+    "displayNumber": 32,
+    "catalogOrder": 32
   },
   {
     "number": 9,
@@ -151,7 +163,9 @@
     "x": 209,
     "y": 124,
     "name": "Тёмно-коричневая с зачёсом",
-    "displayNumber": 10
+    "displayNumber": 10,
+    "height": 136,
+    "catalogOrder": 10
   },
   {
     "number": 10,
@@ -168,7 +182,9 @@
     "x": 208,
     "y": 141,
     "name": "Рыжая короткая с зачёсом",
-    "displayNumber": 7
+    "displayNumber": 7,
+    "height": 134,
+    "catalogOrder": 7
   },
   {
     "number": 11,
@@ -181,11 +197,13 @@
       1031,
       799
     ],
-    "width": 205,
-    "x": 199,
-    "y": 169,
+    "width": 220,
+    "x": 190,
+    "y": 159,
     "name": "Золотисто-коричневое каре",
-    "displayNumber": 33
+    "displayNumber": 33,
+    "height": 165,
+    "catalogOrder": 31
   },
   {
     "number": 12,
@@ -199,10 +217,12 @@
       571
     ],
     "width": 185,
-    "x": 213,
-    "y": 153,
+    "x": 212,
+    "y": 137,
     "name": "Тёмные волны с центральным пробором",
-    "displayNumber": 17
+    "displayNumber": 17,
+    "height": 137,
+    "catalogOrder": 17
   },
   {
     "number": 13,
@@ -217,9 +237,11 @@
     ],
     "width": 185,
     "x": 212,
-    "y": 145,
+    "y": 137,
     "name": "Каштановые волны с центральным пробором",
-    "displayNumber": 18
+    "displayNumber": 18,
+    "height": 137,
+    "catalogOrder": 18
   },
   {
     "number": 14,
@@ -233,10 +255,12 @@
       610
     ],
     "width": 185,
-    "x": 207,
-    "y": 149,
+    "x": 208,
+    "y": 141,
     "name": "Чёрная с волнистым зачёсом",
-    "displayNumber": 8
+    "displayNumber": 8,
+    "height": 134,
+    "catalogOrder": 8
   },
   {
     "number": 15,
@@ -253,7 +277,8 @@
     "x": 210,
     "y": 130,
     "name": "Чёрная с косой чёлкой",
-    "displayNumber": 24
+    "displayNumber": 24,
+    "catalogOrder": 24
   },
   {
     "number": 16,
@@ -270,7 +295,8 @@
     "x": 199,
     "y": 158,
     "name": "Каштановые боковые локоны",
-    "displayNumber": 41
+    "displayNumber": 41,
+    "catalogOrder": 40
   },
   {
     "number": 17,
@@ -287,7 +313,8 @@
     "x": 207,
     "y": 131,
     "name": "Чёрная растрёпанная",
-    "displayNumber": 19
+    "displayNumber": 19,
+    "catalogOrder": 19
   },
   {
     "number": 18,
@@ -304,7 +331,8 @@
     "x": 211,
     "y": 140,
     "name": "Чёрная с ровным зачёсом",
-    "displayNumber": 1
+    "displayNumber": 1,
+    "catalogOrder": 1
   },
   {
     "number": 19,
@@ -321,7 +349,8 @@
     "x": 210,
     "y": 141,
     "name": "Рыжая с ровным зачёсом",
-    "displayNumber": 2
+    "displayNumber": 2,
+    "catalogOrder": 2
   },
   {
     "number": 20,
@@ -338,7 +367,8 @@
     "x": 210,
     "y": 141,
     "name": "Оливково-бежевая с зачёсом",
-    "displayNumber": 3
+    "displayNumber": 3,
+    "catalogOrder": 3
   },
   {
     "number": 21,
@@ -355,7 +385,9 @@
     "x": 210,
     "y": 129,
     "name": "Каштановая с боковым пробором",
-    "displayNumber": 11
+    "displayNumber": 11,
+    "height": 134,
+    "catalogOrder": 12
   },
   {
     "number": 22,
@@ -372,7 +404,8 @@
     "x": 199,
     "y": 159,
     "name": "Каштановое каре с волнами",
-    "displayNumber": 34
+    "displayNumber": 34,
+    "catalogOrder": 33
   },
   {
     "number": 23,
@@ -389,7 +422,8 @@
     "x": 199,
     "y": 156,
     "name": "Рыжее каре с волнами",
-    "displayNumber": 35
+    "displayNumber": 35,
+    "catalogOrder": 34
   },
   {
     "number": 24,
@@ -406,7 +440,8 @@
     "x": 200,
     "y": 154,
     "name": "Чёрное каре с волнами",
-    "displayNumber": 36
+    "displayNumber": 36,
+    "catalogOrder": 35
   },
   {
     "number": 25,
@@ -423,7 +458,8 @@
     "x": 199,
     "y": 156,
     "name": "Русое каре с волнами",
-    "displayNumber": 37
+    "displayNumber": 37,
+    "catalogOrder": 36
   },
   {
     "number": 26,
@@ -436,11 +472,13 @@
       872,
       1038
     ],
-    "width": 195,
-    "x": 205,
-    "y": 167,
+    "width": 205,
+    "x": 198,
+    "y": 158,
     "name": "Длинные локоны тёплый блонд",
-    "displayNumber": 50
+    "displayNumber": 50,
+    "height": 244,
+    "catalogOrder": 50
   },
   {
     "number": 27,
@@ -457,7 +495,8 @@
     "x": 206,
     "y": 128,
     "name": "Каштановая растрёпанная",
-    "displayNumber": 20
+    "displayNumber": 20,
+    "catalogOrder": 20
   },
   {
     "number": 28,
@@ -474,7 +513,8 @@
     "x": 208,
     "y": 126,
     "name": "Чёрная с короткой чёлкой",
-    "displayNumber": 29
+    "displayNumber": 29,
+    "catalogOrder": 28
   },
   {
     "number": 29,
@@ -489,9 +529,11 @@
     ],
     "width": 185,
     "x": 208,
-    "y": 143,
+    "y": 141,
     "name": "Каштановая короткая с зачёсом",
-    "displayNumber": 9
+    "displayNumber": 9,
+    "height": 134,
+    "catalogOrder": 9
   },
   {
     "number": 30,
@@ -508,7 +550,8 @@
     "x": 206,
     "y": 127,
     "name": "Каштановые взъерошенные волосы",
-    "displayNumber": 21
+    "displayNumber": 21,
+    "catalogOrder": 21
   },
   {
     "number": 31,
@@ -523,9 +566,11 @@
     ],
     "width": 185,
     "x": 210,
-    "y": 132,
+    "y": 129,
     "name": "Чёрная волнистая с пробором",
-    "displayNumber": 12
+    "displayNumber": 12,
+    "height": 134,
+    "catalogOrder": 13
   },
   {
     "number": 32,
@@ -538,11 +583,12 @@
       757,
       889
     ],
-    "width": 195,
-    "x": 203,
-    "y": 132,
+    "width": 185,
+    "x": 208,
+    "y": 137,
     "name": "Рыжее каре с боковым пробором",
-    "displayNumber": 38
+    "displayNumber": 38,
+    "catalogOrder": 37
   },
   {
     "number": 33,
@@ -559,7 +605,8 @@
     "x": 208,
     "y": 124,
     "name": "Чёрное каре с прямой чёлкой",
-    "displayNumber": 30
+    "displayNumber": 30,
+    "catalogOrder": 29
   },
   {
     "number": 34,
@@ -572,11 +619,13 @@
       833,
       771
     ],
-    "width": 175,
-    "x": 216,
-    "y": 122,
+    "width": 190,
+    "x": 205,
+    "y": 126,
     "name": "Каштановая с косой чёлкой",
-    "displayNumber": 25
+    "displayNumber": 25,
+    "height": 170,
+    "catalogOrder": 25
   },
   {
     "number": 35,
@@ -593,7 +642,8 @@
     "x": 210,
     "y": 127,
     "name": "Каштановая с передними прядями",
-    "displayNumber": 44
+    "displayNumber": 44,
+    "catalogOrder": 44
   },
   {
     "number": 36,
@@ -610,7 +660,8 @@
     "x": 208,
     "y": 118,
     "name": "Коричневая с пробором",
-    "displayNumber": 14
+    "displayNumber": 14,
+    "catalogOrder": 15
   },
   {
     "number": 37,
@@ -627,7 +678,8 @@
     "x": 211,
     "y": 127,
     "name": "Бордовая с боковыми прядями",
-    "displayNumber": 45
+    "displayNumber": 45,
+    "catalogOrder": 45
   },
   {
     "number": 38,
@@ -644,7 +696,8 @@
     "x": 205,
     "y": 136,
     "name": "Красное каре с заколкой",
-    "displayNumber": 39
+    "displayNumber": 39,
+    "catalogOrder": 38
   },
   {
     "number": 39,
@@ -657,11 +710,13 @@
       911,
       1060
     ],
-    "width": 195,
-    "x": 206,
-    "y": 166,
+    "width": 205,
+    "x": 198,
+    "y": 158,
     "name": "Длинные каштановые волны",
-    "displayNumber": 51
+    "displayNumber": 51,
+    "height": 244,
+    "catalogOrder": 51
   },
   {
     "number": 40,
@@ -674,11 +729,13 @@
       916,
       1064
     ],
-    "width": 195,
-    "x": 205,
-    "y": 165,
+    "width": 205,
+    "x": 198,
+    "y": 158,
     "name": "Длинные тёмно-коричневые волны",
-    "displayNumber": 52
+    "displayNumber": 52,
+    "height": 244,
+    "catalogOrder": 52
   },
   {
     "number": 41,
@@ -695,7 +752,8 @@
     "x": 209,
     "y": 148,
     "name": "Длинные прямые чёрные волосы",
-    "displayNumber": 47
+    "displayNumber": 47,
+    "catalogOrder": 47
   },
   {
     "number": 42,
@@ -712,7 +770,8 @@
     "x": 208,
     "y": 134,
     "name": "Рыжевато-каштановые кудри",
-    "displayNumber": 22
+    "displayNumber": 22,
+    "catalogOrder": 22
   },
   {
     "number": 43,
@@ -729,7 +788,8 @@
     "x": 208,
     "y": 132,
     "name": "Чёрные мелкие кудри",
-    "displayNumber": 23
+    "displayNumber": 23,
+    "catalogOrder": 23
   },
   {
     "number": 44,
@@ -746,7 +806,8 @@
     "x": 208,
     "y": 128,
     "name": "Чёрная с центральным пробором",
-    "displayNumber": 13
+    "displayNumber": 13,
+    "catalogOrder": 14
   },
   {
     "number": 45,
@@ -763,7 +824,8 @@
     "x": 199,
     "y": 158,
     "name": "Чёрные боковые локоны",
-    "displayNumber": 42
+    "displayNumber": 42,
+    "catalogOrder": 41
   },
   {
     "number": 46,
@@ -778,9 +840,10 @@
     ],
     "width": 185,
     "x": 208,
-    "y": 121,
+    "y": 126,
     "name": "Чёрная с волнистой чёлкой",
-    "displayNumber": 16
+    "displayNumber": 16,
+    "catalogOrder": 16
   },
   {
     "number": 47,
@@ -793,11 +856,13 @@
       661,
       534
     ],
-    "width": 175,
-    "x": 211,
-    "y": 121,
+    "width": 182,
+    "x": 209,
+    "y": 124,
     "name": "Чёрная с аккуратным боковым пробором",
-    "displayNumber": 15
+    "displayNumber": 15,
+    "height": 136,
+    "catalogOrder": 11
   },
   {
     "number": 48,
@@ -814,7 +879,8 @@
     "x": 209,
     "y": 145,
     "name": "Длинные прямые каштановые волосы",
-    "displayNumber": 48
+    "displayNumber": 48,
+    "catalogOrder": 48
   },
   {
     "number": 49,
@@ -831,7 +897,8 @@
     "x": 203,
     "y": 138,
     "name": "Чёрные волнистые пряди",
-    "displayNumber": 43
+    "displayNumber": 43,
+    "catalogOrder": 42
   },
   {
     "number": 50,
@@ -848,7 +915,8 @@
     "x": 209,
     "y": 138,
     "name": "Короткая оранжевая с зачёсом",
-    "displayNumber": 4
+    "displayNumber": 4,
+    "catalogOrder": 4
   },
   {
     "number": 51,
@@ -861,11 +929,13 @@
       935,
       1073
     ],
-    "width": 195,
-    "x": 205,
-    "y": 165,
+    "width": 205,
+    "x": 198,
+    "y": 158,
     "name": "Длинные чёрные волны",
-    "displayNumber": 53
+    "displayNumber": 53,
+    "height": 244,
+    "catalogOrder": 53
   },
   {
     "number": 52,
@@ -882,7 +952,8 @@
     "x": 209,
     "y": 134,
     "name": "Тёмно-серая с зачёсом",
-    "displayNumber": 5
+    "displayNumber": 5,
+    "catalogOrder": 5
   },
   {
     "number": 53,
@@ -895,10 +966,15 @@
       831,
       690
     ],
-    "width": 175,
-    "x": 213,
-    "y": 137,
+    "width": 190,
+    "x": 205,
+    "y": 130,
     "name": "Светлая с волнистой чёлкой",
-    "displayNumber": 28
+    "displayNumber": 28,
+    "tailFit": {
+      "fromY": 240,
+      "toY": 320
+    },
+    "catalogOrder": 27
   }
 ]

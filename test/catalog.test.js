@@ -120,3 +120,16 @@ test('skirt behavior must explicitly distinguish overlays from leg replacements'
  await writeFile(path.join(root,'pants/test__250__Деталь.svg'),svg.replace('<svg ','<svg data-skirt-mode="overlay" '));
  await assert.rejects(collectParts(root),/неверный режим юбки/);
 }));
+
+test('hair display order is independent of permanent numbers and rejects invalid metadata',()=>fixture(async root=>{
+ const first=path.join(root,'haircuts/test__250__Деталь.svg');
+ await writeFile(first,svg.replace('<svg ','<svg data-catalog-order="2" '));
+ await writeFile(path.join(root,'haircuts/second__250__99 · Другой.svg'),svg.replace('<svg ','<svg data-catalog-order="1" '));
+ const hair=(await collectParts(root)).filter(p=>p.category==='hair');
+ assert.deepEqual(hair.map(p=>p.id),['hair-second','hair-test']);
+ assert.equal(hair[0].name,'99 · Другой');
+ for(const order of ['0','-1','1.5','bad','10001']){
+  await writeFile(first,svg.replace('<svg ',`<svg data-catalog-order="${order}" `));
+  await assert.rejects(collectParts(root),/неверный порядок карточки/);
+ }
+}));

@@ -19,7 +19,7 @@ test('all renewed hairstyles keep facial features clear, cover the stud and reta
    for(let py=0;py<720;py++)for(let px=0;px<600;px++)if(pixels[(py*600+px)*4+3]>32){count++;left=Math.min(left,px);right=Math.max(right,px);top=Math.min(top,py);if(px<x||py<y||px>=x+w||py>=y+h)outside++;}
    if(!count||outside)failures.push(hair.id+': empty or cropped preview');
    if(hair.id.startsWith('hair-renewed-')){
-    if(right-left+1>205||top<115)failures.push(hair.id+': oversized on the 152px head');
+    if(right-left+1>220||top<115)failures.push(hair.id+': oversized on the 152px head');
     const centers=[];
     for(let py=175;py<210;py++){
      let l=600,r=0,count=0;for(let px=0;px<600;px++)if(pixels[(py*600+px)*4+3]>40){l=Math.min(l,px);r=px;count++;}

@@ -47,7 +47,7 @@ export async function collectParts(root) {
     // Hair labels carry display numbers; stable slugs preserve saved selections.
     const sortName=entry=>category==='hair'?(entry.name.split('__')[2]||entry.name):entry.name;
     entries.sort((a,b)=>category==='hair'?sortName(a).localeCompare(sortName(b),'ru',{numeric:true}):a.name.localeCompare(b.name,'en'));
-    let count=0;
+    let count=0;const categoryParts=[];
     for(const entry of entries) {
       if(entry.name.startsWith('.')||entry.name==='README.md')continue;
       const filename=entry.name;
@@ -70,6 +70,9 @@ export async function collectParts(root) {
         if(box.length!==4||!box.every(Number.isFinite)||x<0||y<0||w<=0||h<=0||x+w>size.width||y+h>size.height)throw new Error(`${folder}/${filename}: неверная область предпросмотра`);
         previewBox=box.join(' ');
       }
+      const rawOrder=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-catalog-order=["']([^"']*)["']/)?.[1]:undefined;
+      const catalogOrder=rawOrder===undefined?undefined:Number(rawOrder);
+      if(rawOrder!==undefined&&(category!=='hair'||!Number.isSafeInteger(catalogOrder)||catalogOrder<1||catalogOrder>10000))throw new Error(`${folder}/${filename}: неверный порядок карточки`);
       const skirtMode=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-skirt-mode=["']([^"']*)["']/)?.[1]:undefined;
       if(skirtMode!==undefined&&(category!=='skirt'||!['overlay','replace-legs'].includes(skirtMode)))throw new Error(folder+'/'+filename+': неверный режим юбки');
       if(category==='skirt'&&!skirtMode)throw new Error(folder+'/'+filename+': укажите data-skirt-mode="overlay" или "replace-legs"');
@@ -86,8 +89,10 @@ export async function collectParts(root) {
         if(back.length>2*1024*1024||dimensions.width!==size.width||dimensions.height!==size.height)throw new Error(`${folder}/${filename}: неверный размер заднего слоя причёски`);
       }
       ids.add(id);count++;
-      parts.push({id,category,name,price,image:`./${folder}/${encodeURIComponent(filename)}`+versionQuery,...(previewBox?{previewBox}:{}),...(backImage?{backImage:backImage+versionQuery}:{}),...(includedLabel?{includedLabel}:{}),...(skirtMode?{skirtMode}:{})});
+      categoryParts.push({id,category,name,price,...(catalogOrder!==undefined?{catalogOrder}:{}),image:`./${folder}/${encodeURIComponent(filename)}`+versionQuery,...(previewBox?{previewBox}:{}),...(backImage?{backImage:backImage+versionQuery}:{}),...(includedLabel?{includedLabel}:{}),...(skirtMode?{skirtMode}:{})});
     }
+    if(category==='hair')categoryParts.sort((a,b)=>(a.catalogOrder??Number.MAX_SAFE_INTEGER)-(b.catalogOrder??Number.MAX_SAFE_INTEGER));
+    parts.push(...categoryParts);
     if(!count&&!optional)throw new Error(`Добавьте хотя бы одну деталь в ${folder}/`);
   }
   return parts;
