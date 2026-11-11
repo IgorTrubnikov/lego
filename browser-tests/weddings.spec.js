@@ -5,7 +5,7 @@ test('wedding additions change the order price without changing the assembled ch
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
  const scenes=catalog.filter(p=>p.category==='altar');
- expect(scenes.map(p=>p.name)).toEqual(['Алтарь 1','Алтарь 2','Алтарь 3','Алтарь 4','Алтарь 5','Алтарь 6']);
+ expect(scenes.map(p=>p.name)).toEqual(['Алтарь 1','Алтарь 2','Алтарь 3','Балкон','Беседка','Качели']);
  expect(scenes.every(p=>p.price===400)).toBe(true);
  await expect(page.locator('#figure [data-layer="altar"]')).toHaveCount(0);
  for(const category of ['accessory','animal']){

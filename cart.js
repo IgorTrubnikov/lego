@@ -86,5 +86,5 @@ export function assignGroup(cart,itemId,groupId){
 // Saved previews remain intact; current prices and availability come from the catalog.
 export function refreshCart(cart,parts){
  const catalog=new Map(parts.filter(p=>p.image).map(p=>[p.id,p]));
- return {...cart,items:cart.items.map(item=>({...item,unavailable:item.details.some(p=>catalog.get(p.id)?.category!==p.category),details:item.details.map(p=>{const current=catalog.get(p.id);return current?.category===p.category?{...p,price:current.price}:p;})}))};
+ return {...cart,items:cart.items.map(item=>({...item,unavailable:item.details.some(p=>catalog.get(p.id)?.category!==p.category),details:item.details.map(p=>{const current=catalog.get(p.id);return current?.category===p.category?{...p,price:current.price,...(p.category==='altar'?{name:current.name}:{})}:p;})}))};
 }
