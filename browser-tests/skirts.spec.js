@@ -10,19 +10,19 @@ test('skirts preserve pants or replace them, switch correctly with suits and mat
  await page.locator('[data-category="legs"]').click();await page.locator('[data-part="legs-catalog-21"]').click();const base=await amount(page);
  await page.locator('[data-category="skirt"]').click();
  for(const color of ['pink','white','black']){
-  await page.locator(`[data-part="skirt-catalog-short-${color}"]`).click();expect(await amount(page)).toBe(base+200);
+  await page.locator(`[data-part="skirt-catalog-short-${color}"]`).click();expect(await amount(page)).toBe(base+100);
   await expect(page.locator('#figure [data-layer="legs"]')).toHaveCount(1);await expect(page.locator('#figure [data-layer="skirt"]')).toHaveCount(1);
  }
  expect(await exportedBlue(page)).toBeGreaterThan(5000);
  await page.locator('[data-category="legs"]').click();await page.locator('[data-part="legs-catalog-16"]').click();await expect(page.locator('#figure [data-layer="skirt"]')).toHaveCount(1);
  await page.locator('[data-part="legs-catalog-21"]').click();await page.locator('[data-category="skirt"]').click();await page.locator('[data-part="skirt-catalog-long-white"]').click();
- expect(await amount(page)).toBe(base+200);await expect(page.locator('#figure [data-layer="legs"]')).toHaveCount(0);await expect(page.locator('#breakdown')).not.toContainText('Брюки');
+ expect(await amount(page)).toBe(base+100);await expect(page.locator('#figure [data-layer="legs"]')).toHaveCount(0);await expect(page.locator('#breakdown')).not.toContainText('Брюки');
  await page.reload();await expect(page.locator('#figure [data-layer="legs"]')).toHaveCount(0);expect(await exportedBlue(page)).toBe(0);
  await page.locator('[data-category="legs"]').click();await expect(page.locator('#catalog [aria-pressed="true"]')).toHaveCount(0);await page.locator('[data-part="legs-catalog-21"]').click();
  await expect(page.locator('#figure [data-layer="skirt"]')).toHaveCount(0);expect(await amount(page)).toBe(base);
  await page.locator('[data-category="skirt"]').click();await page.locator('[data-part="skirt-catalog-short-pink"]').click();
  await page.locator('[data-category="suit"]').click();await page.locator('[data-part="suit-catalog-09"]').click();await expect(page.locator('#figure [data-layer="skirt"],#figure [data-layer="legs"]')).toHaveCount(0);
- await page.locator('[data-category="skirt"]').click();await page.locator('[data-part="skirt-catalog-long-white"]').click();await expect(page.locator('#figure [data-layer="suit"]')).toHaveCount(0);await expect(page.locator('#figure [data-layer="torso"]')).toHaveCount(1);expect(await amount(page)).toBe(base+200);
+ await page.locator('[data-category="skirt"]').click();await page.locator('[data-part="skirt-catalog-long-white"]').click();await expect(page.locator('#figure [data-layer="suit"]')).toHaveCount(0);await expect(page.locator('#figure [data-layer="torso"]')).toHaveCount(1);expect(await amount(page)).toBe(base+100);
  await page.locator('[data-part="skirt-none"]').click();await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-21__/);expect(await amount(page)).toBe(base);
  await page.locator('[data-category="accessory"]').click();await page.locator('[data-part="accessory-catalog-first-aid"]').click();expect(await amount(page)).toBe(base+100);
  await page.locator('#reset').click();await expect(page.locator('#figure [data-layer="skirt"]')).toHaveCount(0);expect(errors).toEqual([]);

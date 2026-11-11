@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {characterBasePrice,cartTotals,restoreCart,newCart,snapshotDetails,packagingOptions} from '../cart.js';
+import {characterBasePrice,cartTotals,restoreCart,newCart,snapshotDetails,packagingOptions,refreshCart} from '../cart.js';
 import {withOptionalChoices,initialSelection,totalPrice} from '../parts.js';
 const item=(id,details=[])=>({id,selection:{...initialSelection},preview:'data:image/webp;base64,YQ==',details});
 const detail=(id,category,price)=>({id,category,label:category,name:id,price});
@@ -33,4 +33,11 @@ test('multiple formatting quantities add up, no formatting costs zero, and old c
  assert.equal(cartTotals({...cart,packagingId:'none'}).format,0);
  const old=restoreCart({version:1,packagingId:'frame-20x20',items:[item('a')]});
  assert.deepEqual(old.packagingItems,[{id:'frame-20x20',quantity:1}]);assert.equal(cartTotals(old).total,2300);
+});
+
+test('saved additions use current catalog prices and removed details require review',()=>{
+ const saved={...newCart(),packagingId:'none',items:[item('a',[detail('skirt','skirt',200)]),item('b',[detail('accessory-catalog-wheel-small','accessory',100)])]};
+ const updated=refreshCart(saved,[{...detail('skirt','skirt',100),image:'skirt.svg'}]);
+ assert.equal(updated.items[0].details[0].price,100);assert.equal(updated.items[0].unavailable,false);assert.equal(updated.items[0].preview,saved.items[0].preview);
+ assert.equal(updated.items[1].unavailable,true);
 });

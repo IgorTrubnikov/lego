@@ -1,4 +1,4 @@
-import {cartStorageKey,newCart,restoreCart,packagingOptions,characterBasePrice,cartTotals,snapshotDetails,detailIsExtra} from './cart.js';
+import {cartStorageKey,newCart,restoreCart,packagingOptions,characterBasePrice,cartTotals,snapshotDetails,detailIsExtra,refreshCart} from './cart.js';
 import {categories,initialSelection,money,totalPrice,priceBreakdown,includedInFigure,escapeHtml,renderFigure,withOptionalChoices,largeAnimalIds,selectedSuit,selectedSkirt,selectionCategories,choosePart} from './parts.js';
 import catalog from './catalog.js';
 const parts=withOptionalChoices(catalog);
@@ -61,7 +61,8 @@ $('#reset').onclick=()=>{selection={...startingSelection};render();toast('Вер
 $('#random').onclick=()=>{for(const c of categories){const list=parts.filter(p=>p.category===c.id);selection[c.id]=list[Math.floor(Math.random()*list.length)].id;}if(Math.random()<.5)selection.suit='suit-none';if(selectedSuit(selection,parts))selection.skirt='skirt-none';render();};
 $('#remove-addon')?.addEventListener('click',()=>{selection.altar='altar-none';render();});
 $('#catalog-help-open')?.addEventListener('click',()=>$('#catalog-help-dialog')?.showModal());
-let cart=restoreCart(read(cartStorageKey,null)),editingId=null,previousDraft=null,cartSaved=true,cartRevision=0,orderUrls=[],adding=false,exporting=false;
+let cart=refreshCart(restoreCart(read(cartStorageKey,null)),parts),editingId=null,previousDraft=null,cartSaved=true,cartRevision=0,orderUrls=[],adding=false,exporting=false;
+const hasUnavailable=()=>cart.items.some(i=>i.unavailable);
 const draftBasePrice=()=>characterBasePrice(editingId?Math.max(0,cart.items.findIndex(i=>i.id===editingId)):cart.items.length);
 function invalidateOrderFiles(){for(const url of orderUrls)URL.revokeObjectURL(url);orderUrls=[];$('#png-ready')?.setAttribute('hidden','');if($('#order-downloads'))$('#order-downloads').innerHTML='';}
 function changedCart(){cartRevision++;invalidateOrderFiles();cartSaved=persist(cartStorageKey,cart);}
@@ -70,16 +71,16 @@ function renderCart(){
  const totals=cartTotals(cart);
  if($('#cart-count'))$('#cart-count').textContent=cart.items.length;
  $('#cart-status').textContent=cart.items.length?(cartSaved?'Сохранено в этом браузере':'Скачайте заказ перед закрытием страницы'):'';
- $('#cart-items').innerHTML=totals.lines.length?totals.lines.map(line=>`<article class="cart-item" data-cart-item="${escapeHtml(line.item.id)}"><div class="cart-item-art"><img class="cart-thumb" src="${escapeHtml(line.item.preview)}" alt="Персонаж ${line.index+1}" loading="lazy">${line.item.altarPreview?`<img class="cart-altar" src="${escapeHtml(line.item.altarPreview)}" alt="Свадебная композиция для персонажа ${line.index+1}" loading="lazy">`:''}</div><div class="cart-item-content"><h3>Персонаж ${line.index+1}</h3><p class="cart-item-prices">Фигурка <span class="price-amount">${money(line.base)}</span> · дополнения <span class="price-amount">${money(line.extras)}</span></p><details><summary>Все выбранные детали (${line.item.details.length})</summary><ul>${line.item.details.map(p=>`<li><strong>${escapeHtml(p.label)}:</strong> ${escapeHtml(p.name)}<small>${escapeHtml(p.id)} · ${detailIsExtra(p)?money(p.price):'Входит в фигурку'}${p.includedLabel?' · '+escapeHtml(p.includedLabel):''}</small></li>`).join('')}</ul></details></div><div class="cart-item-actions"><strong>${money(line.total)}</strong><button type="button" data-cart-edit="${escapeHtml(line.item.id)}">Изменить</button><button type="button" data-cart-remove="${escapeHtml(line.item.id)}" aria-label="Удалить персонажа ${line.index+1}">Удалить</button></div></article>`).join(''):'<div class="cart-empty">Ваша история начинается с первого персонажа.<br>Соберите его в конструкторе и нажмите «Добавить персонажа в корзину».</div>';
+ $('#cart-items').innerHTML=totals.lines.length?totals.lines.map(line=>`<article class="cart-item" data-cart-item="${escapeHtml(line.item.id)}"><div class="cart-item-art"><img class="cart-thumb" src="${escapeHtml(line.item.preview)}" alt="Персонаж ${line.index+1}" loading="lazy">${line.item.altarPreview?`<img class="cart-altar" src="${escapeHtml(line.item.altarPreview)}" alt="Свадебная композиция для персонажа ${line.index+1}" loading="lazy">`:''}</div><div class="cart-item-content"><h3>Персонаж ${line.index+1}</h3>${line.item.unavailable?'<p class="cart-unavailable">Некоторые детали удалены из каталога. Нажмите «Изменить» и сохраните персонажа заново.</p>':''}<p class="cart-item-prices">Фигурка <span class="price-amount">${money(line.base)}</span> · дополнения <span class="price-amount">${money(line.extras)}</span></p><details><summary>Все выбранные детали (${line.item.details.length})</summary><ul>${line.item.details.map(p=>`<li><strong>${escapeHtml(p.label)}:</strong> ${escapeHtml(p.name)}<small>${escapeHtml(p.id)} · ${detailIsExtra(p)?money(p.price):'Входит в фигурку'}${p.includedLabel?' · '+escapeHtml(p.includedLabel):''}</small></li>`).join('')}</ul></details></div><div class="cart-item-actions"><strong>${money(line.total)}</strong><button type="button" data-cart-edit="${escapeHtml(line.item.id)}">Изменить</button><button type="button" data-cart-remove="${escapeHtml(line.item.id)}" aria-label="Удалить персонажа ${line.index+1}">Удалить</button></div></article>`).join(''):'<div class="cart-empty">Ваша история начинается с первого персонажа.<br>Соберите его в конструкторе и нажмите «Добавить персонажа в корзину».</div>';
  const select=$('#cart-packaging');
  if(select.options.length===1)select.innerHTML+='<option disabled>──────────</option>'+packagingOptions.map(p=>`<option value="${p.id}">${escapeHtml(p.name)}${p.price?' — '+money(p.price):''}</option>`).join('');
  select.value=cart.packagingId;select.disabled=!cart.items.length;
  if($('#packaging-items'))$('#packaging-items').innerHTML=totals.packagingLines.map(p=>`<div class="packaging-line"><div><strong>${escapeHtml(p.name)}</strong><small>${money(p.price)} / шт. · итого ${money(p.total)}</small></div><div class="packaging-stepper"><button type="button" data-format-step="${p.id}" data-step="-1" aria-label="Уменьшить количество: ${escapeHtml(p.name)}"${p.quantity===1?' disabled':''}>−</button><input type="number" min="1" max="999" step="1" inputmode="numeric" data-format-quantity="${p.id}" aria-label="Количество: ${escapeHtml(p.name)}" value="${p.quantity}"><button type="button" data-format-step="${p.id}" data-step="1" aria-label="Увеличить количество: ${escapeHtml(p.name)}"${p.quantity===999?' disabled':''}>+</button></div><button type="button" class="packaging-remove" data-format-remove="${p.id}" aria-label="Убрать оформление: ${escapeHtml(p.name)}">×</button></div>`).join('');
  $('#cart-summary').innerHTML=`<div>Фигурки (${cart.items.length})<strong>${money(totals.figures)}</strong></div><div>Дополнения<strong>${money(totals.extras)}</strong></div><div>Оформление<strong>${totals.packaging&&cart.items.length?money(totals.format):'Не выбрано'}</strong></div><div class="cart-grand-total">Итого<strong id="cart-total">${money(totals.total)}</strong></div>`;
- const ready=!!cart.items.length&&!!totals.packaging;
+ const ready=!!cart.items.length&&!!totals.packaging&&!hasUnavailable();
  $('#save-png').disabled=!ready||exporting;
  $('#order-telegram').setAttribute('aria-disabled',String(!ready));
- $('#cart-guide').textContent=!cart.items.length?'Добавьте хотя бы одного персонажа.':!totals.packaging?'Выберите оформление, чтобы сохранить полный заказ.':'Сохраните лист заказа в PNG, затем прикрепите файл в Telegram. Если листов несколько, отправьте все.';
+ $('#cart-guide').textContent=!cart.items.length?'Добавьте хотя бы одного персонажа.':hasUnavailable()?'Проверьте персонажей с удалёнными деталями перед сохранением заказа.':!totals.packaging?'Выберите оформление, чтобы сохранить полный заказ.':'Сохраните лист заказа в PNG, затем прикрепите файл в Telegram. Если листов несколько, отправьте все.';
 }
 $('#cart-packaging')?.addEventListener('change',e=>{
  const id=e.target.value,formats=cartTotals(cart).packagingLines.map(p=>({id:p.id,quantity:p.quantity}));
@@ -135,7 +136,7 @@ $('#cart-items')?.addEventListener('click',e=>{
 $('#cancel-edit')?.addEventListener('click',()=>{selection=previousDraft||{...startingSelection};editingId=null;previousDraft=null;render();});
 function downloadFile(url,filename){const a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();}
 $('#save-png')?.addEventListener('click',async()=>{
- const button=$('#save-png');if(exporting||!cart.items.length||!cartTotals(cart).packaging)return;exporting=true;
+ const button=$('#save-png');if(exporting||!cart.items.length||!cartTotals(cart).packaging||hasUnavailable())return;exporting=true;
  const snapshot=JSON.parse(JSON.stringify(cart)),revision=cartRevision;button.disabled=true;button.textContent='Готовлю лист заказа…';
  try{
   const {createOrderPngs}=await import('./export-order.js');const files=await createOrderPngs(snapshot);
@@ -145,9 +146,9 @@ $('#save-png')?.addEventListener('click',async()=>{
   $('#order-downloads').innerHTML=links.map(file=>`<a${file.index===0?' id="png-link"':''} href="${file.url}" download="${file.filename}" target="_blank" rel="noopener noreferrer">${links.length>1?`Лист ${file.index+1} из ${links.length}`:'Открыть PNG заказа'}</a>`).join('');
   $('#png-ready').hidden=false;downloadFile(links[0].url,links[0].filename);
  }catch(error){toast(error.message?.includes('изменилась')?error.message:'Не удалось сохранить PNG. Попробуйте ещё раз.');}
- finally{exporting=false;button.disabled=!cart.items.length||!cartTotals(cart).packaging;button.textContent='Сохранить заказ в PNG';}
+ finally{exporting=false;button.disabled=!cart.items.length||!cartTotals(cart).packaging||hasUnavailable();button.textContent='Сохранить заказ в PNG';}
 });
-$('#order-telegram')?.addEventListener('click',e=>{if(!cart.items.length||!cartTotals(cart).packaging){e.preventDefault();toast(cart.items.length?'Выберите оформление заказа.':'Сначала добавьте персонажа в корзину.');}});
+$('#order-telegram')?.addEventListener('click',e=>{if(!cart.items.length||!cartTotals(cart).packaging||hasUnavailable()){e.preventDefault();toast(hasUnavailable()?'Проверьте персонажей с удалёнными деталями.':cart.items.length?'Выберите оформление заказа.':'Сначала добавьте персонажа в корзину.');}});
 
 for(const d of document.querySelectorAll('dialog')){d.querySelector('.close')?.addEventListener('click',()=>d.close());d.addEventListener('click',e=>{if(e.target!==d)return;const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close();});}
 render();renderCart();

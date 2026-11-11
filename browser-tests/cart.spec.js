@@ -62,3 +62,12 @@ test('different formats have independent quantities and no-format orders can be 
  file=page.waitForEvent('download');await page.locator('#save-png').click();expect(await (await file).failure()).toBeNull();await expect(page.locator('#order-telegram')).toHaveAttribute('aria-disabled','false');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
+
+test('saved skirt prices refresh and a retired small wheel is resolved through editing',async({page})=>{
+ await page.goto('/');await choose(page,'skirt','skirt-catalog-short-pink');await add(page,1);await page.locator('#cart-packaging').selectOption('none');
+ expect(await amount(page,'#cart-total')).toBe(650);
+ await page.evaluate(()=>{const c=JSON.parse(localStorage.getItem('teuilor-cart-v1'));c.items[0].details.find(p=>p.category==='skirt').price=200;c.items[0].details.push({id:'accessory-catalog-wheel-small',category:'accessory',label:'Аксессуар',name:'Колесо маленькое',price:100});c.items[0].selection.accessory='accessory-catalog-wheel-small';localStorage.setItem('teuilor-cart-v1',JSON.stringify(c));});
+ await page.reload();await expect(page.locator('.cart-unavailable')).toBeVisible();await expect(page.locator('#save-png')).toBeDisabled();
+ const data=await page.evaluate(()=>document.querySelector('.cart-item').innerText);expect(data).toContain('дополнения');
+ await page.locator('[data-cart-edit]').click();await page.locator('#add-cart').click();await expect(page.locator('#cancel-edit')).toBeHidden();await expect(page.locator('.cart-unavailable')).toHaveCount(0);expect(await amount(page,'#cart-total')).toBe(650);await expect(page.locator('#save-png')).toBeEnabled();
+});

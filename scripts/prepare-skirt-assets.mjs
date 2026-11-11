@@ -36,10 +36,10 @@ export function prepare(source){
    magick([...base,'-background','none','-gravity','northwest','-splice',`${x}x${y}`,'-extent','600x720','-strip','-define','webp:lossless=true',out]);
    const raster=readFileSync(out),version=createHash('sha256').update(raster).digest('hex').slice(0,12);
    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic"${skirtMode?` data-skirt-mode="${skirtMode}"`:''} data-asset-version="${version}" data-preview-box="${x-6} ${y-6} ${w+12} ${h+12}"><title>${escapeHtml(name)}</title><image width="600" height="720" href="data:image/webp;base64,${raster.toString('base64')}"/></svg>\n`;
-   return {folder,filename:`catalog-${slug}__200__${name}.svg`,svg};
+   return {folder,filename:`catalog-${slug}__100__${name}.svg`,svg};
   });
   for(const {folder,filename,svg} of outputs){mkdirSync(path.join(root,folder),{recursive:true});writeFileSync(path.join(root,folder,filename),svg);}
-  console.log(`Added a first aid case and four skirts at 200 ₽ each.`);
+  console.log(`Added a first aid case and four skirts at 100 ₽ each.`);
  }finally{rmSync(temp,{recursive:true,force:true});}
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))prepare(process.argv[2]);

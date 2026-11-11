@@ -45,3 +45,9 @@ export function cartTotals(cart){
  const figures=lines.reduce((sum,l)=>sum+l.base,0),extras=lines.reduce((sum,l)=>sum+l.extras,0),format=lines.length?formats.reduce((sum,p)=>sum+p.total,0):0;
  return {lines,figures,extras,format,packaging,packagingLines:formats,total:figures+extras+format};
 }
+
+// Saved previews remain intact; current prices and availability come from the catalog.
+export function refreshCart(cart,parts){
+ const catalog=new Map(parts.filter(p=>p.image).map(p=>[p.id,p]));
+ return {...cart,items:cart.items.map(item=>({...item,unavailable:item.details.some(p=>catalog.get(p.id)?.category!==p.category),details:item.details.map(p=>{const current=catalog.get(p.id);return current?.category===p.category?{...p,price:current.price}:p;})}))};
+}
