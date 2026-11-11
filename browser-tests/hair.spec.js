@@ -1,3 +1,4 @@
+import {exportDraftPng} from './helpers/figure-export.js';
 import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 
@@ -55,11 +56,11 @@ test('all hairstyles select independently, keep the correct price and export lon
  }
  for(const id of ['hair-renewed-07','hair-renewed-14','hair-catalog-cap-white','hair-catalog-cap-black']){
   await page.locator(`[data-part="${id}"]`).click();
-  const pending=page.waitForEvent('download');await page.locator('#save-png').click();
+  const pending=page.waitForEvent('download');await exportDraftPng(page);
   const download=await pending;expect(await download.failure()).toBeNull();
   const bytes=await readFile(await download.path());expect(bytes.subarray(0,8).toString('hex')).toBe('89504e470d0a1a0a');
   const center=await page.evaluate(async()=>{
-   const i=new Image();i.src=document.querySelector('#png-link').href;await i.decode();
+   const i=new Image();i.src=document.querySelector('#test-figure-png').href;await i.decode();
    const c=document.createElement('canvas');c.width=1200;c.height=1440;const ctx=c.getContext('2d');ctx.drawImage(i,0,0);
    return [...ctx.getImageData(600,530,1,1).data];
   });

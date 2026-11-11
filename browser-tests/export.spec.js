@@ -1,8 +1,9 @@
+import {exportDraftPng} from './helpers/figure-export.js';
 import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 
 async function downloadPng(page){
- const pending=page.waitForEvent('download');await page.locator('#save-png').click();
+ const pending=page.waitForEvent('download');await exportDraftPng(page);
  const download=await pending;expect(download.suggestedFilename()).toBe('teuilor-personazh.png');
  expect(await download.failure()).toBeNull();
  const bytes=await readFile(await download.path());
@@ -19,7 +20,7 @@ test('downloads the full character with mixed SVG and WebP layers, independently
  }
  const initial=await downloadPng(page);
  const pixels=await page.evaluate(async()=>{
-  const img=new Image();img.src=document.querySelector('#png-link').href;await img.decode();
+  const img=new Image();img.src=document.querySelector('#test-figure-png').href;await img.decode();
   const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;
   const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);const data=ctx.getImageData(0,0,1200,1440).data;
   const regions={hair:[195,90,210,130],face:[224,225,152,95],torso:[139,326,322,180],legs:[188,530,224,166],accessory:[15,405,150,290],animal:[430,435,170,265]};
@@ -33,21 +34,20 @@ test('downloads the full character with mixed SVG and WebP layers, independently
  const withAltar=await downloadPng(page);expect(withAltar.equals(initial)).toBe(true);
  await page.locator('[data-category="legs"]').click();await page.locator('[data-part="legs-catalog-21"]').click();
  const blue=await downloadPng(page);expect(blue.equals(initial)).toBe(false);
- await expect(page.locator('#png-link')).toHaveAttribute('target','_blank');
+ await expect(page.locator('#test-figure-png')).toHaveAttribute('target','_blank');
  await expect(page.locator('#order-telegram')).toHaveAttribute('href','https://t.me/teuilor');
- await expect(page.locator('#cart-open, #cart-dialog, #add-cart')).toHaveCount(0);
+ await expect(page.locator('.checkout #save-png')).toHaveCount(0);await expect(page.locator('#add-cart')).toHaveCount(1);
  expect(errors).toEqual([]);
 });
 
-test('an export error leaves the constructor usable and allows saving again',async({page})=>{
+test('a figure renderer failure leaves the constructor usable',async({page})=>{
  await page.goto('/');
- await page.evaluate(()=>{window.originalToBlob=HTMLCanvasElement.prototype.toBlob;HTMLCanvasElement.prototype.toBlob=function(callback){callback(null);};});
- await page.locator('#save-png').click();
- await expect(page.locator('#toast')).toContainText('Не удалось сохранить изображение');
- await expect(page.locator('#save-png')).toBeEnabled();
- await expect(page.locator('#png-ready')).toBeHidden();
+ const failed=await page.evaluate(async()=>{
+  const old=HTMLCanvasElement.prototype.toBlob;HTMLCanvasElement.prototype.toBlob=cb=>cb(null);
+  try{const {createFigurePng}=await import('./export-image.js'),{default:parts}=await import('./catalog.js');await createFigurePng(JSON.parse(localStorage.getItem('teuilor-selection-v1')),parts);return false;}catch{return true;}finally{HTMLCanvasElement.prototype.toBlob=old;}
+ });
+ expect(failed).toBe(true);
  await page.locator('[data-category="legs"]').click();await page.locator('[data-part="legs-catalog-21"]').click();
  await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-21__/);
- await page.evaluate(()=>{HTMLCanvasElement.prototype.toBlob=window.originalToBlob;});
- await downloadPng(page);await expect(page.locator('#png-ready')).toBeVisible();
+ await downloadPng(page);
 });

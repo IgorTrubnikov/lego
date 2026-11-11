@@ -1,7 +1,8 @@
+import {exportDraftPng} from './helpers/figure-export.js';
 import {test,expect} from '@playwright/test';
 
 const amount=async page=>Number((await page.locator('#total').innerText()).replace(/\D/g,''));
-async function download(page){const pending=page.waitForEvent('download');await page.locator('#save-png').click();const d=await pending;expect(await d.failure()).toBeNull();return page.evaluate(async()=>{const img=new Image();img.src=document.querySelector('#png-link').href;await img.decode();const c=document.createElement('canvas');c.width=1200;c.height=1440;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);const pixels=ctx.getImageData(950,650,210,290).data;let bag=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i]>128)bag++;return {width:img.width,height:img.height,bag};});}
+async function download(page){const pending=page.waitForEvent('download');await exportDraftPng(page);const d=await pending;expect(await d.failure()).toBeNull();return page.evaluate(async()=>{const img=new Image();img.src=document.querySelector('#test-figure-png').href;await img.decode();const c=document.createElement('canvas');c.width=1200;c.height=1440;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);const pixels=ctx.getImageData(950,650,210,290).data;let bag=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i]>128)bag++;return {width:img.width,height:img.height,bag};});}
 
 test('49 suits replace body and legs once in price and restore separate clothing on demand',async({page})=>{
  test.setTimeout(90_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));

@@ -101,7 +101,7 @@ export async function build(root=process.cwd(),output=path.join(root,'_site')) {
   const works=await readGallery(root),reviews=await readReviews(root);
   const parts=await collectParts(root); // Validate before replacing the last successful build.
   await rm(output,{recursive:true,force:true});await mkdir(output,{recursive:true});
-  for(const file of ['index.html','style.css','app.js','export-image.js','navigation.js','gallery.js','reviews.js','parts.js','assets',...Object.keys(folders)]){
+  for(const file of ['index.html','style.css','app.js','cart.js','export-order.js','export-image.js','navigation.js','gallery.js','reviews.js','parts.js','assets',...Object.keys(folders)]){
     try{await cp(path.join(root,file),path.join(output,file),{recursive:true});}
     catch(error){if(error.code==='ENOENT'&&categories.find(c=>c.id===folders[file])?.optional)continue;throw error;}
   }
@@ -119,7 +119,7 @@ export async function build(root=process.cwd(),output=path.join(root,'_site')) {
 // A page and its complete module graph must load from the same release.
 // Keep plain filenames for older cached pages and existing public URLs.
 export async function versionAssets(output,htmlFiles){
-  const assetFiles=['app.js','parts.js','catalog.js','export-image.js','navigation.js','gallery.js','reviews.js','style.css'];
+  const assetFiles=['app.js','parts.js','catalog.js','cart.js','export-order.js','export-image.js','navigation.js','gallery.js','reviews.js','style.css'];
   const source=new Map();
   for(const file of [...assetFiles,...htmlFiles])source.set(file,await readFile(path.join(output,file),'utf8'));
   const hash=createHash('sha256');

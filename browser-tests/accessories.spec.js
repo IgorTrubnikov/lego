@@ -1,3 +1,4 @@
+import {exportDraftPng} from './helpers/figure-export.js';
 import {test,expect} from '@playwright/test';
 
 test('accessory artwork decodes transparently inside its slot and its own thumbnail bounds',async({page})=>{
@@ -71,9 +72,9 @@ test('six wedding accessories add to the existing catalog at 100 rubles and surv
   expect(await amount()).toBe(base+100);
  }
  await page.reload();await expect(page.locator('#figure [data-layer="accessory"]')).toHaveAttribute('href',/catalog-heart-large__/);
- const pending=page.waitForEvent('download');await page.locator('#save-png').click();expect(await (await pending).failure()).toBeNull();
+ const pending=page.waitForEvent('download');await exportDraftPng(page);expect(await (await pending).failure()).toBeNull();
  const exported=await page.evaluate(async()=>{
-  const img=new Image();img.src=document.querySelector('#png-link').href;await img.decode();
+  const img=new Image();img.src=document.querySelector('#test-figure-png').href;await img.decode();
   const c=document.createElement('canvas');c.width=1200;c.height=1440;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);
   const pixels=ctx.getImageData(30,810,300,580).data;let red=0;
   for(let i=0;i<pixels.length;i+=4)if(pixels[i]>150&&pixels[i+1]<90&&pixels[i+2]<90&&pixels[i+3]>128)red++;

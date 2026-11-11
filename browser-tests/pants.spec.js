@@ -1,3 +1,4 @@
+import {exportDraftPng} from './helpers/figure-export.js';
 import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 
@@ -32,7 +33,7 @@ test('all 20 retained reference pants have a wider waist, complete feet and a tr
  await page.reload();await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',pants.at(-1).image);
  for(const id of ['legs-catalog-21','legs-catalog-28']){
   await page.locator('[data-category="legs"]').click();await page.locator(`[data-part="${id}"]`).click();
-  const pending=page.waitForEvent('download');await page.locator('#save-png').click();const download=await pending;
+  const pending=page.waitForEvent('download');await exportDraftPng(page);const download=await pending;
   expect(await download.failure()).toBeNull();const bytes=await readFile(await download.path());
   expect([bytes.readUInt32BE(16),bytes.readUInt32BE(20)]).toEqual([1200,1440]);
  }

@@ -1,9 +1,10 @@
+import {exportDraftPng} from './helpers/figure-export.js';
 import {test,expect} from '@playwright/test';
 const amount=async page=>Number((await page.locator('#total').innerText()).replace(/\D/g,''));
 async function pixels(page){
- const pending=page.waitForEvent('download');await page.locator('#save-png').click();expect(await (await pending).failure()).toBeNull();
+ const pending=page.waitForEvent('download');await exportDraftPng(page);expect(await (await pending).failure()).toBeNull();
  return page.evaluate(async()=>{
-  const img=new Image();img.src=document.querySelector('#png-link').href;await img.decode();
+  const img=new Image();img.src=document.querySelector('#test-figure-png').href;await img.decode();
   const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);
   const upper=ctx.getImageData(0,0,1200,1440).data;let hash=2166136261;
   for(const value of upper)hash=Math.imul(hash^value,16777619)>>>0;

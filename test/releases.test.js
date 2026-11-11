@@ -7,7 +7,7 @@ import {versionAssets} from '../scripts/build.mjs';
 
 test('HTML, styles, catalog and lazy imports share a version that changes with the page',async()=>{
  const root=await mkdtemp(path.join(os.tmpdir(),'teuilor-release-'));
- const source={'index.html':'<link href="style.css"><script type="module" src="app.js"></script>','app.js':"import './parts.js';import catalog from './catalog.js';async function save(){await import('./export-image.js');}",'parts.js':'export const parts=[];','catalog.js':'export default [];','export-image.js':"import './parts.js';",'navigation.js':'','gallery.js':'','reviews.js':'','style.css':'body{color:red}'};
+ const source={'index.html':'<link href="style.css"><script type="module" src="app.js"></script>','app.js':"import './parts.js';import catalog from './catalog.js';async function save(){await import('./export-image.js');}",'cart.js':"import './parts.js';",'export-order.js':"import './cart.js';async function preview(){await import('./export-image.js');}",'parts.js':'export const parts=[];','catalog.js':'export default [];','export-image.js':"import './parts.js';",'navigation.js':'','gallery.js':'','reviews.js':'','style.css':'body{color:red}'};
  async function prepare(){for(const [file,contents] of Object.entries(source))await writeFile(path.join(root,file),contents);}
  try{
   await prepare();const first=await versionAssets(root,['index.html']);

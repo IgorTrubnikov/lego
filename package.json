@@ -6,7 +6,7 @@
     "build": "node scripts/build.mjs",
     "dev": "npm run start",
     "start": "npm run build && node server.mjs",
-    "test": "node test/parts.test.js && node test/catalog.test.js && node test/releases.test.js",
+    "test": "node test/parts.test.js && node test/cart.test.js && node test/catalog.test.js && node test/releases.test.js",
     "test:browser": "playwright test"
   },
   "engines": {

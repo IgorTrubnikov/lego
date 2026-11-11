@@ -9,8 +9,9 @@ test('a new page bypasses cached scripts and loads one release including PNG exp
  await expect(page.locator('#tabs [role="tab"]')).toHaveCount(11);
  await expect(page.locator('#figure image')).toHaveCount(4);
  await page.locator('[data-category="legs"]').click();await page.locator('[data-part="legs-catalog-21"]').click();
+ await page.locator('#add-cart').click();await expect(page.locator('.cart-item')).toHaveCount(1);await page.locator('#cart-packaging').selectOption('flask');
  const pending=page.waitForEvent('download');await page.locator('#save-png').click();expect(await (await pending).failure()).toBeNull();
- for(const name of ['app.js','parts.js','catalog.js','export-image.js','navigation.js','style.css'])expect(scripts.some(url=>url.endsWith('/'+manifest.assets[name])),name).toBe(true);
+ for(const name of ['app.js','parts.js','catalog.js','cart.js','export-order.js','export-image.js','navigation.js','style.css'])expect(scripts.some(url=>url.endsWith('/'+manifest.assets[name])),name).toBe(true);
  expect(errors).toEqual([]);
 });
 

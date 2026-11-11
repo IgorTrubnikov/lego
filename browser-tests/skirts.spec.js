@@ -1,8 +1,9 @@
+import {exportDraftPng} from './helpers/figure-export.js';
 import {test,expect} from '@playwright/test';
 const amount=async page=>Number((await page.locator('#total').innerText()).replace(/\D/g,''));
 async function exportedBlue(page){
- const pending=page.waitForEvent('download');await page.locator('#save-png').click();expect(await (await pending).failure()).toBeNull();
- return page.evaluate(async()=>{const img=new Image();img.src=document.querySelector('#png-link').href;await img.decode();const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);const data=ctx.getImageData(400,1220,400,160).data;let blue=0;for(let i=0;i<data.length;i+=4)if(data[i+2]>120&&data[i]<90&&data[i+3]>128)blue++;return blue;});
+ const pending=page.waitForEvent('download');await exportDraftPng(page);expect(await (await pending).failure()).toBeNull();
+ return page.evaluate(async()=>{const img=new Image();img.src=document.querySelector('#test-figure-png').href;await img.decode();const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);const data=ctx.getImageData(400,1220,400,160).data;let blue=0;for(let i=0;i<data.length;i+=4)if(data[i+2]>120&&data[i]<90&&data[i+3]>128)blue++;return blue;});
 }
 test('skirts preserve pants or replace them, switch correctly with suits and match the saved PNG',async({page})=>{
  test.setTimeout(60_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');

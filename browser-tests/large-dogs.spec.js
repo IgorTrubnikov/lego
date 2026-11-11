@@ -1,5 +1,6 @@
+import {exportDraftPng} from './helpers/figure-export.js';
 import {test,expect} from '@playwright/test';
-async function download(page){const pending=page.waitForEvent('download');await page.locator('#save-png').click();expect(await (await pending).failure()).toBeNull();return page.locator('#png-link').getAttribute('href');}
+async function download(page){const pending=page.waitForEvent('download');await exportDraftPng(page);expect(await (await pending).failure()).toBeNull();return page.locator('#test-figure-png').getAttribute('href');}
 test('dogs are visibly larger in the assembled character and PNG, with room for all other extras',async({page})=>{
  test.setTimeout(60_000);await page.goto('/');
  await page.locator('[data-category="suit"]').click();await page.locator('[data-part="suit-catalog-07"]').click();
