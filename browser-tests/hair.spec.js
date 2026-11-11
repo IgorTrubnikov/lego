@@ -20,7 +20,9 @@ test('all renewed hairstyles keep facial features clear, cover the stud and reta
    for(let py=0;py<720;py++)for(let px=0;px<600;px++)if(pixels[(py*600+px)*4+3]>32){count++;left=Math.min(left,px);right=Math.max(right,px);top=Math.min(top,py);if(px<x||py<y||px>=x+w||py>=y+h)outside++;}
    if(!count||outside)failures.push(hair.id+': empty or cropped preview');
    if(hair.id.startsWith('hair-renewed-')){
-    if(right-left+1>(['hair-renewed-07','hair-renewed-26','hair-renewed-39','hair-renewed-40','hair-renewed-51'].includes(hair.id)?226:220)||top<115)failures.push(hair.id+': oversized on the 152px head');
+    const number=Number(hair.name.split(' · ')[0]);
+    const maxWidth=[31,32,33].includes(number)?253:[34,35,36,37].includes(number)?236:[49,50,51,52,53].includes(number)?226:220;
+    if(right-left+1>maxWidth||top<115)failures.push(hair.id+': oversized on the 152px head');
     const centers=[];
     for(let py=175;py<210;py++){
      let l=600,r=0,count=0;for(let px=0;px<600;px++)if(pixels[(py*600+px)*4+3]>40){l=Math.min(l,px);r=px;count++;}
@@ -54,7 +56,7 @@ test('all hairstyles select independently, keep the correct price and export lon
   }
   expect(Number((await page.locator('#total').innerText()).replace(/\D/g,''))).toBe(base+hair.price);
  }
- for(const id of ['hair-renewed-07','hair-renewed-14','hair-catalog-cap-white','hair-catalog-cap-black']){
+ for(const id of ['hair-renewed-07','hair-renewed-14','hair-renewed-08','hair-renewed-17','hair-catalog-cap-white','hair-catalog-cap-black']){
   await page.locator(`[data-part="${id}"]`).click();
   const pending=page.waitForEvent('download');await exportDraftPng(page);
   const download=await pending;expect(await download.failure()).toBeNull();
@@ -120,4 +122,27 @@ test('15 uses exactly the silhouette of 10 in black and 28 retains its natural p
  expect(result.count).toBeGreaterThan(1000);expect(result.nonNeutral).toBe(0);
  expect(result.ratio).toBeGreaterThan(1.19);expect(result.ratio).toBeLessThan(1.22);
  expect(result.matched).toBe(true);
+});
+
+
+test('19–21 finish at matching cheek heights and 32 is centered on the face opening',async({page})=>{
+ await page.goto('/');
+ const fitted=await page.evaluate(async()=>{
+  const catalog=(await import('./catalog.js')).default;
+  return Promise.all(catalog.filter(p=>p.category==='hair'&&['19','20','21','32'].some(n=>p.name.startsWith(n+' ·'))).map(async part=>{
+   const image=new Image();image.src=part.image;await image.decode();
+   const canvas=document.createElement('canvas');canvas.width=600;canvas.height=720;
+   const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0);const data=ctx.getImageData(0,0,600,720).data;
+   const alpha=(x,y)=>data[(y*600+x)*4+3];
+   const bottom=(left,right)=>{let bottom=0;for(let y=220;y<310;y++)for(let x=left;x<right;x++)if(alpha(x,y)>128)bottom=y;return bottom;};
+   const centers=[];
+   for(let y=230;y<=260;y+=5){let left=300,right=300;while(left>200&&alpha(left,y)<128)left--;while(right<400&&alpha(right,y)<128)right++;centers.push((left+right)/2);}
+   return {number:Number(part.name.split(' · ')[0]),left:bottom(220,240),right:bottom(360,380),centers};
+  }));
+ });
+ expect(fitted).toHaveLength(4);
+ for(const fit of fitted){
+  if(fit.number===32){for(const center of fit.centers)expect(Math.abs(center-300)).toBeLessThanOrEqual(1);}
+  else{expect(fit.left).toBeGreaterThan(260);expect(Math.abs(fit.left-fit.right)).toBeLessThanOrEqual(1);}
+ }
 });

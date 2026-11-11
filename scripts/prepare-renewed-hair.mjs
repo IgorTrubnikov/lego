@@ -32,6 +32,11 @@ export function prepare(sourceDir){
     const pivot=part.tailFit.fromY,factor=(part.tailFit.toY-pivot)/(part.y+height-pivot);
     art=`<defs><image id="hair" width="600" height="720" href="data:image/webp;base64,${raster.toString('base64')}"/><clipPath id="upper"><rect width="600" height="${pivot}"/></clipPath><clipPath id="lower"><rect y="${pivot}" width="600" height="${720-pivot}"/></clipPath></defs><use href="#hair" clip-path="url(#upper)"/><g transform="translate(0 ${pivot*(1-factor)}) scale(1 ${factor})"><use href="#hair" clip-path="url(#lower)"/></g>`;
    }
+   if(part.cheekFit){
+    // Keep the fitted left cheek and crown; align only the lower right side.
+    const {fromY,scaleY}=part.cheekFit;
+    art=`<defs><image id="hair" width="600" height="720" href="data:image/webp;base64,${raster.toString('base64')}"/><clipPath id="fixed"><path d="M0 0H600V${fromY+1}H300V720H0Z"/></clipPath><clipPath id="right-cheek"><rect x="300" y="${fromY}" width="300" height="${720-fromY}"/></clipPath></defs><g transform="translate(0 ${fromY*(1-scaleY)}) scale(1 ${scaleY})"><use href="#hair" clip-path="url(#right-cheek)"/></g><use href="#hair" clip-path="url(#fixed)"/>`;
+   }
    if(part.material==='black'){
     // The same source and alpha silhouette as the brown model, rendered as glossy black.
     // Only RGB changes; coordinates, texture and transparent contour remain identical.
