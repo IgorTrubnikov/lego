@@ -72,7 +72,7 @@ export async function collectParts(root) {
       }
       const rawOrder=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-catalog-order=["']([^"']*)["']/)?.[1]:undefined;
       const catalogOrder=rawOrder===undefined?undefined:Number(rawOrder);
-      if(rawOrder!==undefined&&(category!=='hair'||!Number.isSafeInteger(catalogOrder)||catalogOrder<1||catalogOrder>10000))throw new Error(`${folder}/${filename}: неверный порядок карточки`);
+      if(rawOrder!==undefined&&(!['hair','animal'].includes(category)||!Number.isSafeInteger(catalogOrder)||catalogOrder<1||catalogOrder>10000))throw new Error(`${folder}/${filename}: неверный порядок карточки`);
       const skirtMode=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-skirt-mode=["']([^"']*)["']/)?.[1]:undefined;
       if(skirtMode!==undefined&&(category!=='skirt'||!['overlay','replace-legs'].includes(skirtMode)))throw new Error(folder+'/'+filename+': неверный режим юбки');
       if(category==='skirt'&&!skirtMode)throw new Error(folder+'/'+filename+': укажите data-skirt-mode="overlay" или "replace-legs"');
@@ -91,7 +91,7 @@ export async function collectParts(root) {
       ids.add(id);count++;
       categoryParts.push({id,category,name,price,...(catalogOrder!==undefined?{catalogOrder}:{}),image:`./${folder}/${encodeURIComponent(filename)}`+versionQuery,...(previewBox?{previewBox}:{}),...(backImage?{backImage:backImage+versionQuery}:{}),...(includedLabel?{includedLabel}:{}),...(skirtMode?{skirtMode}:{})});
     }
-    if(category==='hair')categoryParts.sort((a,b)=>(a.catalogOrder??Number.MAX_SAFE_INTEGER)-(b.catalogOrder??Number.MAX_SAFE_INTEGER));
+    if(['hair','animal'].includes(category))categoryParts.sort((a,b)=>(a.catalogOrder??Number.MAX_SAFE_INTEGER)-(b.catalogOrder??Number.MAX_SAFE_INTEGER));
     parts.push(...categoryParts);
     if(!count&&!optional)throw new Error(`Добавьте хотя бы одну деталь в ${folder}/`);
   }

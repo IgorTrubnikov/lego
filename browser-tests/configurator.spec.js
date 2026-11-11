@@ -103,7 +103,7 @@ test('extras appear beside the figure, add to price, persist and reset to none',
 });
 
 
-test('retained cats load with transparent backgrounds inside their assembly slot',async({page})=>{
+test('all animal cutouts load with transparent backgrounds inside their assembly slot',async({page})=>{
  await page.goto('/');
  const checks=await page.evaluate(async()=>{
   const {default:catalog}=await import('./catalog.js');
@@ -122,7 +122,7 @@ test('retained cats load with transparent backgrounds inside their assembly slot
    return {id:part.id,width:image.width,height:image.height,visible,outside};
   }));
  });
- expect(checks).toHaveLength(10);
+ expect(checks).toHaveLength(39);
  for(const check of checks){
   expect([check.width,check.height],check.id).toEqual([600,720]);
   expect(check.visible,check.id).toBeGreaterThan(500);

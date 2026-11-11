@@ -148,3 +148,12 @@ test('all six current altars embed the exact uploaded PNGs in the requested orde
   assert.match(svg,/preserveAspectRatio="xMidYMid meet"/);
  }
 });
+
+test('animal ordering uses explicit catalog order while preserving permanent IDs',()=>fixture(async root=>{
+ const folder=path.join(root,'animals');
+ await writeFile(path.join(folder,'test__250__Деталь.svg'),svg.replace('<svg ','<svg data-catalog-order="500" '));
+ await writeFile(path.join(folder,'z-cat__200__Кошка.svg'),svg.replace('<svg ','<svg data-catalog-order="101" '));
+ await writeFile(path.join(folder,'a-dog__200__Собака.svg'),svg.replace('<svg ','<svg data-catalog-order="401" '));
+ assert.deepEqual((await collectParts(root)).filter(p=>p.category==='animal').map(p=>p.id),['animal-z-cat','animal-a-dog','animal-test']);
+ await writeFile(path.join(folder,'z-cat__200__Кошка.svg'),svg.replace('<svg ','<svg data-catalog-order="0" '));await assert.rejects(collectParts(root),/неверный порядок карточки/);
+}));

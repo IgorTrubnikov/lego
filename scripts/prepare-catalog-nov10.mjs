@@ -1,4 +1,4 @@
-// Add the supplied bags, bear, ice creams and plain shirts; keep only the ten current cats.
+// Add the supplied bags, bear, ice creams and plain shirts; update the original ten cats and preserve other animals.
 // Usage: node scripts/prepare-catalog-nov10.mjs accessories.png cats.png shirts.png
 import {spawnSync} from 'node:child_process';
 import {readFileSync,writeFileSync,readdirSync,mkdirSync,mkdtempSync,rmSync} from 'node:fs';
@@ -43,13 +43,13 @@ export function prepare(sources){
     const [w,h]=magick([...base,'-format','%w %h','info:']).split(' ').map(Number),x=group.x??Math.round(group.center-w/2),y=group.y??group.bottom-h;
     const file=path.join(temp,s+'-'+i+'.webp');magick([...base,'-background','none','-gravity','northwest','-splice',`${x}x${y}`,'-extent','600x720','-strip','-define','webp:lossless=true',file]);
     const bytes=readFileSync(file),version=createHash('sha256').update(bytes).digest('hex').slice(0,12),preview=`${x-6} ${y-6} ${w+12} ${h+12}`;
-    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${version}" data-preview-box="${preview}"><title>${escapeHtml(name)}</title><image width="600" height="720" href="data:image/webp;base64,${bytes.toString('base64')}"/></svg>\n`;
+    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic"${group.folder==='animals'?` data-catalog-order="${i<5?101+i:201+i-5}"`:''} data-asset-version="${version}" data-preview-box="${preview}"><title>${escapeHtml(name)}</title><image width="600" height="720" href="data:image/webp;base64,${bytes.toString('base64')}"/></svg>\n`;
     outputs.push({folder:group.folder,filename:`${group.folder==='accessories'?'catalog-':''}${slug}__${group.price}__${name}.svg`,svg});
    }
   }
   if(outputs.length!==21)throw Error('Expected 8 accessories, 10 cats and 3 shirts.');
   for(const folder of ['accessories','animals','clothes'])mkdirSync(path.join(root,folder),{recursive:true});
-  for(const file of readdirSync(path.join(root,'animals')))if(/\.(?:svg|png|webp)$/i.test(file)&&!/^cat-(?:kitten|standing)-/.test(file))rmSync(path.join(root,'animals',file));
+  for(const file of readdirSync(path.join(root,'animals')))if(/\.(?:svg|png|webp)$/i.test(file)&&/^(?:black-cat|ginger-cat|3d-ginger-kitten|3d-ivory-kitten)__/.test(file))rmSync(path.join(root,'animals',file));
   for(const file of readdirSync(path.join(root,'accessories')))if(file.startsWith('catalog-shoulder-bag__'))rmSync(path.join(root,'accessories',file));
   for(const {folder,filename,svg} of outputs)writeFileSync(path.join(root,folder,filename),svg);
   console.log('Prepared 8 accessories (7 new, brown shoulder bag updated), 10 replacement cats and 3 shirts.');

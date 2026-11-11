@@ -1,0 +1,495 @@
+[
+  {
+    "sheet": 1,
+    "rect": [
+      4,
+      4,
+      414,
+      414
+    ],
+    "slug": "photo-puppy-01",
+    "name": "Щенок далматинца",
+    "group": "puppies",
+    "source_sha256": "dceed70b5cab4e179dcc289d441ec221e16931361672acd49595f93fce8f3fff",
+    "mask_sha256": "66c0d98aff56a517c39305cc3a7bf0f21fb6f2af2a2cc724633767b414155fbb",
+    "order": 301,
+    "maxWidth": 135,
+    "maxHeight": 175
+  },
+  {
+    "sheet": 1,
+    "rect": [
+      422,
+      4,
+      832,
+      414
+    ],
+    "slug": "photo-puppy-02",
+    "name": "Пудель белый",
+    "group": "puppies",
+    "source_sha256": "dceed70b5cab4e179dcc289d441ec221e16931361672acd49595f93fce8f3fff",
+    "mask_sha256": "ff5f967460d8b4e55c12f6a1df97d10f37ab8953e8458088eb10d98d83f2001b",
+    "order": 302,
+    "maxWidth": 135,
+    "maxHeight": 175
+  },
+  {
+    "sheet": 1,
+    "rect": [
+      840,
+      4,
+      1250,
+      414
+    ],
+    "slug": "photo-puppy-03",
+    "name": "Бульдог белый с красным ошейником",
+    "group": "puppies",
+    "source_sha256": "dceed70b5cab4e179dcc289d441ec221e16931361672acd49595f93fce8f3fff",
+    "mask_sha256": "c26b674913838804a4a2c7d3a514353e11b125a76f30bb763b8b38de7ed70117",
+    "order": 303,
+    "maxWidth": 135,
+    "maxHeight": 175
+  },
+  {
+    "sheet": 1,
+    "rect": [
+      4,
+      422,
+      414,
+      832
+    ],
+    "slug": "photo-puppy-04",
+    "name": "Бульдог жёлтый",
+    "group": "puppies",
+    "source_sha256": "dceed70b5cab4e179dcc289d441ec221e16931361672acd49595f93fce8f3fff",
+    "mask_sha256": "469ff91eac932946b129c0af3d1c72a1b49cab300337fa0d96e3df370e5e6c43",
+    "order": 304,
+    "maxWidth": 135,
+    "maxHeight": 175
+  },
+  {
+    "sheet": 1,
+    "rect": [
+      422,
+      422,
+      832,
+      832
+    ],
+    "slug": "photo-puppy-05",
+    "name": "Бульдог светло-серый",
+    "group": "puppies",
+    "source_sha256": "dceed70b5cab4e179dcc289d441ec221e16931361672acd49595f93fce8f3fff",
+    "mask_sha256": "3c0fd895625bf8f13a7c198595385e468324c26ffc400f71bcc31bddc321daf9",
+    "order": 305,
+    "maxWidth": 135,
+    "maxHeight": 175
+  },
+  {
+    "sheet": 1,
+    "rect": [
+      840,
+      422,
+      1250,
+      832
+    ],
+    "slug": "photo-puppy-06",
+    "name": "Пудель кремовый",
+    "group": "puppies",
+    "source_sha256": "dceed70b5cab4e179dcc289d441ec221e16931361672acd49595f93fce8f3fff",
+    "mask_sha256": "f4213671a821ce31f4ee0a100849a2b101b56841b07d9bca9c08a76eb132c76b",
+    "order": 306,
+    "maxWidth": 135,
+    "maxHeight": 175
+  },
+  {
+    "sheet": 1,
+    "rect": [
+      4,
+      840,
+      414,
+      1250
+    ],
+    "slug": "photo-puppy-07",
+    "name": "Бульдог коричневый с синим ошейником",
+    "group": "puppies",
+    "source_sha256": "dceed70b5cab4e179dcc289d441ec221e16931361672acd49595f93fce8f3fff",
+    "mask_sha256": "02df07c6103136f6bd9e64e38576eebbf458a8d50c7b3026c8705ca2b0458371",
+    "order": 307,
+    "maxWidth": 135,
+    "maxHeight": 175
+  },
+  {
+    "sheet": 1,
+    "rect": [
+      422,
+      840,
+      832,
+      1250
+    ],
+    "slug": "photo-puppy-08",
+    "name": "Щенок белый лохматый",
+    "group": "puppies",
+    "source_sha256": "dceed70b5cab4e179dcc289d441ec221e16931361672acd49595f93fce8f3fff",
+    "mask_sha256": "3c4e81e274458fbfa478bc8a36ffd8344243073c909ef2c0e7f31de579fa64d6",
+    "order": 308,
+    "maxWidth": 135,
+    "maxHeight": 175
+  },
+  {
+    "sheet": 1,
+    "rect": [
+      840,
+      840,
+      1250,
+      1250
+    ],
+    "slug": "photo-puppy-09",
+    "name": "Чихуахуа рыжий",
+    "group": "puppies",
+    "source_sha256": "dceed70b5cab4e179dcc289d441ec221e16931361672acd49595f93fce8f3fff",
+    "mask_sha256": "b026477f2f01a7040679dd326249519dad817ecc9bc43e0c80aa3ac5c902f831",
+    "order": 309,
+    "maxWidth": 135,
+    "maxHeight": 175
+  },
+  {
+    "sheet": 2,
+    "rect": [
+      20,
+      20,
+      390,
+      635
+    ],
+    "slug": "photo-other-01",
+    "name": "Попугай голубой",
+    "group": "other",
+    "source_sha256": "a8060f6054d0120351d0d58650330f68783370d3955bdbd7e42ec8c9a9c4fbb0",
+    "mask_sha256": "b9e8cf28c4c91593d2ac14871cb2e34513ca3491154bdf0e9f0cc1e808b12962",
+    "order": 501,
+    "maxWidth": 85,
+    "maxHeight": 175
+  },
+  {
+    "sheet": 2,
+    "rect": [
+      420,
+      20,
+      795,
+      635
+    ],
+    "slug": "photo-other-02",
+    "name": "Попугай розовый",
+    "group": "other",
+    "source_sha256": "a8060f6054d0120351d0d58650330f68783370d3955bdbd7e42ec8c9a9c4fbb0",
+    "mask_sha256": "3c3baaecb9806ebc52af96fd5fb34a043e777c007f9a41cab5f9ace8253ce496",
+    "order": 502,
+    "maxWidth": 85,
+    "maxHeight": 175
+  },
+  {
+    "sheet": 2,
+    "rect": [
+      12,
+      650,
+      350,
+      1100
+    ],
+    "slug": "photo-other-03",
+    "name": "Кролик белый с голубыми глазами",
+    "group": "other",
+    "source_sha256": "a8060f6054d0120351d0d58650330f68783370d3955bdbd7e42ec8c9a9c4fbb0",
+    "mask_sha256": "a3b3ebab9f6389f24edb7726d49e45d69c08744364af7f6a74f901247868f1f5",
+    "order": 503,
+    "maxWidth": 135,
+    "maxHeight": 175
+  },
+  {
+    "sheet": 2,
+    "rect": [
+      350,
+      650,
+      650,
+      1100
+    ],
+    "slug": "photo-other-04",
+    "name": "Белка коричневая",
+    "group": "other",
+    "source_sha256": "a8060f6054d0120351d0d58650330f68783370d3955bdbd7e42ec8c9a9c4fbb0",
+    "mask_sha256": "9b61ce463bd9eb181c2ca492fd9150872eb4ec126013ded4726f4946696863ae",
+    "order": 504,
+    "maxWidth": 135,
+    "maxHeight": 175
+  },
+  {
+    "sheet": 2,
+    "rect": [
+      650,
+      650,
+      1012,
+      1100
+    ],
+    "slug": "photo-other-05",
+    "name": "Хорёк белый",
+    "group": "other",
+    "source_sha256": "a8060f6054d0120351d0d58650330f68783370d3955bdbd7e42ec8c9a9c4fbb0",
+    "mask_sha256": "dcd5029c7e1240d94a0fe4c66a30a83086a4af81ce759d6630bd51609cb0fdcf",
+    "order": 505,
+    "maxWidth": 135,
+    "maxHeight": 175
+  },
+  {
+    "sheet": 2,
+    "rect": [
+      75,
+      1100,
+      490,
+      1525
+    ],
+    "slug": "photo-other-06",
+    "name": "Заяц белый",
+    "group": "other",
+    "source_sha256": "a8060f6054d0120351d0d58650330f68783370d3955bdbd7e42ec8c9a9c4fbb0",
+    "mask_sha256": "85a5145dbe9f73f88b88a0de3aaf416bb824b20de5463eb002f4818327673b25",
+    "order": 506,
+    "maxWidth": 135,
+    "maxHeight": 175
+  },
+  {
+    "sheet": 2,
+    "rect": [
+      500,
+      1100,
+      950,
+      1525
+    ],
+    "slug": "photo-other-07",
+    "name": "Заяц жёлтый",
+    "group": "other",
+    "source_sha256": "a8060f6054d0120351d0d58650330f68783370d3955bdbd7e42ec8c9a9c4fbb0",
+    "mask_sha256": "c721e3d84cb6cd59ce014083b8751d390758596add65909010d62d29eb161a2f",
+    "order": 507,
+    "maxWidth": 135,
+    "maxHeight": 175
+  },
+  {
+    "sheet": 3,
+    "rect": [
+      4,
+      4,
+      634,
+      539
+    ],
+    "slug": "cat-kitten-tilted-cream",
+    "name": "Котёнок кремовый с наклоном головы",
+    "group": "kittens",
+    "source_sha256": "07ec7c8818a2e67e4ce1608876d20d62312087687ae9417c289c96bd26fd98e9",
+    "mask_sha256": "5ff1a1802160b9307c3d5439344ec56165bf4daa9cc83877bc55f06d89a7b2b3",
+    "order": 206,
+    "maxWidth": 150,
+    "maxHeight": 170
+  },
+  {
+    "sheet": 3,
+    "rect": [
+      642,
+      4,
+      1271,
+      539
+    ],
+    "slug": "cat-kitten-striped-ginger",
+    "name": "Котёнок рыжий полосатый",
+    "group": "kittens",
+    "source_sha256": "07ec7c8818a2e67e4ce1608876d20d62312087687ae9417c289c96bd26fd98e9",
+    "mask_sha256": "fce616f23ff8ac9ba0e64a9300196e0ae27a23fb0c4dd7ba4890f578734240a9",
+    "order": 207,
+    "maxWidth": 150,
+    "maxHeight": 170
+  },
+  {
+    "sheet": 3,
+    "rect": [
+      4,
+      547,
+      634,
+      1230
+    ],
+    "slug": "photo-dog-01",
+    "name": "Хаски серо-белый",
+    "group": "dogs",
+    "source_sha256": "07ec7c8818a2e67e4ce1608876d20d62312087687ae9417c289c96bd26fd98e9",
+    "mask_sha256": "49d73727cd8f0c5c7451e6114d9f9dba22a14791a258cc6da7e06ae368cc9c07",
+    "order": 401,
+    "maxWidth": 180,
+    "maxHeight": 210
+  },
+  {
+    "sheet": 3,
+    "rect": [
+      642,
+      547,
+      1271,
+      1230
+    ],
+    "slug": "photo-dog-02",
+    "name": "Овчарка коричнево-чёрная",
+    "group": "dogs",
+    "source_sha256": "07ec7c8818a2e67e4ce1608876d20d62312087687ae9417c289c96bd26fd98e9",
+    "mask_sha256": "5f1a780f086cdc32130033c6f01c7811f3df9c73d515acf471464bf55506c96e",
+    "order": 402,
+    "maxWidth": 180,
+    "maxHeight": 210
+  },
+  {
+    "sheet": 4,
+    "rect": [
+      4,
+      4,
+      351,
+      438
+    ],
+    "slug": "photo-dog-03",
+    "name": "Лабрадор жёлтый",
+    "group": "dogs",
+    "source_sha256": "d0ce54411507f7bac8123c9aa30c3bec39eddf50c45d790eb5d035133159b6c9",
+    "mask_sha256": "6ca22a06cbf2c88e72088960395706a22ddeb65a41a22bc9293639fb4cef0803",
+    "order": 403,
+    "maxWidth": 180,
+    "maxHeight": 210
+  },
+  {
+    "sheet": 4,
+    "rect": [
+      359,
+      4,
+      706,
+      438
+    ],
+    "slug": "photo-dog-04",
+    "name": "Лабрадор шоколадный",
+    "group": "dogs",
+    "source_sha256": "d0ce54411507f7bac8123c9aa30c3bec39eddf50c45d790eb5d035133159b6c9",
+    "mask_sha256": "fc7fdf33e11b690b259b88bae7c9d1268cd692f1e0c31090cc4eac9fe4cb234a",
+    "order": 404,
+    "maxWidth": 180,
+    "maxHeight": 210
+  },
+  {
+    "sheet": 4,
+    "rect": [
+      714,
+      4,
+      1060,
+      438
+    ],
+    "slug": "photo-dog-05",
+    "name": "Собака бежевая пятнистая",
+    "group": "dogs",
+    "source_sha256": "d0ce54411507f7bac8123c9aa30c3bec39eddf50c45d790eb5d035133159b6c9",
+    "mask_sha256": "c018dce9162537672b1eae25286492c7855de6fdc869c935dd9f8dd78109de33",
+    "order": 405,
+    "maxWidth": 180,
+    "maxHeight": 210
+  },
+  {
+    "sheet": 4,
+    "rect": [
+      1068,
+      4,
+      1415,
+      438
+    ],
+    "slug": "photo-dog-06",
+    "name": "Овчарка рыжая",
+    "group": "dogs",
+    "source_sha256": "d0ce54411507f7bac8123c9aa30c3bec39eddf50c45d790eb5d035133159b6c9",
+    "mask_sha256": "1afb36256f4309947022ec11b6ea872f39c777e1c17408844b821db8b21e16ef",
+    "order": 406,
+    "maxWidth": 180,
+    "maxHeight": 210
+  },
+  {
+    "sheet": 4,
+    "rect": [
+      1423,
+      4,
+      1770,
+      438
+    ],
+    "slug": "photo-dog-07",
+    "name": "Лабрадор рыжий",
+    "group": "dogs",
+    "source_sha256": "d0ce54411507f7bac8123c9aa30c3bec39eddf50c45d790eb5d035133159b6c9",
+    "mask_sha256": "e0c07f227aeaf84c2ea10a859dee5b412134a976cb27a1560b8f6af86cfa4a60",
+    "order": 407,
+    "maxWidth": 180,
+    "maxHeight": 210
+  },
+  {
+    "sheet": 4,
+    "rect": [
+      4,
+      446,
+      440,
+      883
+    ],
+    "slug": "photo-dog-08",
+    "name": "Лабрадор светлый",
+    "group": "dogs",
+    "source_sha256": "d0ce54411507f7bac8123c9aa30c3bec39eddf50c45d790eb5d035133159b6c9",
+    "mask_sha256": "f28cf9b54802a52cd4e2061a551007d08907d611e8c88fa5d779b6f856ca50d1",
+    "order": 408,
+    "maxWidth": 180,
+    "maxHeight": 210
+  },
+  {
+    "sheet": 4,
+    "rect": [
+      448,
+      446,
+      883,
+      883
+    ],
+    "slug": "photo-dog-09",
+    "name": "Овчарка рыже-чёрная",
+    "group": "dogs",
+    "source_sha256": "d0ce54411507f7bac8123c9aa30c3bec39eddf50c45d790eb5d035133159b6c9",
+    "mask_sha256": "9cdcf9fd2da122b029e8d9b049b9a05f9265c7a2faad5c33007b53863968b7c1",
+    "order": 409,
+    "maxWidth": 180,
+    "maxHeight": 210
+  },
+  {
+    "sheet": 4,
+    "rect": [
+      891,
+      446,
+      1326,
+      883
+    ],
+    "slug": "photo-dog-10",
+    "name": "Далматинец белый",
+    "group": "dogs",
+    "source_sha256": "d0ce54411507f7bac8123c9aa30c3bec39eddf50c45d790eb5d035133159b6c9",
+    "mask_sha256": "1798474d758e1813abe771e71f9716638449c5b9fe08d87b46d525b23d72ec77",
+    "order": 410,
+    "maxWidth": 180,
+    "maxHeight": 210
+  },
+  {
+    "sheet": 4,
+    "rect": [
+      1334,
+      446,
+      1770,
+      883
+    ],
+    "slug": "photo-dog-11",
+    "name": "Далматинец чёрный",
+    "group": "dogs",
+    "source_sha256": "d0ce54411507f7bac8123c9aa30c3bec39eddf50c45d790eb5d035133159b6c9",
+    "mask_sha256": "69520dd75aac1c2173ec4f5e8647417d59ea4b6dfa4e4dbc2e700ffd781b21ba",
+    "order": 411,
+    "maxWidth": 180,
+    "maxHeight": 210
+  }
+]

@@ -52,7 +52,7 @@ export function selectedFigureParts(selection,parts){
   return front;
 }
 // Extra lower plane and room for full-size dogs; character coordinates stay unchanged.
-export const largeAnimalIds=new Set(['animal-3d-shepherd','animal-3d-labrador']);
+export const largeAnimalIds=new Set(['animal-3d-shepherd','animal-3d-labrador',...Array.from({length:11},(_,i)=>'animal-photo-dog-'+String(i+1).padStart(2,'0'))]);
 export function figureScene(selection,parts){
  const chosen=selectedFigureParts(selection,parts);
  const hasChildren=chosen.some(p=>p.category==='children'),hasTransport=chosen.some(p=>p.category==='transport');
