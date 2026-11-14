@@ -1,3 +1,4 @@
+import {readFile} from 'node:fs/promises';
 import {exportDraftPng} from './helpers/figure-export.js';
 import {test,expect} from '@playwright/test';
 
@@ -54,4 +55,34 @@ test('all eight added heads persist and appear in PNG with their own face print'
   },face.image);
   expect(diff.count).toBeGreaterThan(1000);expect(diff.mean).toBeLessThan(8);
  }
+});
+
+
+test('additional faces use the catalog skin and silhouette while retaining printed details',async({page})=>{
+ await page.goto('/');
+ const source=(await readFile(new URL('../scripts/additional-faces/source.png',import.meta.url))).toString('base64');
+ const manifest=JSON.parse(await readFile(new URL('../scripts/additional-faces/manifest.json',import.meta.url),'utf8'));
+ const results=await page.evaluate(async({source,manifest})=>{
+  const catalog=(await import('./catalog.js')).default;
+  const load=async src=>{const i=new Image();i.src=src;await i.decode();return i;};
+  const pixels=img=>{const c=document.createElement('canvas');c.width=600;c.height=720;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);return ctx.getImageData(0,0,600,720).data;};
+  const ref=pixels(await load(catalog.find(p=>p.id==='face-catalog-58').image));
+  const sheet=await load('data:image/png;base64,'+source),results=[];
+  for(const item of manifest){
+   const actual=pixels(await load(catalog.find(p=>p.id==='face-additional-'+item.number).image));
+   let alphaDiff=0,skinDiff=0,printDiff=0,printed=0;
+   for(let i=3;i<ref.length;i+=4)if(actual[i]!==ref[i])alphaDiff++;
+   for(const [x,y] of [[300,210],[240,280],[360,280],[300,313]])for(let c=0;c<3;c++){const i=(y*600+x)*4+c;skinDiff=Math.max(skinDiff,Math.abs(actual[i]-ref[i]));}
+   const raw=document.createElement('canvas');raw.width=600;raw.height=720;const ctx=raw.getContext('2d');
+   const top=item.row?530:128,bottom=item.row?794:393;
+   ctx.drawImage(sheet,item.center-164,top,328,bottom-top,224,195,152,112);
+   const data=ctx.getImageData(0,0,600,720).data;
+   for(let y=220;y<294;y++)for(let x=242;x<359;x++){
+    const i=(y*600+x)*4,[r,g,b]=data.slice(i,i+3);
+    if(data[i+3]>245&&(r<100||b>r+15||g>r+15||(r>g+60&&b>g+5))){printed++;for(let c=0;c<3;c++)printDiff=Math.max(printDiff,Math.abs(actual[i+c]-data[i+c]));}
+   }
+   results.push({number:item.number,alphaDiff,skinDiff,printed,printDiff});
+  }return results;
+ },{source,manifest});
+ for(const result of results){expect(result.alphaDiff,String(result.number)).toBe(0);expect(result.skinDiff,String(result.number)).toBeLessThanOrEqual(2);expect(result.printed,String(result.number)).toBeGreaterThan(100);expect(result.printDiff,String(result.number)).toBeLessThanOrEqual(2);}
 });
