@@ -162,7 +162,7 @@ test('animal ordering uses explicit catalog order while preserving permanent IDs
 test('seven additional original hairpieces retain numbers, zero prices and requested neighbors',async()=>{
  const manifest=JSON.parse(await readFile(new URL('../scripts/additional-hair-manifest.json',import.meta.url),'utf8'));
  const hair=(await collectParts(new URL('../',import.meta.url).pathname)).filter(p=>p.category==='hair');
- assert.equal(hair.length,62);
+ assert.equal(hair.length,69);
  assert.deepEqual(manifest.map(p=>p.displayNumber),[56,57,58,59,60,61,62]);
  const index=id=>hair.findIndex(p=>p.id===id);
  assert.equal(index('hair-glossy-02'),index('hair-renewed-53')+1);
@@ -194,3 +194,11 @@ test('reimporting the original hair collection preserves later styles, caps and 
  await assert.rejects(readFile(path.join(hair,'renewed-01__0__Старое имя.svg')),/ENOENT/);
  assert.equal(await readFile(path.join(backs,'later.svg'),'utf8'),'back layer');
 }));
+
+
+test('headwear is numbered 63–69 and included in the figure price',async()=>{
+ const hair=(await collectParts(new URL('../',import.meta.url).pathname)).filter(p=>p.id.startsWith('hair-headwear-'));
+ assert.equal(hair.length,7);
+ assert.deepEqual(hair.map(p=>Number(p.name.split(' · ')[0])),[63,64,65,66,67,68,69]);
+ assert.ok(hair.every(p=>p.price===0&&p.previewBox));
+});

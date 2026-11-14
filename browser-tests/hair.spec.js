@@ -7,7 +7,7 @@ test('all renewed hairstyles keep facial features clear, cover the stud and reta
  const failures=await page.evaluate(async()=>{
   const catalog=(await import('./catalog.js')).default,failures=[];
   const hairs=catalog.filter(p=>p.category==='hair');
-  if(hairs.length!==62||hairs.filter(p=>p.id.startsWith('hair-renewed-')).length!==53||hairs.filter(p=>p.id.startsWith('hair-glossy-')).length!==7||hairs.filter(p=>/hair-catalog-cap-(black|white)$/.test(p.id)).length!==2)failures.push('obsolete or missing hairstyles');
+  if(hairs.length!==69||hairs.filter(p=>p.id.startsWith('hair-renewed-')).length!==53||hairs.filter(p=>p.id.startsWith('hair-glossy-')).length!==7||hairs.filter(p=>p.id.startsWith('hair-headwear-')).length!==7||hairs.filter(p=>/hair-catalog-cap-(black|white)$/.test(p.id)).length!==2)failures.push('obsolete or missing hairstyles');
   for(const hair of hairs){
    const image=new Image();image.src=hair.image;await image.decode();
    const canvas=document.createElement('canvas');canvas.width=600;canvas.height=720;
@@ -85,12 +85,12 @@ test('a retired test hairstyle resets to a new style while preserving other save
  await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-21__/);
 });
 
-test('all seven additional hairstyles persist, cost no extra and export the selected artwork',async({page})=>{
+test('additional hairstyles and headwear persist, cost no extra and export the selected artwork',async({page})=>{
  test.setTimeout(90_000);
  await page.goto('/');
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
- const hairs=catalog.filter(p=>p.id.startsWith('hair-glossy-'));
- expect(hairs).toHaveLength(7);
+ const hairs=catalog.filter(p=>p.id.startsWith('hair-glossy-')||p.id.startsWith('hair-headwear-'));
+ expect(hairs).toHaveLength(14);
  for(const hair of hairs){
   await page.locator(`[data-part="${hair.id}"]`).click();
   await expect(page.locator('#total')).toHaveText(/550/);
