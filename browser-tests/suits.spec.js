@@ -4,11 +4,11 @@ import {test,expect} from '@playwright/test';
 const amount=async page=>Number((await page.locator('#total').innerText()).replace(/\D/g,''));
 async function download(page){const pending=page.waitForEvent('download');await exportDraftPng(page);const d=await pending;expect(await d.failure()).toBeNull();return page.evaluate(async()=>{const img=new Image();img.src=document.querySelector('#test-figure-png').href;await img.decode();const c=document.createElement('canvas');c.width=1200;c.height=1440;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);const pixels=ctx.getImageData(950,650,210,290).data;let bag=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i]>128)bag++;return {width:img.width,height:img.height,bag};});}
 
-test('49 suits replace body and legs once in price and restore separate clothing on demand',async({page})=>{
+test('65 suits replace body and legs once in price and restore separate clothing on demand',async({page})=>{
  test.setTimeout(90_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default),suits=catalog.filter(p=>p.category==='suit');
- expect(suits).toHaveLength(49);expect(suits.every(p=>p.price===550)).toBe(true);
+ expect(suits).toHaveLength(65);expect(suits.every(p=>p.price===550)).toBe(true);
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('teuilor-selection-v1')));
  const original=await amount(page);
  await page.locator('[data-category="suit"]').click();
@@ -57,4 +57,28 @@ test('a missing saved suit falls back to separate parts and old saved figures st
  await page.goto('/');await expect(page.locator('#figure [data-layer="suit"]')).toHaveCount(0);
  for(const [layer,id] of [['face','catalog-07'],['hair','renewed-07'],['torso','catalog-12'],['legs','catalog-21']])await expect(page.locator(`#figure [data-layer="${layer}"]`)).toHaveAttribute('href',new RegExp(id+'__'));
  await page.locator('[data-category="suit"]').click();await expect(page.locator('[data-part="suit-none"]')).toHaveAttribute('aria-pressed','true');
+});
+
+
+test('all sixteen additional suits persist and export without an extra charge',async({page})=>{
+ test.setTimeout(120_000);await page.goto('/');
+ const suits=await page.evaluate(async()=>(await import('./catalog.js')).default.filter(p=>p.id.startsWith('suit-additional-')));
+ expect(suits).toHaveLength(16);
+ for(const suit of suits){
+  await page.locator('[data-category="suit"]').click();await page.locator(`[data-part="${suit.id}"]`).click();
+  expect(await amount(page)).toBe(550);await page.reload();
+  await expect(page.locator('#figure [data-layer="suit"]')).toHaveAttribute('href',suit.image);
+  const png=await download(page);expect([png.width,png.height]).toEqual([1200,1440]);
+ }
+ const failures=await page.evaluate(async suits=>{
+  const failures=[];
+  for(const suit of suits){
+   const i=new Image();i.src=suit.image;await i.decode();const c=document.createElement('canvas');c.width=600;c.height=720;const ctx=c.getContext('2d');ctx.drawImage(i,0,0);
+   const p=ctx.getImageData(0,0,600,720).data;let count=0,outside=0;
+   for(let y=0;y<720;y++)for(let x=0;x<600;x++)if(p[(y*600+x)*4+3]>32){count++;if(x<133||x>=467||y<311||y>=702)outside++;}
+   if(count<20000||outside)failures.push(suit.id+': empty or cropped artwork');
+   if(ctx.getImageData(300,600,1,1).data[3]>0)failures.push(suit.id+': background between legs');
+  }return failures;
+ },suits);
+ expect(failures).toEqual([]);
 });
