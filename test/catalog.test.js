@@ -206,8 +206,9 @@ test('headwear is numbered 63–69 and included in the figure price',async()=>{
 
 test('sixteen additional suits preserve the original collection and stable numbering',async()=>{
  const suits=(await collectParts(new URL('../',import.meta.url).pathname)).filter(p=>p.category==='suit');
- assert.equal(suits.length,65);
- assert.equal(suits.filter(p=>p.id.startsWith('suit-catalog-')).length,49);
+ assert.equal(suits.length,64);
+ assert.ok(!suits.some(p=>p.id==='suit-catalog-41'));
+ assert.equal(suits.filter(p=>p.id.startsWith('suit-catalog-')).length,48);
  const added=suits.filter(p=>p.id.startsWith('suit-additional-'));
  assert.deepEqual(added.map(p=>Number(p.name.split(' · ')[0])),Array.from({length:16},(_,i)=>50+i));
  assert.ok(added.every(p=>p.price===550&&p.previewBox==='133 311 334 391'));

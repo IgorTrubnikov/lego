@@ -4,11 +4,11 @@ import {test,expect} from '@playwright/test';
 const amount=async page=>Number((await page.locator('#total').innerText()).replace(/\D/g,''));
 async function download(page){const pending=page.waitForEvent('download');await exportDraftPng(page);const d=await pending;expect(await d.failure()).toBeNull();return page.evaluate(async()=>{const img=new Image();img.src=document.querySelector('#test-figure-png').href;await img.decode();const c=document.createElement('canvas');c.width=1200;c.height=1440;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);const pixels=ctx.getImageData(950,650,210,290).data;let bag=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i]>128)bag++;return {width:img.width,height:img.height,bag};});}
 
-test('65 suits replace body and legs once in price and restore separate clothing on demand',async({page})=>{
+test('64 suits replace body and legs once in price and restore separate clothing on demand',async({page})=>{
  test.setTimeout(90_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default),suits=catalog.filter(p=>p.category==='suit');
- expect(suits).toHaveLength(65);expect(suits.every(p=>p.price===550)).toBe(true);
+ expect(suits).toHaveLength(64);expect(suits.every(p=>p.price===550)).toBe(true);
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('teuilor-selection-v1')));
  const original=await amount(page);
  await page.locator('[data-category="suit"]').click();
@@ -53,7 +53,7 @@ test('army backpack is included in the suit, price and PNG while independent ext
 });
 
 test('a missing saved suit falls back to separate parts and old saved figures stay usable',async({page})=>{
- await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({suit:'suit-removed',face:'face-catalog-07',hair:'hair-renewed-07',torso:'torso-catalog-12',legs:'legs-catalog-21'})));
+ await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({suit:'suit-catalog-41',face:'face-catalog-07',hair:'hair-renewed-07',torso:'torso-catalog-12',legs:'legs-catalog-21'})));
  await page.goto('/');await expect(page.locator('#figure [data-layer="suit"]')).toHaveCount(0);
  for(const [layer,id] of [['face','catalog-07'],['hair','renewed-07'],['torso','catalog-12'],['legs','catalog-21']])await expect(page.locator(`#figure [data-layer="${layer}"]`)).toHaveAttribute('href',new RegExp(id+'__'));
  await page.locator('[data-category="suit"]').click();await expect(page.locator('[data-part="suit-none"]')).toHaveAttribute('aria-pressed','true');

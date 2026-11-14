@@ -64,8 +64,9 @@ export function prepare(sources,price=500){
   if(outputs.length!==49)throw Error('Expected 49 complete outfits');
   mkdirSync(path.join(root,'suits'),{recursive:true});
   for(const f of readdirSync(path.join(root,'suits')))if(/^catalog-\d{2}__.*\.(svg|png|webp)$/i.test(f))rmSync(path.join(root,'suits',f));
-  for(const out of outputs)writeFileSync(path.join(root,'suits',out.filename),out.svg);
-  console.log(`Prepared ${outputs.length} suits at ${price} ₽ each; backpack included in 37.`);
+  const active=outputs.filter(out=>!out.filename.startsWith('catalog-41__'));
+  for(const out of active)writeFileSync(path.join(root,'suits',out.filename),out.svg);
+  console.log(`Prepared ${active.length} suits at ${price} ₽ each; backpack included in 37.`);
  }finally{rmSync(temp,{recursive:true,force:true});}
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){const args=process.argv.slice(2);prepare(args.slice(0,5),Number(args[5]??500));}
