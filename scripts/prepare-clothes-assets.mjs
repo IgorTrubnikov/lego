@@ -40,10 +40,11 @@ export function prepare(source,price=0){
   }).filter(out=>!/^catalog-(03|10|14)__/.test(out.filename));
   const config=JSON.parse(readFileSync(new URL('./plain-torsos/order.json',import.meta.url)));
   const order=config.groups.flatMap(g=>g.numbers);
-  const current=outputs.filter(out=>!config.retired.includes(Number(out.filename.match(/^catalog-(\d+)/)[1])));
+  const detailed=new Set(JSON.parse(readFileSync(new URL('./detailed-torsos/manifest.json',import.meta.url))).map(p=>p.number));
+  const current=outputs.filter(out=>{const n=Number(out.filename.match(/^catalog-(\d+)/)[1]);return !config.retired.includes(n)&&!detailed.has(n);});
   for(const out of current){const n=Number(out.filename.match(/^catalog-(\d+)/)[1]);out.svg=out.svg.replace('<svg ',`<svg data-catalog-order="${(order.indexOf(n)+1)*10}" `);}
   // Replace trial clothing only after every design has been prepared successfully.
-  for(const f of readdirSync(path.join(root,'clothes')))if(/^catalog-\d{2}__/.test(f)&&Number(f.match(/^catalog-(\d+)/)[1])<=37)rmSync(path.join(root,'clothes',f));
+  for(const f of readdirSync(path.join(root,'clothes')))if(/^catalog-\d{2}__/.test(f)&&Number(f.match(/^catalog-(\d+)/)[1])<=37&&!detailed.has(Number(f.match(/^catalog-(\d+)/)[1])))rmSync(path.join(root,'clothes',f));
   for(const out of current)writeFileSync(path.join(root,'clothes',out.filename),out.svg);
   console.log(`Prepared ${current.length} original clothing variants; later colors preserved at ${price} ₽ each.`);
  }finally{rmSync(temp,{recursive:true,force:true});}

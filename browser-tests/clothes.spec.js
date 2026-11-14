@@ -65,3 +65,20 @@ test('nine plain colors persist and export their selected torso without extra ch
   },top.image);expect(delta).toBeLessThan(8);
  }
 });
+
+test('twenty detailed printed torsos preserve their selected print in PNG',async({page})=>{
+ test.setTimeout(120_000);await page.goto('/');
+ const tops=await page.evaluate(async()=>(await import('./catalog.js')).default.filter(p=>p.category==='torso'&&p.id.startsWith('torso-catalog-')&&![25,26,27,38,39].includes(Number(p.name.split(' · ')[0]))));
+ expect(tops).toHaveLength(20);
+ for(const top of tops){
+  await page.locator('[data-category="torso"]').click();await page.locator(`[data-part="${top.id}"]`).click();await page.reload();
+  await expect(page.locator('#figure [data-layer="torso"]')).toHaveAttribute('href',top.image);await expect(page.locator('#total')).toHaveText(/550/);
+  const pending=page.waitForEvent('download');await exportDraftPng(page);expect(await(await pending).failure()).toBeNull();
+  const delta=await page.evaluate(async src=>{
+   const load=async src=>{const i=new Image();i.src=src;await i.decode();return i;};
+   const imgs=await Promise.all([load(src),load(document.querySelector('#test-figure-png').href)]);
+   const data=imgs.map(i=>{const c=document.createElement('canvas');c.width=600;c.height=720;const ctx=c.getContext('2d');ctx.drawImage(i,0,0,600,720);return ctx.getImageData(260,350,80,120).data;});
+   let sum=0;for(let i=0;i<data[0].length;i+=4)for(let j=0;j<3;j++)sum+=Math.abs(data[0][i+j]-data[1][i+j]);return sum/(80*120*3);
+  },top.image);expect(delta,top.id).toBeLessThan(10);
+ }
+});

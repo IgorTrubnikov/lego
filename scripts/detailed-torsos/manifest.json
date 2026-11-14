@@ -1,0 +1,222 @@
+[
+  {
+    "number": 4,
+    "sheet": "prints",
+    "box": [
+      12,
+      108,
+      304,
+      198
+    ],
+    "front": 183
+  },
+  {
+    "number": 5,
+    "sheet": "prints",
+    "box": [
+      336,
+      108,
+      304,
+      198
+    ],
+    "front": 183
+  },
+  {
+    "number": 6,
+    "sheet": "prints",
+    "box": [
+      659,
+      108,
+      304,
+      198
+    ],
+    "front": 183
+  },
+  {
+    "number": 30,
+    "sheet": "prints",
+    "box": [
+      12,
+      448,
+      304,
+      192
+    ],
+    "front": 177
+  },
+  {
+    "number": 11,
+    "sheet": "prints",
+    "box": [
+      336,
+      448,
+      304,
+      192
+    ],
+    "front": 177
+  },
+  {
+    "number": 12,
+    "sheet": "prints",
+    "box": [
+      659,
+      448,
+      304,
+      192
+    ],
+    "front": 177
+  },
+  {
+    "number": 16,
+    "sheet": "prints",
+    "box": [
+      12,
+      771,
+      304,
+      189
+    ],
+    "front": 174
+  },
+  {
+    "number": 17,
+    "sheet": "prints",
+    "box": [
+      336,
+      771,
+      304,
+      189
+    ],
+    "front": 174
+  },
+  {
+    "number": 18,
+    "sheet": "prints",
+    "box": [
+      659,
+      771,
+      304,
+      189
+    ],
+    "front": 174
+  },
+  {
+    "number": 22,
+    "sheet": "prints",
+    "box": [
+      12,
+      1084,
+      304,
+      180
+    ],
+    "front": 162
+  },
+  {
+    "number": 23,
+    "sheet": "prints",
+    "box": [
+      336,
+      1084,
+      304,
+      180
+    ],
+    "front": 162
+  },
+  {
+    "number": 24,
+    "sheet": "prints",
+    "box": [
+      659,
+      1084,
+      304,
+      180
+    ],
+    "front": 162
+  },
+  {
+    "number": 29,
+    "sheet": "prints",
+    "box": [
+      12,
+      1387,
+      304,
+      198
+    ],
+    "front": 167
+  },
+  {
+    "number": 34,
+    "sheet": "prints",
+    "box": [
+      336,
+      1387,
+      304,
+      198
+    ],
+    "front": 167
+  },
+  {
+    "number": 35,
+    "sheet": "prints",
+    "box": [
+      659,
+      1387,
+      304,
+      198
+    ],
+    "front": 167
+  },
+  {
+    "number": 31,
+    "sheet": "medical",
+    "box": [
+      17,
+      130,
+      486,
+      308
+    ],
+    "front": 260
+  },
+  {
+    "number": 32,
+    "sheet": "medical",
+    "box": [
+      530,
+      130,
+      486,
+      308
+    ],
+    "front": 260
+  },
+  {
+    "number": 33,
+    "sheet": "medical",
+    "box": [
+      1035,
+      130,
+      486,
+      308
+    ],
+    "front": 260
+  },
+  {
+    "number": 36,
+    "sheet": "medical",
+    "box": [
+      17,
+      634,
+      486,
+      300
+    ],
+    "front": 251
+  },
+  {
+    "number": 37,
+    "sheet": "medical",
+    "box": [
+      530,
+      634,
+      486,
+      300
+    ],
+    "front": 251
+  }
+]
