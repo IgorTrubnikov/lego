@@ -176,3 +176,21 @@ test('19–21 finish at matching cheek heights and 32 is centered on the face op
   else{expect(fit.left).toBeGreaterThan(260);expect(Math.abs(fit.left-fit.right)).toBeLessThanOrEqual(1);}
  }
 });
+
+test('uniform caps share a centered frame and resized hair 58/59 stays adjacent',async({page})=>{
+ await page.goto('/');
+ const result=await page.evaluate(async()=>{
+  const catalog=(await import('./catalog.js')).default.filter(p=>p.category==='hair');
+  const caps=await Promise.all(['navy','white','black'].map(async color=>{
+   const part=catalog.find(p=>p.id==='hair-headwear-uniform-'+color),img=new Image();img.src=part.image;await img.decode();
+   const c=document.createElement('canvas');c.width=600;c.height=720;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);
+   const data=ctx.getImageData(0,0,600,720).data;let l=600,r=0,t=720,b=0;
+   for(let y=0;y<720;y++)for(let x=0;x<600;x++)if(data[(y*600+x)*4+3]>32){l=Math.min(l,x);r=Math.max(r,x);t=Math.min(t,y);b=Math.max(b,y);}
+   return {box:[l,t,r-l+1,b-t+1],center:(l+r+1)/2,preview:part.previewBox};
+  }));
+  return {caps,adjacent:catalog.findIndex(p=>p.id==='hair-glossy-04')===catalog.findIndex(p=>p.id==='hair-glossy-03')+1};
+ });
+ expect(result.adjacent).toBe(true);
+ for(const cap of result.caps){expect(Math.abs(cap.center-300)).toBeLessThanOrEqual(.5);expect(cap.box[2]).toBeGreaterThanOrEqual(195);expect(cap.box[2]).toBeLessThanOrEqual(197);}
+ for(const cap of result.caps.slice(1)){expect(cap.box).toEqual(result.caps[0].box);expect(cap.preview).toBe(result.caps[0].preview);}
+});

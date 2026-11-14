@@ -168,6 +168,7 @@ test('seven additional original hairpieces retain numbers, zero prices and reque
  assert.equal(index('hair-glossy-02'),index('hair-renewed-53')+1);
  assert.equal(index('hair-glossy-07'),index('hair-glossy-01')+1);
  assert.equal(index('hair-glossy-05'),index('hair-glossy-04')+1);
+ assert.equal(index('hair-glossy-04'),index('hair-glossy-03')+1);
  const oldManifest=JSON.parse(await readFile(new URL('../scripts/renewed-hair-manifest.json',import.meta.url),'utf8'));
  const old=hair.filter(p=>p.id.startsWith('hair-renewed-'));
  assert.deepEqual(old.map(p=>p.id),[...oldManifest].sort((a,b)=>a.catalogOrder-b.catalogOrder).map(p=>'hair-renewed-'+String(p.number).padStart(2,'0')));

@@ -50,11 +50,11 @@
       1166,
       993
     ],
-    "x": 195,
-    "y": 101,
-    "width": 210,
-    "height": 178,
-    "catalogOrder": 600
+    "x": 206,
+    "y": 111,
+    "width": 189,
+    "height": 160,
+    "catalogOrder": 580
   },
   {
     "archiveIndex": 4,
@@ -69,11 +69,11 @@
       1151,
       1032
     ],
-    "x": 195,
-    "y": 101,
-    "width": 210,
-    "height": 185,
-    "catalogOrder": 580
+    "x": 206,
+    "y": 111,
+    "width": 189,
+    "height": 167,
+    "catalogOrder": 590
   },
   {
     "archiveIndex": 5,
@@ -92,7 +92,7 @@
     "y": 125,
     "width": 248,
     "height": 245,
-    "catalogOrder": 590
+    "catalogOrder": 600
   },
   {
     "archiveIndex": 6,
@@ -107,10 +107,10 @@
       1195,
       849
     ],
-    "x": 200,
-    "y": 135,
-    "width": 200,
-    "height": 150,
+    "x": 213,
+    "y": 125,
+    "width": 175,
+    "height": 131,
     "catalogOrder": 610
   },
   {
