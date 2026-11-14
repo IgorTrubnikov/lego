@@ -5,6 +5,7 @@ import {mkdtemp,mkdir,writeFile,readFile,rm,rename} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {collectParts,folders,imageSize} from '../scripts/build.mjs';
+import {replacePreparedHair} from '../scripts/prepare-renewed-hair.mjs';
 const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 720"><rect x="224" y="190" width="152" height="130"/></svg>';
 async function fixture(fn){const root=await mkdtemp(path.join(os.tmpdir(),'teuilor-catalog-'));try{for(const f of Object.keys(folders)){await mkdir(path.join(root,f));await writeFile(path.join(root,f,'test__250__Деталь.svg'),f==='skirts'?svg.replace('<svg ','<svg data-skirt-mode="overlay" '):svg);}await fn(root);}finally{await rm(root,{recursive:true,force:true});}}
 test('discovers all folders and encodes file URLs for GitHub project pages',()=>fixture(async root=>{
@@ -156,4 +157,40 @@ test('animal ordering uses explicit catalog order while preserving permanent IDs
  await writeFile(path.join(folder,'a-dog__200__Собака.svg'),svg.replace('<svg ','<svg data-catalog-order="401" '));
  assert.deepEqual((await collectParts(root)).filter(p=>p.category==='animal').map(p=>p.id),['animal-z-cat','animal-a-dog','animal-test']);
  await writeFile(path.join(folder,'z-cat__200__Кошка.svg'),svg.replace('<svg ','<svg data-catalog-order="0" '));await assert.rejects(collectParts(root),/неверный порядок карточки/);
+}));
+
+test('seven additional original hairpieces retain numbers, zero prices and requested neighbors',async()=>{
+ const manifest=JSON.parse(await readFile(new URL('../scripts/additional-hair-manifest.json',import.meta.url),'utf8'));
+ const hair=(await collectParts(new URL('../',import.meta.url).pathname)).filter(p=>p.category==='hair');
+ assert.equal(hair.length,62);
+ assert.deepEqual(manifest.map(p=>p.displayNumber),[56,57,58,59,60,61,62]);
+ const index=id=>hair.findIndex(p=>p.id===id);
+ assert.equal(index('hair-glossy-02'),index('hair-renewed-53')+1);
+ assert.equal(index('hair-glossy-07'),index('hair-glossy-01')+1);
+ assert.equal(index('hair-glossy-05'),index('hair-glossy-04')+1);
+ const oldManifest=JSON.parse(await readFile(new URL('../scripts/renewed-hair-manifest.json',import.meta.url),'utf8'));
+ const old=hair.filter(p=>p.id.startsWith('hair-renewed-'));
+ assert.deepEqual(old.map(p=>p.id),[...oldManifest].sort((a,b)=>a.catalogOrder-b.catalogOrder).map(p=>'hair-renewed-'+String(p.number).padStart(2,'0')));
+ for(const part of oldManifest)assert.ok(old.find(p=>p.id==='hair-renewed-'+String(part.number).padStart(2,'0')).name.startsWith(String(part.displayNumber).padStart(2,'0')+' · '));
+ for(const entry of manifest){
+  const part=hair.find(p=>p.id==='hair-'+entry.slug);
+  assert.equal(part.name,entry.displayNumber+' · '+entry.name);
+  assert.equal(part.price,0);
+  assert.equal(part.catalogOrder,entry.catalogOrder);
+  assert.match(part.image,/\?v=[a-f0-9]{12}$/);
+ }
+});
+
+test('reimporting the original hair collection preserves later styles, caps and back layers',()=>fixture(async root=>{
+ const hair=path.join(root,'haircuts'),staged=path.join(root,'staged');await mkdir(staged);
+ const keep=['glossy-01__0__56 · Светлая.svg','catalog-cap-white__0__54 · Кепка.svg'];
+ for(const name of keep)await writeFile(path.join(hair,name),'preserve '+name);
+ const backs=path.join(root,'assets/hair-backs');await mkdir(backs,{recursive:true});await writeFile(path.join(backs,'later.svg'),'back layer');
+ await writeFile(path.join(hair,'renewed-01__0__Старое имя.svg'),'old artwork');
+ const fresh='renewed-01__0__Новое имя.svg';await writeFile(path.join(staged,fresh),'new artwork');
+ replacePreparedHair(staged,hair);
+ for(const name of keep)assert.equal(await readFile(path.join(hair,name),'utf8'),'preserve '+name);
+ assert.equal(await readFile(path.join(hair,fresh),'utf8'),'new artwork');
+ await assert.rejects(readFile(path.join(hair,'renewed-01__0__Старое имя.svg')),/ENOENT/);
+ assert.equal(await readFile(path.join(backs,'later.svg'),'utf8'),'back layer');
 }));

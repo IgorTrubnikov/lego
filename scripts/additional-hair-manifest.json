@@ -1,0 +1,135 @@
+[
+  {
+    "archiveIndex": 1,
+    "sourceName": "Глянцевые светлые волосы LEGO на прозрачном фоне.webp",
+    "sha256": "51ba687a1af44ca87b90d46e4e20396b6db694f1feb8764709709878ee53553f",
+    "slug": "glossy-01",
+    "displayNumber": 56,
+    "name": "Светлая с центральным пробором",
+    "bbox": [
+      302,
+      253,
+      1092,
+      933
+    ],
+    "x": 201,
+    "y": 135,
+    "width": 198,
+    "height": 170,
+    "catalogOrder": 560
+  },
+  {
+    "archiveIndex": 2,
+    "sourceName": "Глянцевая тёмно-коричневая деталь волос LEGO.webp",
+    "sha256": "291d8b06dad62ef2390558b73b666a9512efb2013ae0afdeaf9317b93583d263",
+    "slug": "glossy-02",
+    "displayNumber": 57,
+    "name": "Тёмно-каштановая с пышной чёлкой",
+    "bbox": [
+      118,
+      195,
+      1139,
+      1043
+    ],
+    "x": 188,
+    "y": 115,
+    "width": 224,
+    "height": 186,
+    "catalogOrder": 275
+  },
+  {
+    "archiveIndex": 3,
+    "sourceName": "Глянцевый тёмно-коричневый парик LEGO.webp",
+    "sha256": "f74b7b3ca0850665f350a17d2a26880eb6b9f61eb437035bbcece7b36f9f6a12",
+    "slug": "glossy-03",
+    "displayNumber": 58,
+    "name": "Каштановая с переплетёнными прядями",
+    "bbox": [
+      207,
+      181,
+      1166,
+      993
+    ],
+    "x": 195,
+    "y": 101,
+    "width": 210,
+    "height": 178,
+    "catalogOrder": 600
+  },
+  {
+    "archiveIndex": 4,
+    "sourceName": "Блондовая деталь волос Lego-style на прозрачном фоне.webp",
+    "sha256": "72afd6c7ee2e7879a1b2813dfddab6d20b8925f47908eaec5fa37fd1b39cb955",
+    "slug": "glossy-04",
+    "displayNumber": 59,
+    "name": "Светлая с переплетёнными прядями",
+    "bbox": [
+      188,
+      183,
+      1151,
+      1032
+    ],
+    "x": 195,
+    "y": 101,
+    "width": 210,
+    "height": 185,
+    "catalogOrder": 580
+  },
+  {
+    "archiveIndex": 5,
+    "sourceName": "Глянцевые волнистые волосы LEGO с чёлкой.webp",
+    "sha256": "a597cc4d7ba6703d0489ff8f74cd8b84122b72f7eace353607b690846efa010e",
+    "slug": "glossy-05",
+    "displayNumber": 60,
+    "name": "Каштановые волны с чёлкой",
+    "bbox": [
+      129,
+      147,
+      1140,
+      1144
+    ],
+    "x": 184,
+    "y": 125,
+    "width": 248,
+    "height": 245,
+    "catalogOrder": 590
+  },
+  {
+    "archiveIndex": 6,
+    "sourceName": "Глянцевый рыжевато-коричневый парик LEGO.webp",
+    "sha256": "a5790f73d5fa614c3796b0c787adf8aef39c5be72ada8e0216cf586a1054cb73",
+    "slug": "glossy-06",
+    "displayNumber": 61,
+    "name": "Рыжевато-каштановая с зачёсом",
+    "bbox": [
+      274,
+      158,
+      1195,
+      849
+    ],
+    "x": 200,
+    "y": 135,
+    "width": 200,
+    "height": 150,
+    "catalogOrder": 610
+  },
+  {
+    "archiveIndex": 7,
+    "sourceName": "Глянцевые чёрные волосы LEGO с пробором.webp",
+    "sha256": "ab89e4b2529b9940d20736e1b93dfa89d9fe5228940821c64bed208562cd35ba",
+    "slug": "glossy-07",
+    "displayNumber": 62,
+    "name": "Чёрная с плавным пробором",
+    "bbox": [
+      287,
+      212,
+      1120,
+      921
+    ],
+    "x": 200,
+    "y": 135,
+    "width": 200,
+    "height": 170,
+    "catalogOrder": 570
+  }
+]

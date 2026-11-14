@@ -3,14 +3,19 @@
 import {readFileSync,writeFileSync,mkdtempSync,readdirSync,rmSync,renameSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
-import path from 'node:path';import os from 'node:os';import {fileURLToPath} from 'node:url';
+import path from 'node:path';import {fileURLToPath} from 'node:url';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const manifest=JSON.parse(readFileSync(new URL('./renewed-hair-manifest.json',import.meta.url)));
 const hash=data=>createHash('sha256').update(data).digest('hex');
 function magick(args){const r=spawnSync('magick',args,{encoding:'utf8'});if(r.error)throw r.error;if(r.status)throw Error(r.stderr);}
+export function replacePreparedHair(stagedDir,hairDir=path.join(root,'haircuts')){
+ // Replace only this import's files; preserve caps and later hair collections.
+ for(const name of readdirSync(hairDir))if(/^renewed-\d{2}__.*\.(svg|png|webp)$/i.test(name))rmSync(path.join(hairDir,name));
+ for(const name of readdirSync(stagedDir))if(name.endsWith('.svg'))renameSync(path.join(stagedDir,name),path.join(hairDir,name));
+}
 export function prepare(sourceDir){
  if(!sourceDir)throw Error('Provide the directory containing the numbered original PNG files.');
- const temp=mkdtempSync(path.join(os.tmpdir(),'renewed-hair-'));
+ const temp=mkdtempSync(path.join(root,'.renewed-hair-'));
  try{
   // Stage every image before replacing the live catalog, so a failed import leaves it intact.
   for(const part of manifest){
@@ -45,10 +50,8 @@ export function prepare(sourceDir){
    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${hash(art).slice(0,12)}" data-preview-box="${box}" data-catalog-order="${part.catalogOrder}"><title>${label}</title>${art}</svg>\n`;
    writeFileSync(path.join(temp,`renewed-${number}__0__${label}.svg`),svg);
   }
-  for(const name of readdirSync(path.join(root,'haircuts')))if(/\.(svg|png|webp)$/i.test(name)&&!/^catalog-cap-(white|black)__/.test(name))rmSync(path.join(root,'haircuts',name));
-  for(const name of readdirSync(temp))if(name.endsWith('.svg'))renameSync(path.join(temp,name),path.join(root,'haircuts',name));
-  rmSync(path.join(root,'assets/hair-backs'),{recursive:true,force:true});
-  console.log(`Replaced the hair catalog with ${manifest.length} original hairpieces included in the figure price.`);
+  replacePreparedHair(temp);
+  console.log(`Updated ${manifest.length} original hairpieces included in the figure price; other collections preserved.`);
  }finally{rmSync(temp,{recursive:true,force:true});}
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))prepare(process.argv[2]);

@@ -7,7 +7,7 @@ test('all renewed hairstyles keep facial features clear, cover the stud and reta
  const failures=await page.evaluate(async()=>{
   const catalog=(await import('./catalog.js')).default,failures=[];
   const hairs=catalog.filter(p=>p.category==='hair');
-  if(hairs.length!==55||hairs.filter(p=>p.id.startsWith('hair-renewed-')).length!==53||hairs.filter(p=>/hair-catalog-cap-(black|white)$/.test(p.id)).length!==2)failures.push('obsolete or missing hairstyles');
+  if(hairs.length!==62||hairs.filter(p=>p.id.startsWith('hair-renewed-')).length!==53||hairs.filter(p=>p.id.startsWith('hair-glossy-')).length!==7||hairs.filter(p=>/hair-catalog-cap-(black|white)$/.test(p.id)).length!==2)failures.push('obsolete or missing hairstyles');
   for(const hair of hairs){
    const image=new Image();image.src=hair.image;await image.decode();
    const canvas=document.createElement('canvas');canvas.width=600;canvas.height=720;
@@ -83,6 +83,36 @@ test('a retired test hairstyle resets to a new style while preserving other save
  await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',/catalog-07__/);
  await expect(page.locator('#figure [data-layer="torso"]')).toHaveAttribute('href',/catalog-12__/);
  await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-21__/);
+});
+
+test('all seven additional hairstyles persist, cost no extra and export the selected artwork',async({page})=>{
+ test.setTimeout(90_000);
+ await page.goto('/');
+ const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
+ const hairs=catalog.filter(p=>p.id.startsWith('hair-glossy-'));
+ expect(hairs).toHaveLength(7);
+ for(const hair of hairs){
+  await page.locator(`[data-part="${hair.id}"]`).click();
+  await expect(page.locator('#total')).toHaveText(/550/);
+  await page.reload();
+  await expect(page.locator('#figure [data-layer="hair"]')).toHaveAttribute('href',hair.image);
+  const pending=page.waitForEvent('download');await exportDraftPng(page);
+  const download=await pending;expect(await download.failure()).toBeNull();
+  const bytes=await readFile(await download.path());
+  expect(bytes.subarray(0,8).toString('hex')).toBe('89504e470d0a1a0a');
+  // Compare a patch on the crown with the original layer: export must contain
+  // this hairstyle, rather than merely producing a valid PNG of another one.
+  const difference=await page.evaluate(async image=>{
+   const load=async src=>{const i=new Image();i.src=src;await i.decode();return i;};
+   const [hair,png]=await Promise.all([load(image),load(document.querySelector('#test-figure-png').href)]);
+   const a=document.createElement('canvas'),b=document.createElement('canvas');a.width=b.width=600;a.height=b.height=720;
+   const ca=a.getContext('2d'),cb=b.getContext('2d');ca.drawImage(hair,0,0,600,720);cb.drawImage(png,0,0,600,720);
+   const original=ca.getImageData(285,165,30,20).data,exported=cb.getImageData(285,165,30,20).data;
+   let sum=0,count=0;for(let i=0;i<original.length;i+=4)if(original[i+3]>245){for(let c=0;c<3;c++)sum+=Math.abs(original[i+c]-exported[i+c]);count+=3;}
+   return {count,mean:sum/count};
+  },hair.image);
+  expect(difference.count).toBeGreaterThan(500);expect(difference.mean).toBeLessThan(12);
+ }
 });
 
 test('hairline joins every head without a transparent forehead gap',async({page})=>{
