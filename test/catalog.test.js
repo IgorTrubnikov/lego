@@ -231,7 +231,7 @@ test('torso catalog removes retired IDs and groups solid colors before prints an
  for(const n of config.retired)assert.ok(!numbers.includes(n));
  assert.equal(tops.filter(p=>p.id.startsWith('torso-plain-')).length,9);
  assert.ok(tops.every(p=>p.price===0));
- const medical=[31,32,33,37];assert.deepEqual(numbers.slice(numbers.indexOf(31),numbers.indexOf(31)+4),medical);
+ const medical=[31,32,33,36,37];assert.deepEqual(numbers.slice(numbers.indexOf(31),numbers.indexOf(31)+5),medical);
 });
 
 test('upper pants masking metadata is accepted only on torsos with a valid boundary',()=>fixture(async root=>{
@@ -245,3 +245,19 @@ test('upper pants masking metadata is accepted only on torsos with a valid bound
  await writeFile(path.join(root,'pants/test__250__Деталь.svg'),svg.replace('<svg ','<svg data-legs-top="510" '));
  await assert.rejects(collectParts(root),/граница брюк/);
 }));
+
+test('original uploaded torso sheets and reviewed masks are preserved with native-resolution cutouts',async()=>{
+ const base=new URL('../scripts/original-torsos/',import.meta.url);
+ const manifest=JSON.parse(await readFile(new URL('manifest.json',base),'utf8'));
+ assert.deepEqual(manifest.items.map(p=>p.number).sort((a,b)=>a-b),[4,5,6,11,12,16,17,18,22,23,24,29,30,31,32,33,34,35,36,37]);
+ for(const [name,hash] of Object.entries(manifest.sources))assert.equal(createHash('sha256').update(await readFile(new URL(name+'.webp',base))).digest('hex'),hash);
+ for(const item of manifest.items){
+  const mask=await readFile(new URL('masks/'+String(item.number).padStart(2,'0')+'.png',base));
+  assert.equal(createHash('sha256').update(mask).digest('hex'),item.maskSha256);
+  const [,,width,height]=item.box;assert.deepEqual(imageSize(mask,'.png'),{width,height});
+  const svg=await readFile(new URL('../clothes/catalog-'+String(item.number).padStart(2,'0')+'__0__'+item.title+'.svg',import.meta.url),'utf8');
+  const raster=Buffer.from(svg.match(/href="data:image\/png;base64,([^"]+)"/)[1],'base64');
+  assert.deepEqual(imageSize(raster,'.png'),{width,height});
+  assert.doesNotMatch(svg,/<filter|feColor|feBlend/);
+ }
+});

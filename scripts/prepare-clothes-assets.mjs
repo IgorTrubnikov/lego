@@ -40,7 +40,7 @@ export function prepare(source,price=0){
   }).filter(out=>!/^catalog-(03|10|14)__/.test(out.filename));
   const config=JSON.parse(readFileSync(new URL('./plain-torsos/order.json',import.meta.url)));
   const order=config.groups.flatMap(g=>g.numbers);
-  const detailed=new Set(JSON.parse(readFileSync(new URL('./detailed-torsos/manifest.json',import.meta.url))).map(p=>p.number));
+  const detailed=new Set(JSON.parse(readFileSync(new URL('./original-torsos/manifest.json',import.meta.url))).items.map(p=>p.number));
   const current=outputs.filter(out=>{const n=Number(out.filename.match(/^catalog-(\d+)/)[1]);return !config.retired.includes(n)&&!detailed.has(n);});
   for(const out of current){const n=Number(out.filename.match(/^catalog-(\d+)/)[1]);out.svg=out.svg.replace('<svg ',`<svg data-catalog-order="${(order.indexOf(n)+1)*10}" `);}
   // Replace trial clothing only after every design has been prepared successfully.

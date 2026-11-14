@@ -1,0 +1,268 @@
+{
+  "sources": {
+    "medical": "3ffb0ef240ece325a5ed189c6686aa1ebde717f1ec61b500f8a9ee667aacde10",
+    "prints": "f50d8beda69562f982465146397e609973df9494e0552614f2ebcbf85da467f9"
+  },
+  "items": [
+    {
+      "number": 4,
+      "sheet": "prints",
+      "box": [
+        10,
+        116,
+        306,
+        189
+      ],
+      "front": 170,
+      "maskSha256": "f8b8dfbdc3acd824db5c427c284db21306f93f9f854285d4e6554acc9bb13a30",
+      "title": "04 · Синяя куртка с бананом"
+    },
+    {
+      "number": 5,
+      "sheet": "prints",
+      "box": [
+        335,
+        116,
+        306,
+        189
+      ],
+      "front": 170,
+      "maskSha256": "c8f1873e11976244e647ab0fe624c815b6d62626478b631174eb999b97093f84",
+      "title": "05 · Красная университетская куртка"
+    },
+    {
+      "number": 6,
+      "sheet": "prints",
+      "box": [
+        658,
+        116,
+        306,
+        189
+      ],
+      "front": 170,
+      "maskSha256": "dabe80770fe3afaa384c8c60ed6b8315ab6df3892732562d11aabf9b4f00334a",
+      "title": "06 · Светлый пиджак"
+    },
+    {
+      "number": 30,
+      "sheet": "prints",
+      "box": [
+        10,
+        451,
+        306,
+        189
+      ],
+      "front": 173,
+      "maskSha256": "f44d8d799d5f5cc7d90fcf66c48e2a4a1cf89ec57b49d3e6255b112c189bfa8d",
+      "title": "30 · Белая футболка с единорогом"
+    },
+    {
+      "number": 11,
+      "sheet": "prints",
+      "box": [
+        335,
+        451,
+        306,
+        189
+      ],
+      "front": 173,
+      "maskSha256": "9c12848a91405c6bb6328e51512bd6f03868b7acb9cc69f11584539a989e2947",
+      "title": "11 · Красная куртка с футболкой"
+    },
+    {
+      "number": 12,
+      "sheet": "prints",
+      "box": [
+        658,
+        451,
+        306,
+        189
+      ],
+      "front": 173,
+      "maskSha256": "da108ffba5571e7ea22746adae3973685f6007bf8eff918870d738ae16bdef6e",
+      "title": "12 · Чёрный костюм с галстуком"
+    },
+    {
+      "number": 16,
+      "sheet": "prints",
+      "box": [
+        10,
+        778,
+        306,
+        178
+      ],
+      "front": 161,
+      "maskSha256": "6b8f3d0cb0a7f912c459d098807c869322b0c4fa3f690d00ee154b30fe682d53",
+      "title": "16 · Синий свитер с орнаментом"
+    },
+    {
+      "number": 17,
+      "sheet": "prints",
+      "box": [
+        335,
+        778,
+        306,
+        178
+      ],
+      "front": 161,
+      "maskSha256": "7637ea0bc586a52038db72f63eebeed060efe52b7a7d0817695d99dda3eebac7",
+      "title": "17 · Тропическая рубашка с бейджем"
+    },
+    {
+      "number": 18,
+      "sheet": "prints",
+      "box": [
+        658,
+        778,
+        306,
+        178
+      ],
+      "front": 161,
+      "maskSha256": "a0a29ac299a4fad1ca52b0eb05c5356c3dd8f9a72865beb19dcbff4562ac7818",
+      "title": "18 · Чёрный жакет с котёнком"
+    },
+    {
+      "number": 22,
+      "sheet": "prints",
+      "box": [
+        10,
+        1087,
+        306,
+        172
+      ],
+      "front": 156,
+      "maskSha256": "40fb471e1e380a7c9f276bb99860765f52e6e96bf18ef8221882b44c577ae0a6",
+      "title": "22 · Свитер с красно-золотым шарфом"
+    },
+    {
+      "number": 23,
+      "sheet": "prints",
+      "box": [
+        335,
+        1087,
+        306,
+        172
+      ],
+      "front": 156,
+      "maskSha256": "a1fffebcc9343d040f54a055ec2ea8d211bed8bedf9dcfcfd95c0f1bb3e89b72",
+      "title": "23 · Серый жилет с жёлтым галстуком"
+    },
+    {
+      "number": 24,
+      "sheet": "prints",
+      "box": [
+        658,
+        1087,
+        306,
+        172
+      ],
+      "front": 156,
+      "maskSha256": "7e8cf07beaf031529791b082b0148989262c6bb22d82609e319fc7e53806bcc4",
+      "title": "24 · Зелёный свитер с зигзагом"
+    },
+    {
+      "number": 29,
+      "sheet": "prints",
+      "box": [
+        10,
+        1394,
+        306,
+        196
+      ],
+      "front": 154,
+      "maskSha256": "8dd955962f3d64e21b1efa64c5ea3d43953bff76174d324aeaad11fd0a22d91e",
+      "title": "29 · Бордовое худи Tiger"
+    },
+    {
+      "number": 34,
+      "sheet": "prints",
+      "box": [
+        335,
+        1394,
+        306,
+        196
+      ],
+      "front": 154,
+      "maskSha256": "c422dd7fee05736608205caa863a4dc036a0e50806e5341c3445ad908dd485c0",
+      "title": "34 · Белая футболка I Love My GF"
+    },
+    {
+      "number": 35,
+      "sheet": "prints",
+      "box": [
+        658,
+        1394,
+        306,
+        196
+      ],
+      "front": 154,
+      "maskSha256": "73ea686793220924d3a05132f8eecd4a240afb874cac4aaf52aa66d7f5836554",
+      "title": "35 · Белая футболка I Love My BF"
+    },
+    {
+      "number": 31,
+      "sheet": "medical",
+      "box": [
+        34,
+        151,
+        450,
+        285
+      ],
+      "front": 242,
+      "maskSha256": "c598cec7ac57005020c8997ae169ad8947347fedca66064b84888d7afa9a3e20",
+      "title": "31 · Белый халат с бейджем"
+    },
+    {
+      "number": 32,
+      "sheet": "medical",
+      "box": [
+        575,
+        151,
+        448,
+        285
+      ],
+      "front": 242,
+      "maskSha256": "a9e5a127e258153dffa585a5d16ed4669b258993980551220f8f3a90a986c290",
+      "title": "32 · Белый халат со стетоскопом"
+    },
+    {
+      "number": 33,
+      "sheet": "medical",
+      "box": [
+        1115,
+        151,
+        448,
+        285
+      ],
+      "front": 242,
+      "maskSha256": "583d0db69175dad9e3d011ffb07d6d062a78f19269276c89b8de40901e578129",
+      "title": "33 · Бирюзовая медицинская форма"
+    },
+    {
+      "number": 36,
+      "sheet": "medical",
+      "box": [
+        167,
+        668,
+        454,
+        284
+      ],
+      "front": 239,
+      "maskSha256": "9d2c64bece701fab17b411b9172eb6e20351c4d737d74787b8d1faa405a50c8e",
+      "title": "36 · Белый жакет в голубую полоску"
+    },
+    {
+      "number": 37,
+      "sheet": "medical",
+      "box": [
+        969,
+        668,
+        462,
+        284
+      ],
+      "front": 239,
+      "maskSha256": "1c4abcac5ddbd844a768f9a7ba7390c925496f9c0d16c1e2c5a0ea2e79d71b59",
+      "title": "37 · Розовая медицинская форма"
+    }
+  ]
+}

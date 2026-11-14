@@ -1,3 +1,4 @@
+import {readFile} from 'node:fs/promises';
 import {exportDraftPng} from './helpers/figure-export.js';
 import {test,expect} from '@playwright/test';
 
@@ -10,9 +11,10 @@ test('all 34 available outfits keep their hands, fit below the head and select w
  const artwork=await page.evaluate(async list=>Promise.all(list.map(async part=>{
   const img=new Image();img.src=part.image;await img.decode();
   const c=document.createElement('canvas');c.width=600;c.height=720;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);
+  const [bx,by,bw,bh]=part.previewBox.split(' ').map(Number);
   const data=ctx.getImageData(0,0,600,720).data;let outside=0,visible=0,leftHand=0,rightHand=0;
   for(let y=0;y<720;y++)for(let x=0;x<600;x++)if(data[(y*600+x)*4+3]){
-   visible++;if(x<139||x>=461||y<317||y>=532)outside++;
+   visible++;if(x<bx||x>=bx+bw||y<by||y>=by+bh)outside++;
    if(y>=450&&x<220)leftHand++;if(y>=450&&x>=380)rightHand++;
   }
   return {id:part.id,w:img.width,h:img.height,outside,visible,leftHand,rightHand,collar:ctx.getImageData(300,319,1,1).data[3]};
@@ -83,46 +85,32 @@ test('twenty detailed printed torsos preserve their selected print in PNG',async
  }
 });
 
-test('detailed torsos have transparent arm gaps in assets and exported PNGs',async({page})=>{
- test.setTimeout(90_000);await page.goto('/');
- const failures=await page.evaluate(async()=>{
-  const catalog=(await import('./catalog.js')).default;
-  const {initialSelection}=await import('./parts.js');
-  const {createFigurePng}=await import('./export-image.js');
-  const torsos=catalog.filter(p=>p.category==='torso'&&p.id.startsWith('torso-catalog-')&&![25,26,27,38,39].includes(Number(p.name.split(' · ')[0])));
-  const failures=[];
-  const check=async(src,id,scale)=>{
-   const i=new Image();i.src=src;await i.decode();const c=document.createElement('canvas');c.width=i.width;c.height=i.height;const ctx=c.getContext('2d');ctx.drawImage(i,0,0);
-   for(const x of [213,386]){const data=ctx.getImageData(x*scale,450*scale,scale,25*scale).data;if(data.some((v,i)=>i%4===3&&v>2))failures.push(id+': opaque arm gap at '+x);}
-  };
-  for(const torso of torsos){
-   await check(torso.image,torso.id,1);
-   const blob=await createFigurePng({...initialSelection,torso:torso.id},catalog),url=URL.createObjectURL(blob);
-   try{await check(url,torso.id+' PNG',2);}finally{URL.revokeObjectURL(url);}
-  }
-  return {count:torsos.length,failures};
- });
- expect(failures.count).toBe(20);expect(failures.failures).toEqual([]);
-});
 
-test('printed torso front panels have straight sides without triangular edge cuts',async({page})=>{
- await page.goto('/');
- const result=await page.evaluate(async()=>{
+
+test('uploaded torso colors and alpha masks match the untouched original cutouts',async({page})=>{
+ test.setTimeout(90_000);await page.goto('/');
+ const base=new URL('../scripts/original-torsos/',import.meta.url);
+ const manifest=JSON.parse(await readFile(new URL('manifest.json',base),'utf8'));
+ const sources={};for(const name of Object.keys(manifest.sources))sources[name]=(await readFile(new URL(name+'.webp',base))).toString('base64');
+ const masks={};for(const item of manifest.items)masks[item.number]=(await readFile(new URL('masks/'+String(item.number).padStart(2,'0')+'.png',base))).toString('base64');
+ const results=await page.evaluate(async({manifest,sources,masks})=>{
   const catalog=(await import('./catalog.js')).default;
-  const tops=catalog.filter(p=>p.category==='torso'&&p.legsTop===510),failures=[];
-  for(const top of tops){
-   const i=new Image();i.src=top.image;await i.decode();const c=document.createElement('canvas');c.width=600;c.height=720;const ctx=c.getContext('2d');ctx.drawImage(i,0,0);
-   const alpha=(x,y)=>ctx.getImageData(x,y,1,1).data[3];
-   for(let y=430;y<=475;y+=3){
-    const left=139+322*(.29-.065*((y-317)/193))+3;
-    const inside=Math.ceil(left)+2,outside=Math.floor(left)-2;
-    if(alpha(inside,y)<245||alpha(599-inside,y)<245||alpha(outside,y)>2||alpha(599-outside,y)>2){failures.push(top.id+': irregular border at '+y);break;}
+  const load=async src=>{const i=new Image();i.src=src;await i.decode();return i;};
+  const pixels=(img,w,h,sx=0,sy=0)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.drawImage(img,sx,sy,w,h,0,0,w,h);return ctx.getImageData(0,0,w,h).data;};
+  const sheets={};for(const [name,data] of Object.entries(sources))sheets[name]=await load('data:image/webp;base64,'+data);
+  const results=[];
+  for(const item of manifest.items){
+   const part=catalog.find(p=>p.id==='torso-catalog-'+String(item.number).padStart(2,'0'));
+   const svg=await(await fetch(part.image)).text(),image=await load('data:image/png;base64,'+svg.match(/href="data:image\/png;base64,([^"]+)"/)[1]);
+   const [x,y,w,h]=item.box,actual=pixels(image,w,h),expected=pixels(sheets[item.sheet],w,h,x,y),mask=pixels(await load('data:image/png;base64,'+masks[item.number]),w,h);
+   let alphaDiff=0,colorDiff=0,maxDiff=0,count=0;
+   for(let i=0;i<actual.length;i+=4){
+    if(actual[i+3]!==mask[i])alphaDiff++;
+    if(actual[i+3]===255){for(let c=0;c<3;c++){const d=Math.abs(actual[i+c]-expected[i+c]);colorDiff+=d;maxDiff=Math.max(maxDiff,d);count++;}}
    }
-   if(top.id==='torso-catalog-33'){
-    const p=ctx.getImageData(222,460,1,1).data;if(p[1]<100||p[2]<100)failures.push(top.id+': dark triangular side mark');
-   }
-  }
-  return {count:tops.length,failures};
- });
- expect(result.count).toBe(20);expect(result.failures).toEqual([]);
+   results.push({number:item.number,alphaDiff,mean:colorDiff/count,maxDiff,count,width:image.width,height:image.height,w,h});
+  }return results;
+ },{manifest,sources,masks});
+ expect(results).toHaveLength(20);
+ for(const p of results){expect([p.width,p.height],String(p.number)).toEqual([p.w,p.h]);expect(p.alphaDiff,String(p.number)).toBe(0);expect(p.count,String(p.number)).toBeGreaterThan(15000);expect(p.maxDiff,String(p.number)).toBeLessThanOrEqual(3);expect(p.mean,String(p.number)).toBeLessThan(.5);}
 });
