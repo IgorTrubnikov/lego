@@ -45,7 +45,7 @@ export function prepare(source,price=200){
    return {filename:`catalog-${number}__${price}__${title}.svg`,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${version}" data-preview-box="218 167 164 159"><title>${escapeHtml(title)}</title>${art}</svg>\n`};
   });
   // Replace the category only when every new head has been prepared successfully.
-  for(const f of readdirSync(path.join(root,'faces')))if(/\.(svg|png|webp)$/i.test(f))rmSync(path.join(root,'faces',f));
+  for(const f of readdirSync(path.join(root,'faces')))if(/^catalog-\d{2}__.*\.(svg|png|webp)$/i.test(f))rmSync(path.join(root,'faces',f));
   for(const out of outputs)writeFileSync(path.join(root,'faces',out.filename),out.svg);
   console.log(`Prepared ${outputs.length} heads at ${price} ₽ each.`);
  }finally{rmSync(temp,{recursive:true,force:true});}

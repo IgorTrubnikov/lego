@@ -1,11 +1,12 @@
+import {exportDraftPng} from './helpers/figure-export.js';
 import {test,expect} from '@playwright/test';
 
-test('all 66 reference heads load transparently, select, update price and survive reload',async({page})=>{
+test('all 74 heads load transparently, select, update price and survive reload',async({page})=>{
  test.setTimeout(90_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');await page.locator('[data-category="face"]').click();
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
- const faces=catalog.filter(p=>p.category==='face');expect(faces).toHaveLength(66);
- expect(faces.every(p=>p.price===0&&/^face-catalog-\d\d$/.test(p.id))).toBe(true);
+ const faces=catalog.filter(p=>p.category==='face');expect(faces).toHaveLength(74);
+ expect(faces.every(p=>p.price===0&&/^face-(catalog|additional)-\d\d$/.test(p.id))).toBe(true);
  const artwork=await page.evaluate(async faces=>Promise.all(faces.map(async face=>{
   const img=new Image();img.src=face.image;await img.decode();
   const c=document.createElement('canvas');c.width=600;c.height=720;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);
@@ -33,4 +34,24 @@ test('a removed test head resets to the new default without discarding other cho
  await expect(page.locator('#figure [data-layer="torso"]')).toHaveAttribute('href',/catalog-12__/);
  await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-21__/);
  await page.locator('[data-category="face"]').click();await expect(page.locator('[data-part="face-glasses"]')).toHaveCount(0);
+});
+
+
+test('all eight added heads persist and appear in PNG with their own face print',async({page})=>{
+ test.setTimeout(90_000);await page.goto('/');
+ const faces=await page.evaluate(async()=>(await import('./catalog.js')).default.filter(p=>p.id.startsWith('face-additional-')));
+ expect(faces).toHaveLength(8);
+ for(const face of faces){
+  await page.locator('[data-category="face"]').click();await page.locator(`[data-part="${face.id}"]`).click();
+  await expect(page.locator('#total')).toHaveText(/550/);await page.reload();
+  await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',face.image);
+  const pending=page.waitForEvent('download');await exportDraftPng(page);expect(await (await pending).failure()).toBeNull();
+  const diff=await page.evaluate(async src=>{
+   const load=async src=>{const i=new Image();i.src=src;await i.decode();return i;};
+   const images=await Promise.all([load(src),load(document.querySelector('#test-figure-png').href)]);
+   const pixels=images.map(img=>{const c=document.createElement('canvas');c.width=600;c.height=720;const ctx=c.getContext('2d');ctx.drawImage(img,0,0,600,720);return ctx.getImageData(275,260,50,35).data;});
+   let sum=0,count=0;for(let i=0;i<pixels[0].length;i+=4)if(pixels[0][i+3]>245)for(let j=0;j<3;j++){sum+=Math.abs(pixels[0][i+j]-pixels[1][i+j]);count++;}return {count,mean:sum/count};
+  },face.image);
+  expect(diff.count).toBeGreaterThan(1000);expect(diff.mean).toBeLessThan(8);
+ }
 });

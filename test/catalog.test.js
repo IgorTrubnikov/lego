@@ -211,3 +211,11 @@ test('sixteen additional suits preserve the original collection and stable numbe
  assert.deepEqual(added.map(p=>Number(p.name.split(' · ')[0])),Array.from({length:16},(_,i)=>50+i));
  assert.ok(added.every(p=>p.price===550&&p.previewBox==='133 311 334 391'));
 });
+
+test('eight additional faces preserve previous heads and source order without extra charge',async()=>{
+ const faces=(await collectParts(new URL('../',import.meta.url).pathname)).filter(p=>p.category==='face');
+ assert.equal(faces.length,74);assert.equal(faces.filter(p=>p.id.startsWith('face-catalog-')).length,66);
+ const added=faces.filter(p=>p.id.startsWith('face-additional-'));
+ assert.deepEqual(added.map(p=>Number(p.name.split(' · ')[0])),[67,68,69,70,71,72,73,74]);
+ assert.ok(added.every(p=>p.price===0&&p.previewBox==='218 167 164 159'));
+});
