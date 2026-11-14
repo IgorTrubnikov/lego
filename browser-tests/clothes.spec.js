@@ -104,3 +104,25 @@ test('detailed torsos have transparent arm gaps in assets and exported PNGs',asy
  });
  expect(failures.count).toBe(20);expect(failures.failures).toEqual([]);
 });
+
+test('printed torso front panels have straight sides without triangular edge cuts',async({page})=>{
+ await page.goto('/');
+ const result=await page.evaluate(async()=>{
+  const catalog=(await import('./catalog.js')).default;
+  const tops=catalog.filter(p=>p.category==='torso'&&p.legsTop===510),failures=[];
+  for(const top of tops){
+   const i=new Image();i.src=top.image;await i.decode();const c=document.createElement('canvas');c.width=600;c.height=720;const ctx=c.getContext('2d');ctx.drawImage(i,0,0);
+   const alpha=(x,y)=>ctx.getImageData(x,y,1,1).data[3];
+   for(let y=430;y<=475;y+=3){
+    const left=139+322*(.29-.065*((y-317)/193))+3;
+    const inside=Math.ceil(left)+2,outside=Math.floor(left)-2;
+    if(alpha(inside,y)<245||alpha(599-inside,y)<245||alpha(outside,y)>2||alpha(599-outside,y)>2){failures.push(top.id+': irregular border at '+y);break;}
+   }
+   if(top.id==='torso-catalog-33'){
+    const p=ctx.getImageData(222,460,1,1).data;if(p[1]<100||p[2]<100)failures.push(top.id+': dark triangular side mark');
+   }
+  }
+  return {count:tops.length,failures};
+ });
+ expect(result.count).toBe(20);expect(result.failures).toEqual([]);
+});

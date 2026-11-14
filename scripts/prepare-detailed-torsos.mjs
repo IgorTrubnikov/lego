@@ -25,6 +25,43 @@ try{
    ctx.scale(w,h);ctx.clip(path);ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(image,sx,sy,w,h,0,0,w,h);
    const out=document.createElement('canvas');out.width=600;out.height=720;const o=out.getContext('2d');
    o.drawImage(c,0,0,w,p.front,139,317,322,193);o.drawImage(c,0,p.front,w,h-p.front,139,510,322,22);
+   // Replace the irregular source-side fringe with straight, antialiased
+   // panel edges. Keep the arms/hands and the central print unchanged.
+   const pixels=o.getImageData(0,0,600,720),original=new Uint8ClampedArray(pixels.data);
+   for(let y=345;y<510;y++){
+    const t=(y-317)/193,fade=Math.min(1,(y-345)/35),left=139+322*(.29-.065*t)+3*fade,right=600-left;
+    for(const side of [-1,1]){
+     const edge=side===-1?left:right;
+     const hand=(i)=>y>=480&&(p.number===33||p.number===37
+      ?original[i]>160&&original[i+1]>160&&original[i+2]>160
+      :original[i]>130&&original[i+1]>70&&original[i+2]>30&&original[i]>original[i+1]*1.13&&original[i+1]>original[i+2]*1.12);
+     for(let step=-7;step<=1;step++){
+      const x=side===-1?Math.floor(edge)+step:Math.ceil(edge)-step,i=(y*600+x)*4;
+      if(hand(i))continue;
+      const coverage=Math.max(0,Math.min(1,side===-1?x+1-edge:edge-x));
+      if(coverage===0){pixels.data[i+3]=Math.round(original[i+3]*(1-fade));continue;}
+      let anchor=x;
+      for(let d=0;d<10&&original[(y*600+anchor)*4+3]<245;d++)anchor-=side;
+      const source=(y*600+anchor)*4;
+      if(original[i+3]<245){for(let c=0;c<3;c++)pixels.data[i+c]=original[source+c];}
+      pixels.data[i+3]=Math.round(original[i+3]*(1-fade)+255*coverage*fade);
+     }
+     if((p.number===33||p.number===37)&&y>=(p.number===33?445:460)&&y<=505){
+      const samples=[[],[],[]];
+      for(let dy=-5;dy<=5;dy++)for(let d=20;d<=40;d++){
+       const x=Math.round(edge-side*d),i=((y+dy)*600+x)*4,[r,g,b]=original.slice(i,i+3);
+       const fabric=p.number===33?g>100&&b>100&&r<g*.45:r>205&&g>55&&b>130&&g<r*.65;
+       if(original[i+3]>245&&fabric)for(let c=0;c<3;c++)samples[c].push(original[i+c]);
+      }
+      const color=samples.map(values=>values.sort((a,b)=>a-b)[Math.floor(values.length/2)]);
+      if(color.every(v=>v!==undefined))for(let d=1;d<30;d++){
+       const x=Math.round(edge-side*d),i=(y*600+x)*4;
+       if(original[i]+original[i+1]+original[i+2]<color[0]+color[1]+color[2]-15&&pixels.data[i+3]>245)for(let c=0;c<3;c++)pixels.data[i+c]=color[c];
+      }
+     }
+    }
+   }
+   o.putImageData(pixels,0,0);
    return out.toDataURL('image/png').split(',')[1];
   },{p,source});
   const version=createHash('sha256').update(Buffer.from(raster,'base64')).digest('hex').slice(0,12);
