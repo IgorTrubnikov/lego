@@ -133,3 +133,13 @@ test('large dogs get room beside the figure and an assembly scale independent of
  assert.doesNotMatch(renderFigure(chosen,catalog,'animal'),/transform=/);
  assert.equal(figureScene({...chosen,animal:'animal-none'},catalog).width,600);
 });
+
+test('detailed torso masks only the hidden upper pants in the shared figure scene',()=>{
+ const catalog=parts.map(p=>p.category==='torso'?{...p,legsTop:510}:p);
+ assert.equal(figureScene(selection,catalog).layers.find(p=>p.category==='legs').clipTop,510);
+ assert.match(renderFigure(selection,catalog),/clip-path:inset\(510px 0 0\)/);
+ assert.doesNotMatch(renderFigure(selection,catalog,'legs'),/clip-path/);
+ assert.equal(figureScene(selection,parts).layers.find(p=>p.category==='legs').clipTop,undefined);
+ const suit={id:'s',category:'suit',price:550,image:'./suits/test.svg'};
+ assert.ok(!figureScene({...selection,suit:'s'},[...catalog,suit]).layers.some(p=>p.clipTop!==undefined));
+});

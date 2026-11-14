@@ -82,3 +82,25 @@ test('twenty detailed printed torsos preserve their selected print in PNG',async
   },top.image);expect(delta,top.id).toBeLessThan(10);
  }
 });
+
+test('detailed torsos have transparent arm gaps in assets and exported PNGs',async({page})=>{
+ test.setTimeout(90_000);await page.goto('/');
+ const failures=await page.evaluate(async()=>{
+  const catalog=(await import('./catalog.js')).default;
+  const {initialSelection}=await import('./parts.js');
+  const {createFigurePng}=await import('./export-image.js');
+  const torsos=catalog.filter(p=>p.category==='torso'&&p.id.startsWith('torso-catalog-')&&![25,26,27,38,39].includes(Number(p.name.split(' · ')[0])));
+  const failures=[];
+  const check=async(src,id,scale)=>{
+   const i=new Image();i.src=src;await i.decode();const c=document.createElement('canvas');c.width=i.width;c.height=i.height;const ctx=c.getContext('2d');ctx.drawImage(i,0,0);
+   for(const x of [213,386]){const data=ctx.getImageData(x*scale,450*scale,scale,25*scale).data;if(data.some((v,i)=>i%4===3&&v>2))failures.push(id+': opaque arm gap at '+x);}
+  };
+  for(const torso of torsos){
+   await check(torso.image,torso.id,1);
+   const blob=await createFigurePng({...initialSelection,torso:torso.id},catalog),url=URL.createObjectURL(blob);
+   try{await check(url,torso.id+' PNG',2);}finally{URL.revokeObjectURL(url);}
+  }
+  return {count:torsos.length,failures};
+ });
+ expect(failures.count).toBe(20);expect(failures.failures).toEqual([]);
+});

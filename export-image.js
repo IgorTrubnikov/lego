@@ -8,10 +8,14 @@ export async function createFigurePng(selection,parts){
   const image=new Image();
   image.src=new URL(part.image,document.baseURI).href;
   await image.decode();
-  return {image,x:part.x,y:part.y,scale:part.scale};
+  return {image,x:part.x,y:part.y,scale:part.scale,clipTop:part.clipTop};
  }));
  const canvas=document.createElement('canvas');canvas.width=scene.width*2;canvas.height=scene.height*2;
  const context=canvas.getContext('2d');if(!context)throw new Error('Canvas недоступен.');
- for(const {image,x,y,scale} of images)context.drawImage(image,x*2,y*2,1200*scale,1440*scale);
+ for(const {image,x,y,scale,clipTop} of images){
+  context.save();
+  if(clipTop!==undefined){context.beginPath();context.rect(0,clipTop*2,canvas.width,canvas.height-clipTop*2);context.clip();}
+  context.drawImage(image,x*2,y*2,1200*scale,1440*scale);context.restore();
+ }
  return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('Не удалось создать PNG.')),'image/png'));
 }

@@ -57,7 +57,9 @@ export function figureScene(selection,parts){
  const chosen=selectedFigureParts(selection,parts);
  const hasChildren=chosen.some(p=>p.category==='children'),hasTransport=chosen.some(p=>p.category==='transport');
  const hasLargeAnimal=chosen.some(p=>p.category==='animal'&&largeAnimalIds.has(p.id));
+ const legsTop=chosen.find(p=>p.category==='torso')?.legsTop;
  const layers=chosen.map(part=>{
+  if(part.category==='legs'&&legsTop!==undefined)return {...part,x:0,y:0,scale:1,clipTop:legsTop};
   if(part.category==='animal'&&largeAnimalIds.has(part.id))return {...part,x:450-415*(14/9),y:695-695*(14/9),scale:14/9};
   if(part.category==='transport'&&hasChildren)return {...part,x:-31,y:501,scale:.7};
   if(part.category==='children')return {...part,x:hasTransport?150:0,y:300,scale:1};
@@ -69,7 +71,7 @@ export function renderFigure(selection, parts, crop) {
   const views={hair:'155 65 290 255',face:'190 170 220 160',torso:'125 280 350 270',legs:'200 445 200 250',skirt:'165 485 270 220',suit:'133 311 334 391',accessory:'15 405 150 290',animal:'430 435 170 265',transport:'70 440 460 260',children:'180 425 240 280',altar:'10 40 580 670'};
   const preview=crop&&parts.find(p=>p.id===selection[crop]&&p.category===crop)?.previewBox;
   const image=part=>{
-    return part?.image ? `<image href="${escapeHtml(part.image)}" width="600" height="720" data-layer="${part.category}"${part.y?` transform="translate(${part.x||0} ${part.y})${part.scale!==1?` scale(${part.scale})`:''}"`:''}/>` : '';
+    return part?.image ? `<image href="${escapeHtml(part.image)}" width="600" height="720" data-layer="${part.category}"${part.clipTop!==undefined?` style="clip-path:inset(${part.clipTop}px 0 0)"`:''}${part.y?` transform="translate(${part.x||0} ${part.y})${part.scale!==1?` scale(${part.scale})`:''}"`:''}/>` : '';
   };
   const chosen=parts.find(p=>p.id===selection[crop]&&p.category===crop);
   const cropped=crop==='hair'&&chosen?.backImage?[{...chosen,category:'hair-back',image:chosen.backImage},chosen]:[chosen];

@@ -70,6 +70,9 @@ export async function collectParts(root) {
         if(box.length!==4||!box.every(Number.isFinite)||x<0||y<0||w<=0||h<=0||x+w>size.width||y+h>size.height)throw new Error(`${folder}/${filename}: неверная область предпросмотра`);
         previewBox=box.join(' ');
       }
+      const rawLegsTop=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-legs-top=["']([^"']*)["']/)?.[1]:undefined;
+      const legsTop=rawLegsTop===undefined?undefined:Number(rawLegsTop);
+      if(rawLegsTop!==undefined&&(category!=='torso'||!Number.isSafeInteger(legsTop)||legsTop<1||legsTop>=720))throw new Error(`${folder}/${filename}: неверная граница брюк`);
       const rawOrder=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-catalog-order=["']([^"']*)["']/)?.[1]:undefined;
       const catalogOrder=rawOrder===undefined?undefined:Number(rawOrder);
       if(rawOrder!==undefined&&(!['hair','animal','torso'].includes(category)||!Number.isSafeInteger(catalogOrder)||catalogOrder<1||catalogOrder>10000))throw new Error(`${folder}/${filename}: неверный порядок карточки`);
@@ -89,7 +92,7 @@ export async function collectParts(root) {
         if(back.length>2*1024*1024||dimensions.width!==size.width||dimensions.height!==size.height)throw new Error(`${folder}/${filename}: неверный размер заднего слоя причёски`);
       }
       ids.add(id);count++;
-      categoryParts.push({id,category,name,price,...(catalogOrder!==undefined?{catalogOrder}:{}),image:`./${folder}/${encodeURIComponent(filename)}`+versionQuery,...(previewBox?{previewBox}:{}),...(backImage?{backImage:backImage+versionQuery}:{}),...(includedLabel?{includedLabel}:{}),...(skirtMode?{skirtMode}:{})});
+      categoryParts.push({id,category,name,price,...(legsTop!==undefined?{legsTop}:{}),...(catalogOrder!==undefined?{catalogOrder}:{}),image:`./${folder}/${encodeURIComponent(filename)}`+versionQuery,...(previewBox?{previewBox}:{}),...(backImage?{backImage:backImage+versionQuery}:{}),...(includedLabel?{includedLabel}:{}),...(skirtMode?{skirtMode}:{})});
     }
     if(['hair','animal','torso'].includes(category))categoryParts.sort((a,b)=>(a.catalogOrder??Number.MAX_SAFE_INTEGER)-(b.catalogOrder??Number.MAX_SAFE_INTEGER));
     parts.push(...categoryParts);

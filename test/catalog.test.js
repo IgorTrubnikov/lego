@@ -232,3 +232,15 @@ test('torso catalog removes retired IDs and groups solid colors before prints an
  assert.ok(tops.every(p=>p.price===0));
  const medical=[31,32,33,37];assert.deepEqual(numbers.slice(numbers.indexOf(31),numbers.indexOf(31)+4),medical);
 });
+
+test('upper pants masking metadata is accepted only on torsos with a valid boundary',()=>fixture(async root=>{
+ const file=path.join(root,'clothes/test__250__Деталь.svg');
+ await writeFile(file,svg.replace('<svg ','<svg data-legs-top="510" '));
+ assert.equal((await collectParts(root)).find(p=>p.category==='torso').legsTop,510);
+ for(const value of ['0','720','-1','510.5','bad']){
+  await writeFile(file,svg.replace('<svg ',`<svg data-legs-top="${value}" `));await assert.rejects(collectParts(root),/граница брюк/);
+ }
+ await writeFile(file,svg);
+ await writeFile(path.join(root,'pants/test__250__Деталь.svg'),svg.replace('<svg ','<svg data-legs-top="510" '));
+ await assert.rejects(collectParts(root),/граница брюк/);
+}));
