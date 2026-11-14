@@ -219,3 +219,15 @@ test('eight additional faces preserve previous heads and source order without ex
  assert.deepEqual(added.map(p=>Number(p.name.split(' · ')[0])),[67,68,69,70,71,72,73,74]);
  assert.ok(added.every(p=>p.price===0&&p.previewBox==='218 167 164 159'));
 });
+
+test('torso catalog removes retired IDs and groups solid colors before prints and medical clothing',async()=>{
+ const config=JSON.parse(await readFile(new URL('../scripts/plain-torsos/order.json',import.meta.url),'utf8'));
+ const tops=(await collectParts(new URL('../',import.meta.url).pathname)).filter(p=>p.category==='torso');
+ assert.equal(tops.length,34);
+ const numbers=tops.map(p=>Number(p.name.split(' · ')[0]));
+ assert.deepEqual(numbers,config.groups.flatMap(g=>g.numbers));
+ for(const n of config.retired)assert.ok(!numbers.includes(n));
+ assert.equal(tops.filter(p=>p.id.startsWith('torso-plain-')).length,9);
+ assert.ok(tops.every(p=>p.price===0));
+ const medical=[31,32,33,37];assert.deepEqual(numbers.slice(numbers.indexOf(31),numbers.indexOf(31)+4),medical);
+});

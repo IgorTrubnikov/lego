@@ -1,11 +1,12 @@
+import {exportDraftPng} from './helpers/figure-export.js';
 import {test,expect} from '@playwright/test';
 
-test('all 37 available outfits keep their hands, fit below the head and select without a separate charge',async({page})=>{
+test('all 34 available outfits keep their hands, fit below the head and select without a separate charge',async({page})=>{
  test.setTimeout(90_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');await page.locator('[data-category="torso"]').click();
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
- const clothes=catalog.filter(p=>p.category==='torso');expect(clothes).toHaveLength(37);
- expect(clothes.every(p=>p.price===0&&/^torso-catalog-\d\d$/.test(p.id))).toBe(true);
+ const clothes=catalog.filter(p=>p.category==='torso');expect(clothes).toHaveLength(34);
+ expect(clothes.every(p=>p.price===0&&/^torso-(catalog|plain)-\d\d$/.test(p.id))).toBe(true);
  const artwork=await page.evaluate(async list=>Promise.all(list.map(async part=>{
   const img=new Image();img.src=part.image;await img.decode();
   const c=document.createElement('canvas');c.width=600;c.height=720;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);
@@ -37,4 +38,30 @@ test('a retired trial outfit resets to the new blazer and preserves all other ch
  await expect(page.locator('#figure [data-layer="hair"]')).toHaveAttribute('href',/renewed-07__/);
  await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-21__/);
  await page.locator('[data-category="torso"]').click();await expect(page.locator('[data-part="torso-3d-black-suit"]')).toHaveCount(0);
+});
+
+
+test('removed torso numbers restore safely without changing other selected parts',async({page})=>{
+ await page.goto('/');
+ for(const n of [19,13,2,1,7,8,20,21,28,9,15,40]){
+  await page.evaluate(n=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({torso:'torso-catalog-'+String(n).padStart(2,'0'),face:'face-catalog-07',hair:'hair-renewed-07',legs:'legs-catalog-21'})),n);
+  await page.reload();await expect(page.locator('#figure [data-layer="torso"]')).toHaveAttribute('href',/catalog-06__/);
+  await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',/catalog-07__/);
+ }
+});
+
+test('nine plain colors persist and export their selected torso without extra charge',async({page})=>{
+ test.setTimeout(90_000);await page.goto('/');
+ const tops=await page.evaluate(async()=>(await import('./catalog.js')).default.filter(p=>p.id.startsWith('torso-plain-')));expect(tops).toHaveLength(9);
+ for(const top of tops){
+  await page.locator('[data-category="torso"]').click();await page.locator(`[data-part="${top.id}"]`).click();await page.reload();
+  await expect(page.locator('#figure [data-layer="torso"]')).toHaveAttribute('href',top.image);await expect(page.locator('#total')).toHaveText(/550/);
+  const pending=page.waitForEvent('download');await exportDraftPng(page);expect(await(await pending).failure()).toBeNull();
+  const delta=await page.evaluate(async src=>{
+   const load=async src=>{const i=new Image();i.src=src;await i.decode();return i;};
+   const imgs=await Promise.all([load(src),load(document.querySelector('#test-figure-png').href)]);
+   const data=imgs.map(i=>{const c=document.createElement('canvas');c.width=600;c.height=720;const ctx=c.getContext('2d');ctx.drawImage(i,0,0,600,720);return ctx.getImageData(270,370,60,60).data;});
+   let sum=0;for(let i=0;i<data[0].length;i+=4)for(let j=0;j<3;j++)sum+=Math.abs(data[0][i+j]-data[1][i+j]);return sum/(60*60*3);
+  },top.image);expect(delta).toBeLessThan(8);
+ }
 });

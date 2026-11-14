@@ -1,5 +1,5 @@
 // Import the prepared transparent 6 × 7 torso sheet (37 reference designs).
-// Usage: node scripts/prepare-clothes-assets.mjs clothes.png [price=200]
+// Usage: node scripts/prepare-clothes-assets.mjs clothes.png [price=0]
 import {spawnSync} from 'node:child_process';
 import {readFileSync,writeFileSync,mkdtempSync,rmSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
@@ -21,7 +21,7 @@ export const clothesNames=[
 const bands=[[65,190],[258,377],[444,558],[622,737],[797,910],[954,1073],[1125,1234]];
 const columns=[7,222,432,642,852,1062,1274];
 function magick(args){const r=spawnSync('magick',args,{encoding:'utf8'});if(r.error)throw r.error;if(r.status)throw Error(r.stderr);return r.stdout.trim();}
-export function prepare(source,price=200){
+export function prepare(source,price=0){
  if(!Number.isInteger(price)||price<0)throw Error('Invalid price');
  if(magick(['identify','-format','%wx%h',source])!=='1274x1235')throw Error('Expected the prepared 1274 × 1235 sheet');
  const temp=mkdtempSync(path.join(os.tmpdir(),'clothes-assets-'));
@@ -38,10 +38,14 @@ export function prepare(source,price=200){
    const version=createHash('sha256').update(art).digest('hex').slice(0,12);
    return {filename:`catalog-${number}__${price}__${title}.svg`,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720" viewBox="0 0 600 720" data-render-style="glossy-plastic" data-asset-version="${version}" data-preview-box="133 311 334 227"><title>${escapeHtml(title)}</title>${art}</svg>\n`};
   }).filter(out=>!/^catalog-(03|10|14)__/.test(out.filename));
+  const config=JSON.parse(readFileSync(new URL('./plain-torsos/order.json',import.meta.url)));
+  const order=config.groups.flatMap(g=>g.numbers);
+  const current=outputs.filter(out=>!config.retired.includes(Number(out.filename.match(/^catalog-(\d+)/)[1])));
+  for(const out of current){const n=Number(out.filename.match(/^catalog-(\d+)/)[1]);out.svg=out.svg.replace('<svg ',`<svg data-catalog-order="${(order.indexOf(n)+1)*10}" `);}
   // Replace trial clothing only after every design has been prepared successfully.
-  for(const f of readdirSync(path.join(root,'clothes')))if(/\.(svg|png|webp)$/i.test(f))rmSync(path.join(root,'clothes',f));
-  for(const out of outputs)writeFileSync(path.join(root,'clothes',out.filename),out.svg);
-  console.log(`Prepared ${outputs.length} clothing variants at ${price} ₽ each.`);
+  for(const f of readdirSync(path.join(root,'clothes')))if(/^catalog-\d{2}__/.test(f)&&Number(f.match(/^catalog-(\d+)/)[1])<=37)rmSync(path.join(root,'clothes',f));
+  for(const out of current)writeFileSync(path.join(root,'clothes',out.filename),out.svg);
+  console.log(`Prepared ${current.length} original clothing variants; later colors preserved at ${price} ₽ each.`);
  }finally{rmSync(temp,{recursive:true,force:true});}
 }
-if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))prepare(process.argv[2],Number(process.argv[3]??200));
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))prepare(process.argv[2],Number(process.argv[3]??0));
