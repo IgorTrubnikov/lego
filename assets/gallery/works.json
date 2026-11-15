@@ -1,5 +1,18 @@
 [
   {
+    "id": "keyholder-love-is",
+    "source": "photo_2026-11-14_17-17-46.jpg",
+    "category": "keyholders",
+    "title": "Ключница «Любовь это…»",
+    "alt": "Белая ключница «Любовь это…» с двумя крючками и брелоками с минифигурками LEGO.",
+    "thumb": "assets/gallery/thumbs/keyholder-love-is.webp",
+    "full": "assets/gallery/full/keyholder-love-is.webp",
+    "width": 540,
+    "height": 720,
+    "fullWidth": 960,
+    "fullHeight": 1280
+  },
+  {
     "id": "new-01",
     "source": "1.jpg",
     "category": "keychains",

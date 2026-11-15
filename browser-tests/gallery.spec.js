@@ -11,7 +11,7 @@ test('gallery navigation, categories and every supplied photo work',async({page}
  if(!works.length){await expect(page.locator('.gallery-empty')).toBeVisible();await expect(page.locator('#works-grid .work-card')).toHaveCount(0);expect(errors).toEqual([]);return;}
  await expect(page.locator('#works-grid .work-card')).toHaveCount(works.length);
  await expect(page.locator('#work-count')).toHaveText(works.length+' фото');
- for(const category of ['frames','keychains','domes']){
+ for(const category of new Set(works.map(work=>work.category))){
   await page.locator(`[data-filter="${category}"]`).click();
   await expect(page.locator('#works-grid .work-card:visible')).toHaveCount(works.filter(w=>w.category===category).length);
  }
@@ -29,7 +29,7 @@ test('gallery navigation, categories and every supplied photo work',async({page}
 test('full-size view supports next, previous, filtering, Escape and focus restoration',async({page})=>{
  test.skip(!works.length,'Gallery is intentionally empty while awaiting the replacement photos.');
  await page.goto('/works.html');
- const category=works[0].category,subset=works.filter(w=>w.category===category);
+ const category=works.find(work=>works.filter(w=>w.category===work.category).length>1).category,subset=works.filter(w=>w.category===category);
  await page.locator(`[data-filter="${category}"]`).click();
  const opener=page.locator(`#work-${subset[0].id} .work-open`);await opener.click();
  const dialog=page.locator('#work-lightbox');await expect(dialog).toBeVisible();
@@ -55,4 +55,19 @@ test('gallery remains a usable photo page without JavaScript',async({browser})=>
  else await expect(page.locator('.gallery-empty')).toBeVisible();
  await page.locator('.mobile-menu summary').click();await expect(page.getByRole('navigation',{name:'Мобильная навигация'})).toBeVisible();
  await context.close();
+});
+
+test('keyholder photo is available in its category and full-size view',async({page})=>{
+ await page.goto('/works.html');
+ await page.getByRole('button',{name:'Ключницы'}).click();
+ await expect(page.locator('#works-grid .work-card:visible')).toHaveCount(1);
+ await page.locator('#work-keyholder-love-is .work-open').click();
+ await expect(page.locator('#work-lightbox')).toBeVisible();
+ await expect(page.locator('#work-lightbox-title')).toHaveText('Ключница «Любовь это…»');
+ await expect(page.locator('#work-full')).toHaveAttribute('src',/keyholder-love-is\.webp$/);
+ await expect(page.locator('#work-position')).toHaveText('1 / 1');
+ await page.locator('#work-next').click();
+ await expect(page.locator('#work-position')).toHaveText('1 / 1');
+ await page.keyboard.press('Escape');
+ await expect(page.locator('#work-lightbox')).not.toBeVisible();
 });
