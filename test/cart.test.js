@@ -9,7 +9,7 @@ test('standalone characters always cost 550, including the fourth and later',()=
  const cart={...newCart(),items:['a','b','c','d'].map(id=>item(id))};assert.equal(cartTotals(cart).total,2200);assert.equal(cartTotals(cart).ready,true);
 });
 test('each frame charges its empty price and the first three at 400, then 350',()=>{
- assert.deepEqual(packagingOptions.map(p=>p.price),[0,1500,1150,1250,1350,650]);
+ assert.deepEqual(packagingOptions.map(p=>p.price),[0,1500,1150,1250,1350,650,2500]);
  for(const [type,price] of [['frame-10x15',1150],['frame-15x21',1250],['frame-20x20',1350]]){
   const cart={...newCart(),groups:[group('f',type)],items:['a','b','c','d','e'].map(id=>item(id,[],'f'))};
   const t=cartTotals(cart);assert.deepEqual(t.lines.map(l=>l.base),[400,400,400,350,350]);assert.equal(t.total,price+1900);
@@ -61,4 +61,14 @@ test('saved additions use current catalog prices and removed details require rev
  const saved={...newCart(),items:[item('a',[detail('skirt','skirt',200)]),item('b',[detail('accessory-catalog-wheel-small','accessory',100)])]};
  const updated=refreshCart(saved,[{...detail('skirt','skirt',100),image:'skirt.svg'}]);
  assert.equal(updated.items[0].details[0].price,100);assert.equal(updated.items[0].unavailable,false);assert.equal(updated.items[0].preview,saved.items[0].preview);assert.equal(updated.items[1].unavailable,true);assert.equal(cartTotals(updated).ready,false);
+});
+
+
+test('keyholder includes two figures, charges extras and restores the two-place limit',()=>{
+ const cart={...newCart(),groups:[group('holder','keyholder')],items:[item('a',[detail('pet','animal',200)],'holder'),item('b',[],'holder'),item('c')]};
+ let totals=cartTotals(cart);assert.deepEqual(totals.lines.map(l=>l.base),[0,0,550]);assert.equal(totals.total,3250);
+ assert.equal(totals.groups.find(g=>g.id==='holder').total,2700);assert.equal(assignGroup(cart,'c','holder'),false);
+ cart.items.pop();assert.equal(cartTotals(cart).total,2700);assert.ok(cartTotals(cart).ready);
+ const restored=restoreCart({...cart,items:[...cart.items,item('c',[],'holder')]});assert.equal(restored.items[2].groupId,'none');
+ assert.equal(cartTotals(restored).total,3250);assert.equal(restored.groups[0].type,'keyholder');
 });

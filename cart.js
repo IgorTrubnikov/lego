@@ -7,7 +7,8 @@ export const packagingOptions=[
  {id:'frame-10x15',name:'Рамка 10×15',price:1150},
  {id:'frame-15x21',name:'Рамка 15×21',price:1250},
  {id:'frame-20x20',name:'Рамка 20×20',price:1350},
- {id:'keychain',name:'Брелок',price:650,includesFirst:true,capacity:1}
+ {id:'keychain',name:'Брелок',price:650,includesFirst:true,capacity:1},
+ {id:'keyholder',name:'Ключница',price:2500,includedCharacters:2,capacity:2}
 ];
 const uid=()=>globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+Math.random().toString(36).slice(2);
 export const newGroup=type=>({id:uid(),type});
@@ -15,7 +16,7 @@ export const newCart=()=>({version:2,id:uid().slice(0,8).toUpperCase(),createdAt
 export function characterBasePrice(index=0,type='none'){
  const option=packagingOptions.find(p=>p.id===type);
  if(!option||type==='none')return figurePrice;
- if(option.includesFirst&&index===0)return 0;
+ if(index<(option.includedCharacters??(option.includesFirst?1:0)))return 0;
  return index<3?400:350;
 }
 const isPreview=value=>typeof value==='string'&&/^data:image\/(?:png|webp);base64,[A-Za-z0-9+/=]+$/.test(value)&&value.length<2_000_000;

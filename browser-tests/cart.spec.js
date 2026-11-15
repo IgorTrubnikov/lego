@@ -72,3 +72,16 @@ test('saved skirt prices refresh and a retired small wheel is resolved through e
  await page.reload();await expect(page.locator('.cart-unavailable')).toBeVisible();await expect(page.locator('#save-png')).toBeDisabled();
  await page.locator('[data-cart-edit]').click();await page.locator('#add-cart').click();await expect(page.locator('#cancel-edit')).toBeHidden();await expect(page.locator('.cart-unavailable')).toHaveCount(0);expect(await amount(page)).toBe(650);await expect(page.locator('#save-png')).toBeEnabled();
 });
+
+test('keyholder includes two figures, survives reload and describes its price in PNG',async({page})=>{
+ await page.goto('/');await choose(page,'accessory','accessory-catalog-gamepad');await add(page,1);
+ await choose(page,'accessory','accessory-none');await add(page,2);await add(page,3);
+ const holder=await createGroup(page,'keyholder');await move(page,0,holder);await move(page,1,holder);
+ expect(await amount(page)).toBe(3150); // keyholder2500 + accessory100 + standalone550.
+ const third=(await character(page,2)).locator('[data-cart-group]');await expect(third.locator(`option[value="${holder}"]`)).toHaveJSProperty('disabled',true);
+ await page.reload();expect(await amount(page)).toBe(3150);await expect(page.locator(`[data-group="${holder}"]`)).toContainText('2500 ₽ с двумя фигурками');
+ await (await character(page,2)).locator('[data-cart-remove]').click();expect(await amount(page)).toBe(2600);
+ await recordText(page);const png=await download(page);expect(png.subarray(0,8).toString('hex')).toBe('89504e470d0a1a0a');
+ const text=await page.evaluate(()=>window.__orderTexts.join('\n').replace(/\u00a0/g,' '));expect(text).toContain('Ключница №1 — 2 600 ₽');expect(text).toContain('две фигурки включены');
+ await page.locator(`[data-group-remove="${holder}"]`).click();expect(await amount(page)).toBe(1200);await expect(page.locator('.cart-item')).toHaveCount(2);
+});
