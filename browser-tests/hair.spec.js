@@ -6,6 +6,8 @@ test('hairstyle 70 retains its centered curls after reload and PNG export',async
  await page.goto('/');
  const hair=await page.evaluate(async()=>(await import('./catalog.js')).default.find(p=>p.id==='hair-curly-brown-70'));
  expect(hair.price).toBe(0);expect(hair.name).toBe('70 · Каштановые локоны с пробором');
+ const order=await page.evaluate(async()=>(await import('./catalog.js')).default.filter(p=>p.category==='hair').map(p=>p.id));
+ expect(order[order.indexOf(hair.id)+1]).toBe('hair-headwear-beanie-gray');
  await page.locator(`[data-part="${hair.id}"]`).click();
  await expect(page.locator('#total')).toHaveText(/550/);
  await page.reload();
