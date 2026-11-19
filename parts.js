@@ -9,9 +9,13 @@ export const categories = [
   { id: 'animal', name: 'Животные', singular: 'Животное', optional: true, emptyLabel: 'Без животного', icon: '<path d="M7 13c-2 2-4 6-1 7s4-1 6-1 3 2 6 1 1-5-1-7q-5-5-10 0Z"/><ellipse cx="4" cy="9" rx="2" ry="3"/><ellipse cx="10" cy="5" rx="2" ry="3"/><ellipse cx="16" cy="5" rx="2" ry="3"/><ellipse cx="21" cy="10" rx="2" ry="3"/>' },
   { id: 'transport', name: 'Транспорт', singular: 'Транспорт', optional: true, emptyLabel: 'Без транспорта', icon: '<circle cx="5" cy="17" r="4"/><circle cx="19" cy="17" r="4"/><path d="m5 17 5-8 5 8H5m10 0-3-12h4m-6 4H6"/>' },
   { id: 'children', name: 'Дети', singular: 'Ребёнок', optional: true, emptyLabel: 'Без ребёнка', icon: '<circle cx="12" cy="7" r="4"/><path d="M6 21v-5a6 6 0 0 1 12 0v5M9 21v-4m6 4v-4M10 7h.01M14 7h.01"/>' },
-  { id: 'altar', name: 'Алтари', singular: 'Композиция', optional: true, emptyLabel: 'Без композиции', icon: '<path d="M4 21V10a8 8 0 0 1 16 0v11M2 21h6m8 0h6M7 21V10a5 5 0 0 1 10 0v11"/><path d="m12 5-2-2a1.5 1.5 0 0 1 2-2 1.5 1.5 0 0 1 2 2Z"/>' }
+  { id: 'altar', name: 'Алтари', singular: 'Композиция', optional: true, emptyLabel: 'Без композиции', icon: '<path d="M4 21V10a8 8 0 0 1 16 0v11M2 21h6m8 0h6M7 21V10a5 5 0 0 1 10 0v11"/><path d="m12 5-2-2a1.5 1.5 0 0 1 2-2 1.5 1.5 0 0 1 2 2Z"/>' },
+  { id: 'additional', name: 'Дополнительно', singular: 'Дополнительно', optional: true, emptyLabel: 'Без дополнения', icon: '<rect x="3" y="6" width="18" height="15" rx="2"/><path d="M3 11h18M12 6v15M12 6C4 6 6 0 9 3l3 3c8 0 6-6 3-3Z"/>' }
 ];
-export const initialSelection = { hair:'hair-renewed-14',face:'face-catalog-58',torso:'torso-catalog-06',legs:'legs-catalog-04',skirt:'skirt-none',suit:'suit-none',accessory:'accessory-none',animal:'animal-none',transport:'transport-none',children:'children-none',altar:'altar-none' };
+export const initialSelection = { hair:'hair-renewed-14',face:'face-catalog-58',torso:'torso-catalog-06',legs:'legs-catalog-04',skirt:'skirt-none',suit:'suit-none',accessory:'accessory-none',animal:'animal-none',transport:'transport-none',children:'children-none',altar:'altar-none',additional:'additional-none' };
+export const orderAddonCategories=['altar','additional'];
+export const cardBackgroundNote='Фон выбираете вы — подойдёт любая картинка. Пришлите её вместе с заказом в Telegram. Фон на миниатюре — пример.';
+export function partNote(part){return part?.id==='additional-card'?cardBackgroundNote:'';}
 // Empty choices are virtual: administrators only add actual images to the folders.
 export function withOptionalChoices(parts) {
  return [...categories.filter(c=>c.optional).map(c=>({id:c.id+'-none',category:c.id,name:c.emptyLabel,price:0})),...parts];
@@ -68,7 +72,7 @@ export function figureScene(selection,parts){
  return {width:hasLargeAnimal?760:600,height:hasChildren||hasTransport?1020:720,layers};
 }
 export function renderFigure(selection, parts, crop) {
-  const views={hair:'155 65 290 255',face:'190 170 220 160',torso:'125 280 350 270',legs:'200 445 200 250',skirt:'165 485 270 220',suit:'133 311 334 391',accessory:'15 405 150 290',animal:'430 435 170 265',transport:'70 440 460 260',children:'180 425 240 280',altar:'10 40 580 670'};
+  const views={hair:'155 65 290 255',face:'190 170 220 160',torso:'125 280 350 270',legs:'200 445 200 250',skirt:'165 485 270 220',suit:'133 311 334 391',accessory:'15 405 150 290',animal:'430 435 170 265',transport:'70 440 460 260',children:'180 425 240 280',altar:'10 40 580 670',additional:'10 40 580 670'};
   const preview=crop&&parts.find(p=>p.id===selection[crop]&&p.category===crop)?.previewBox;
   const image=part=>{
     return part?.image ? `<image href="${escapeHtml(part.image)}" width="600" height="720" data-layer="${part.category}"${part.clipTop!==undefined?` style="clip-path:inset(${part.clipTop}px 0 0)"`:''}${part.y?` transform="translate(${part.x||0} ${part.y})${part.scale!==1?` scale(${part.scale})`:''}"`:''}/>` : '';

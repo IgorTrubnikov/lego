@@ -94,9 +94,9 @@ test('extras appear beside the figure, add to price, persist and reset to none',
  }
  expect(Number((await page.locator('#total').innerText()).replace(/\D/g,''))).toBe(base);
  // Keyboard navigation wraps across every category.
- await page.locator('[data-category="altar"]').focus();await page.keyboard.press('ArrowRight');
+ await page.locator('[data-category="additional"]').focus();await page.keyboard.press('ArrowRight');
  await expect(page.locator('[data-category="hair"]')).toBeFocused();
- await page.keyboard.press('End');await expect(page.locator('[data-category="altar"]')).toBeFocused();
+ await page.keyboard.press('End');await expect(page.locator('[data-category="additional"]')).toBeFocused();
  await page.locator('#random').click();await page.locator('#reset').click();
  for(const category of ['accessory','animal'])await expect(page.locator(`#figure [data-layer="${category}"]`)).toHaveCount(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);

@@ -4,12 +4,25 @@ import {withOptionalChoices,initialSelection,totalPrice} from '../parts.js';
 const item=(id,details=[],groupId='none')=>({id,groupId,selection:{...initialSelection},preview:'data:image/webp;base64,YQ==',details});
 const detail=(id,category,price)=>({id,category,label:category,name:id,price});
 const group=(id,type)=>({id,type});
+test('heart keychain includes one figure, preserves additions and restores its own preview',()=>{
+ const card={id:'additional-card',category:'additional',name:'Карточка со своим фоном',price:200,image:'./additional/card.svg'};
+ const parts=withOptionalChoices([card]);
+ const details=snapshotDetails({additional:card.id},parts);
+ assert.match(details[0].note,/любая картинка/);
+ const cart={...newCart(),groups:[group('heart','keychain-heart')],items:[{...item('a',details,'heart'),additionalPreview:'data:image/webp;base64,YQ=='},item('b')]};
+ const total=cartTotals(cart);assert.equal(total.total,1425);assert.equal(total.lines[0].base,0);assert.equal(total.lines[0].extras,200);
+ assert.equal(assignGroup(cart,'b','heart'),false);
+ const restored=restoreCart(cart);assert.equal(restored.items[0].additionalPreview,cart.items[0].additionalPreview);
+ assert.equal(restored.items[0].details[0].note,details[0].note);assert.equal(cartTotals(restored).total,1425);
+ const legacy=restoreCart({...cart,version:1,packagingId:'keychain-heart',groups:undefined});
+ assert.equal(legacy.items[0].groupId,legacy.groups[0].id);assert.equal(legacy.items[1].groupId,'none');
+});
 test('standalone characters always cost 550, including the fourth and later',()=>{
  assert.deepEqual([0,1,2,3,20].map(i=>characterBasePrice(i)),[550,550,550,550,550]);
  const cart={...newCart(),items:['a','b','c','d'].map(id=>item(id))};assert.equal(cartTotals(cart).total,2200);assert.equal(cartTotals(cart).ready,true);
 });
 test('each frame charges its empty price and the first three at 400, then 350',()=>{
- assert.deepEqual(packagingOptions.map(p=>p.price),[0,1500,1150,1250,1350,650,2500]);
+ assert.deepEqual(packagingOptions.map(p=>p.price),[0,1500,1150,1250,1350,650,675,2500]);
  for(const [type,price] of [['frame-10x15',1150],['frame-15x21',1250],['frame-20x20',1350]]){
   const cart={...newCart(),groups:[group('f',type)],items:['a','b','c','d','e'].map(id=>item(id,[],'f'))};
   const t=cartTotals(cart);assert.deepEqual(t.lines.map(l=>l.base),[400,400,400,350,350]);assert.equal(t.total,price+1900);

@@ -77,8 +77,9 @@ test('optional folders can be empty or absent',()=>fixture(async root=>{
  await rm(path.join(root,'skirts'),{recursive:true});
  await rm(path.join(root,'transport'),{recursive:true});
  await rm(path.join(root,'children'),{recursive:true});
+ await rm(path.join(root,'additional'),{recursive:true});
  const parts=await collectParts(root);assert.equal(parts.length,4);
- assert.ok(parts.every(p=>!['suit','accessory','animal','altar'].includes(p.category)));
+ assert.ok(parts.every(p=>!['suit','accessory','animal','altar','additional'].includes(p.category)));
 }));
 
 test('reserves the empty-choice identifiers for optional categories',()=>fixture(async root=>{

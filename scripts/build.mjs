@@ -7,7 +7,7 @@ import {readReviews,reviewsPage} from './reviews.mjs';
 import { fileURLToPath } from 'node:url';
 import {createHash} from 'node:crypto';
 
-export const folders = { haircuts:'hair', faces:'face', clothes:'torso', pants:'legs', skirts:'skirt', suits:'suit', accessories:'accessory', animals:'animal', transport:'transport', children:'children', altars:'altar' };
+export const folders = { haircuts:'hair', faces:'face', clothes:'torso', pants:'legs', skirts:'skirt', suits:'suit', accessories:'accessory', animals:'animal', transport:'transport', children:'children', altars:'altar', additional:'additional' };
 const size = { width:600, height:720 };
 
 export function imageSize(data, extension) {

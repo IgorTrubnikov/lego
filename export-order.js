@@ -1,5 +1,5 @@
 import {cartTotals,detailIsExtra} from './cart.js';
-import {money} from './parts.js';
+import {money,orderAddonCategories} from './parts.js';
 function wrapped(ctx,text,width){
  const lines=[];let line='';
  for(const word of String(text).split(/\s+/)){
@@ -18,12 +18,15 @@ export async function createCartPreviews(selection,parts){
  try{
   const img=await load(url),c=document.createElement('canvas');c.width=360;c.height=Math.round(360*img.height/img.width);c.getContext('2d').drawImage(img,0,0,c.width,c.height);
   const preview=c.toDataURL('image/webp',.94);
-  const altar=parts.find(p=>p.category==='altar'&&p.id===selection.altar&&p.image);let altarPreview;
-  if(altar){
-   const image=await load(new URL(altar.image,document.baseURI).href),[x,y,w,h]=(altar.previewBox||'0 0 600 720').split(' ').map(Number);
-   const a=document.createElement('canvas');a.width=240;a.height=Math.round(240*h/w);a.getContext('2d').drawImage(image,x,y,w,h,0,0,a.width,a.height);altarPreview=a.toDataURL('image/webp',.94);
+  const addons={};
+  for(const category of orderAddonCategories){
+   const addon=parts.find(p=>p.category===category&&p.id===selection[category]&&p.image);
+   if(!addon)continue;
+   const image=await load(new URL(addon.image,document.baseURI).href),[x,y,w,h]=(addon.previewBox||'0 0 600 720').split(' ').map(Number);
+   const a=document.createElement('canvas');a.width=240;a.height=Math.round(240*h/w);a.getContext('2d').drawImage(image,x,y,w,h,0,0,a.width,a.height);
+   addons[category+'Preview']=a.toDataURL('image/webp',.94);
   }
-  return {preview,altarPreview};
+  return {preview,...addons};
  }finally{URL.revokeObjectURL(url);}
 }
 export async function createOrderPngs(cart){
@@ -32,9 +35,10 @@ export async function createOrderPngs(cart){
  const ordered=t.groups.flatMap(g=>g.lines.map((line,index)=>({...line,group:g,firstInGroup:index===0})));
  const cards=await Promise.all(ordered.map(async line=>{
   scratch.font='21px Arial';
-  const details=line.item.details.map(p=>({p,names:wrapped(scratch,p.label+': '+p.name,770),codes:wrapped(scratch,p.id+' · '+(detailIsExtra(p)?money(p.price):'входит в фигурку')+(p.includedLabel?' · '+p.includedLabel:''),850)}));
-  const textHeight=details.reduce((sum,d)=>sum+d.names.length*29+d.codes.length*23+14,0);
-  return {...line,details,height:Math.max(640,textHeight+190)+(line.firstInGroup?140:0),image:await load(line.item.preview),altar:line.item.altarPreview?await load(line.item.altarPreview):undefined};
+  const details=line.item.details.map(p=>({p,names:wrapped(scratch,p.label+': '+p.name,770),notes:p.note?wrapped(scratch,p.note,770):[],codes:wrapped(scratch,p.id+' · '+(detailIsExtra(p)?money(p.price):'входит в фигурку')+(p.includedLabel?' · '+p.includedLabel:''),850)}));
+  const textHeight=details.reduce((sum,d)=>sum+(d.names.length+d.notes.length)*29+d.codes.length*23+14,0);
+  const addons=await Promise.all(orderAddonCategories.map(category=>line.item[category+'Preview']).filter(Boolean).map(load));
+  return {...line,details,height:Math.max(640,textHeight+190)+(line.firstInGroup?140:0),image:await load(line.item.preview),addons};
  }));
  const pages=[];let current=[],height=0;
  for(const card of cards){if(current.length&&(height+card.height>2600||current.length===4)){pages.push(current);current=[];height=0;}current.push(card);height+=card.height;}
@@ -56,7 +60,7 @@ export async function createOrderPngs(cart){
     ctx.fillStyle='#f5e5e8';ctx.fillRect(35,top,1330,125);
     ctx.fillStyle='#791e36';ctx.font='bold 28px Arial';ctx.fillText(`${g.name} — ${money(g.total)}`,65,top+38);
     ctx.fillStyle='#38252a';ctx.font='21px Arial';
-    const rule=g.type==='none'?'Без оформления: каждая фигурка 550 ₽.':g.type==='keyholder'?'Ключница 2500 ₽, две фигурки включены. Дополнения оплачиваются отдельно.':g.type==='keychain'?'Брелок 650 ₽, один персонаж включён.':g.type==='flask'?'Колба 1500 ₽ с первой фигуркой; вторая и третья по 400 ₽, с четвёртой по 350 ₽.':`Рамка ${money(g.price)}; первые три фигурки по 400 ₽, с четвёртой по 350 ₽.`;
+    const rule=g.type==='none'?'Без оформления: каждая фигурка 550 ₽.':g.type==='keyholder'?'Ключница 2500 ₽, две фигурки включены. Дополнения оплачиваются отдельно.':g.type==='keychain'?'Брелок с круглым кольцом 650 ₽, один персонаж включён.':g.type==='keychain-heart'?'Брелок в виде сердца 675 ₽, один персонаж включён.':g.type==='flask'?'Колба 1500 ₽ с первой фигуркой; вторая и третья по 400 ₽, с четвёртой по 350 ₽.':`Рамка ${money(g.price)}; первые три фигурки по 400 ₽, с четвёртой по 350 ₽.`;
     ctx.fillText(rule,65,top+75);
     ctx.font='19px Arial';ctx.fillText(`Оформление ${money(g.price)} + фигурки ${money(g.figures)} + дополнения ${money(g.extras)} = ${money(g.total)}`,65,top+107);
     top+=140;
@@ -65,12 +69,16 @@ export async function createOrderPngs(cart){
    ctx.fillStyle='#ffffff';ctx.fillRect(35,top,1330,cardHeight-20);ctx.strokeStyle='#eadfe0';ctx.strokeRect(35,top,1330,cardHeight-20);
    ctx.fillStyle='#791e36';ctx.font='bold 27px Arial';ctx.fillText(`Персонаж ${card.index+1} — ${card.included&&!card.extras?'включён':money(card.total)}`,65,top+45);
    ctx.fillStyle='#746169';ctx.font='19px Arial';ctx.fillText(`${card.groupName} · ${card.included?'фигурка включена':`фигурка ${money(card.base)}`} + дополнения ${money(card.extras)}`,65,top+78);
-   const figureH=card.altar?Math.min(410,cardHeight-280):cardHeight-165;
+   const figureH=card.addons.length?Math.min(410,cardHeight-280):cardHeight-165;
    contain(ctx,card.image,65,top+100,350,figureH);
-   if(card.altar){contain(ctx,card.altar,120,top+105+figureH,230,145);}
+   for(const [i,addon] of card.addons.entries()){
+    const width=card.addons.length>1?165:230;
+    contain(ctx,addon,card.addons.length>1?65+i*175:120,top+105+figureH,width,145);
+   }
    let y=top+115;
    for(const detail of card.details){
     ctx.font='21px Arial';ctx.fillStyle='#38252a';for(const text of detail.names){ctx.fillText(text,465,y);y+=29;}
+    ctx.fillStyle='#791e36';for(const text of detail.notes){ctx.fillText(text,465,y);y+=29;}
     ctx.font='17px Arial';ctx.fillStyle='#746169';for(const text of detail.codes){ctx.fillText(text,465,y);y+=23;}y+=14;
    }
    top+=cardHeight;

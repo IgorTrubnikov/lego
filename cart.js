@@ -1,4 +1,4 @@
-import {selectionCategories,includedInFigure,figurePrice} from './parts.js';
+import {partNote,selectionCategories,includedInFigure,figurePrice} from './parts.js';
 // Keep the storage key so existing orders can migrate without losing their previews.
 export const cartStorageKey='teuilor-cart-v1';
 export const packagingOptions=[
@@ -7,7 +7,8 @@ export const packagingOptions=[
  {id:'frame-10x15',name:'Рамка 10×15',price:1150},
  {id:'frame-15x21',name:'Рамка 15×21',price:1250},
  {id:'frame-20x20',name:'Рамка 20×20',price:1350},
- {id:'keychain',name:'Брелок',price:650,includesFirst:true,capacity:1},
+ {id:'keychain',name:'Брелок с круглым кольцом',price:650,includesFirst:true,capacity:1},
+ {id:'keychain-heart',name:'Брелок в виде сердца',price:675,includesFirst:true,capacity:1},
  {id:'keyholder',name:'Ключница',price:2500,includedCharacters:2,capacity:2}
 ];
 const uid=()=>globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+Math.random().toString(36).slice(2);
@@ -23,7 +24,7 @@ const isPreview=value=>typeof value==='string'&&/^data:image\/(?:png|webp);base6
 export function restoreCart(value){
  const empty=newCart();
  if(!value||![1,2].includes(value.version)||!Array.isArray(value.items))return empty;
- const items=value.items.filter(i=>i&&typeof i.id==='string'&&i.selection&&typeof i.selection==='object'&&Array.isArray(i.details)&&isPreview(i.preview)).map(i=>({id:i.id.slice(0,80),groupId:typeof i.groupId==='string'?i.groupId:'none',selection:{...i.selection},preview:i.preview,altarPreview:isPreview(i.altarPreview)?i.altarPreview:undefined,details:i.details.filter(p=>p&&typeof p.id==='string'&&typeof p.category==='string'&&typeof p.name==='string'&&Number.isSafeInteger(p.price)&&p.price>=0&&p.price<=100000).map(p=>({id:p.id.slice(0,100),category:p.category.slice(0,30),label:String(p.label||p.category).slice(0,40),name:p.name.slice(0,160),price:p.price,includedLabel:typeof p.includedLabel==='string'?p.includedLabel.slice(0,100):undefined}))}));
+ const items=value.items.filter(i=>i&&typeof i.id==='string'&&i.selection&&typeof i.selection==='object'&&Array.isArray(i.details)&&isPreview(i.preview)).map(i=>({id:i.id.slice(0,80),groupId:typeof i.groupId==='string'?i.groupId:'none',selection:{...i.selection},preview:i.preview,altarPreview:isPreview(i.altarPreview)?i.altarPreview:undefined,additionalPreview:isPreview(i.additionalPreview)?i.additionalPreview:undefined,details:i.details.filter(p=>p&&typeof p.id==='string'&&typeof p.category==='string'&&typeof p.name==='string'&&Number.isSafeInteger(p.price)&&p.price>=0&&p.price<=100000).map(p=>({id:p.id.slice(0,100),category:p.category.slice(0,30),label:String(p.label||p.category).slice(0,40),name:p.name.slice(0,160),price:p.price,...(partNote(p)?{note:partNote(p)}:{}),includedLabel:typeof p.includedLabel==='string'?p.includedLabel.slice(0,100):undefined}))}));
  const unique=items.filter((item,index)=>items.findIndex(other=>other.id===item.id)===index);
  let groups=[],needsReview=value.needsReview===true;
  if(value.version===2){
@@ -38,7 +39,7 @@ export function restoreCart(value){
   }
   for(const [type,quantity] of formats)for(let i=0;i<quantity;i++)groups.push(newGroup(type));
   // A single old format has an unambiguous destination. Multiple formats need review.
-  if(groups.length===1)unique.forEach((item,index)=>{item.groupId=groups[0].type==='keychain'&&index>0?'none':groups[0].id;});
+  if(groups.length===1)unique.forEach((item,index)=>{item.groupId=['keychain','keychain-heart'].includes(groups[0].type)&&index>0?'none':groups[0].id;});
   else{unique.forEach(item=>{item.groupId='none';});needsReview=groups.length>1&&unique.length>0;}
  }
  const counts=new Map();
@@ -52,7 +53,7 @@ export function restoreCart(value){
 export function snapshotDetails(selection,parts){
  return selectionCategories(selection,parts).map(category=>{
   const part=parts.find(p=>p.id===selection[category.id]&&p.category===category.id&&p.image);
-  return part?{id:part.id,category:part.category,label:category.singular,name:part.name,price:part.price,...(part.includedLabel?{includedLabel:part.includedLabel}:{})}:undefined;
+  return part?{id:part.id,category:part.category,label:category.singular,name:part.name,price:part.price,...(partNote(part)?{note:partNote(part)}:{}),...(part.includedLabel?{includedLabel:part.includedLabel}:{})}:undefined;
  }).filter(Boolean);
 }
 export const detailIsExtra=part=>!includedInFigure.has(part.category)&&part.category!=='suit';
@@ -87,5 +88,5 @@ export function assignGroup(cart,itemId,groupId){
 // Saved previews remain intact; current prices and availability come from the catalog.
 export function refreshCart(cart,parts){
  const catalog=new Map(parts.filter(p=>p.image).map(p=>[p.id,p]));
- return {...cart,items:cart.items.map(item=>({...item,unavailable:item.details.some(p=>catalog.get(p.id)?.category!==p.category),details:item.details.map(p=>{const current=catalog.get(p.id);return current?.category===p.category?{...p,price:current.price,...(p.category==='altar'?{name:current.name}:{})}:p;})}))};
+ return {...cart,items:cart.items.map(item=>({...item,unavailable:item.details.some(p=>catalog.get(p.id)?.category!==p.category),details:item.details.map(p=>{const current=catalog.get(p.id);return current?.category===p.category?{...p,price:current.price,...(['altar','additional'].includes(p.category)?{name:current.name}:{}),...(partNote(current)?{note:partNote(current)}:{})}:p;})}))};
 }

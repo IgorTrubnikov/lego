@@ -6,7 +6,7 @@ test('a new page bypasses cached scripts and loads one release including PNG exp
  await page.route('**/app.js',route=>route.fulfill({contentType:'text/javascript',body:'throw new Error("Cached script was used");'}));
  await page.goto('/');
  const manifest=await page.evaluate(async()=>(await fetch('asset-manifest.json')).json());
- await expect(page.locator('#tabs [role="tab"]')).toHaveCount(11);
+ await expect(page.locator('#tabs [role="tab"]')).toHaveCount(12);
  await expect(page.locator('#figure image')).toHaveCount(4);
  await page.locator('[data-category="legs"]').click();await page.locator('[data-part="legs-catalog-21"]').click();
  await page.locator('#add-cart').click();await expect(page.locator('.cart-item')).toHaveCount(1);await page.locator('#cart-packaging').selectOption('flask');
@@ -28,7 +28,7 @@ test('missing optional controls in a cached page cannot stop the constructor',as
  });
  await page.goto('/');
  await expect(page.locator('#figure image')).toHaveCount(4);
- await expect(page.locator('#tabs [role="tab"]')).toHaveCount(11);
+ await expect(page.locator('#tabs [role="tab"]')).toHaveCount(12);
  await page.locator('[data-category="legs"]').click();await page.locator('[data-part="legs-catalog-21"]').click();
  await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-21__/);
  await page.locator('[data-category="altar"]').click();await page.locator('[data-part="altar-photo-01"]').click();

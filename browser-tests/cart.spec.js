@@ -33,7 +33,7 @@ test('flask includes the first, keychain includes one, and PNG describes the exa
  const key=await createGroup(page,'keychain');await move(page,4,key);expect(await amount(page)).toBe(3850);
  const select=(await character(page,0)).locator('[data-cart-group]');await expect(select.locator(`option[value="${key}"]`)).toHaveJSProperty('disabled',true);
  await recordText(page);const png=await download(page);expect(png.subarray(0,8).toString('hex')).toBe('89504e470d0a1a0a');expect(png.readUInt32BE(16)).toBe(1400);
- const text=await page.evaluate(()=>window.__orderTexts.join('\n').replace(/\u00a0/g,' '));expect(text).toContain('Колба №1 — 3 200 ₽');expect(text).toContain('Брелок №1 — 650 ₽');expect(text).toContain('Персонаж 5 — включён');expect(text).toContain('altar-photo-03');expect(text).toContain('transport-catalog-01');expect(text).toContain('с четвёртой по 350');
+ const text=await page.evaluate(()=>window.__orderTexts.join('\n').replace(/\u00a0/g,' '));expect(text).toContain('Колба №1 — 3 200 ₽');expect(text).toContain('Брелок с круглым кольцом №1 — 650 ₽');expect(text).toContain('Персонаж 5 — включён');expect(text).toContain('altar-photo-03');expect(text).toContain('transport-catalog-01');expect(text).toContain('с четвёртой по 350');
  await expect(page.locator('#order-downloads a')).toHaveCount(2);await expect(page.locator('#order-telegram')).toHaveAttribute('aria-disabled','false');
  await page.locator(`[data-group-remove="${key}"]`).click();expect(await amount(page)).toBe(3750);await expect(page.locator('#png-ready')).toBeHidden();
 });
