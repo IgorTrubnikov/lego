@@ -1,4 +1,4 @@
-// Rebuild the eleven isolated accessories from the reviewed transparent sheet.
+// Rebuild accessories from the transparent sheet and the replacement basketball.
 // Usage: node scripts/prepare-november-accessories.mjs
 import {spawnSync} from 'node:child_process';
 import {readFileSync,writeFileSync,mkdtempSync,rmSync} from 'node:fs';
@@ -34,8 +34,11 @@ const temp=mkdtempSync(path.join(os.tmpdir(),'november-accessories-'));
 try{
  const outputs=additions.map(([slug,name,price,maxWidth,maxHeight,crop])=>{
   const sprite=path.join(temp,slug+'.png');
+  const input=slug==='basketball'
+   ?[path.join(root,'scripts/accessory-additions-2026-11/basketball.png')]
+   :[source,'-crop',crop,'+repage'];
   // Remove almost invisible matte remnants before trimming; preserve opaque artwork.
-  magick([source,'-crop',crop,'+repage','-channel','A','-fx','u<0.15?0:u','+channel','-trim','+repage','-filter','Lanczos','-resize',`${maxWidth}x${maxHeight}`,sprite]);
+  magick([...input,'-channel','A','-fx','u<0.15?0:u','+channel','-trim','+repage','-filter','Lanczos','-resize',`${maxWidth}x${maxHeight}`,sprite]);
   const [width,height]=magick(['identify','-format','%w %h',sprite]).split(' ').map(Number);
   if(width<20||height<20)throw Error('Empty accessory: '+slug);
   const x=Math.round(90-width/2),y=683-height,out=path.join(temp,slug+'.webp');
