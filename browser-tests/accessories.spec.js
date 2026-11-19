@@ -61,7 +61,7 @@ test('retired accessories clear from saved selections without dropping other par
 test('six wedding accessories add to the existing catalog at 100 rubles and survive PNG export',async({page})=>{
  await page.goto('/');
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
- const accessories=catalog.filter(p=>p.category==='accessory');expect(accessories).toHaveLength(58);
+ const accessories=catalog.filter(p=>p.category==='accessory');expect(accessories).toHaveLength(69);
  const slugs=['married-sign','flowers-red-bouquet','heart-tile','ring-box','chocolate','heart-large'];
  const amount=async()=>Number((await page.locator('#total').innerText()).replace(/\D/g,''));
  const base=await amount();await page.locator('[data-category="accessory"]').click();
@@ -82,4 +82,29 @@ test('six wedding accessories add to the existing catalog at 100 rubles and surv
  });
  expect(exported.size).toEqual([1200,1440]);expect(exported.red).toBeGreaterThan(5000);
  await page.locator('[data-category="accessory"]').click();await page.locator('[data-part="accessory-none"]').click();expect(await amount()).toBe(base);
+});
+
+test('new accessories use standard prices except the three 15-ruble hearts',async({page})=>{
+ await page.goto('/');
+ const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
+ const standard=['basketball','boxing-gloves','briefcase-brown','briefcase-black','katana-gold','katana-gray','acoustic-guitar','handbag-black'];
+ const hearts=['heart-white','heart-red','heart-pink'];
+ const amount=async()=>Number((await page.locator('#total').innerText()).replace(/\D/g,''));
+ const base=await amount();
+ await page.locator('[data-category="accessory"]').click();
+ for(const slug of [...standard,...hearts]){
+  const item=catalog.find(p=>p.id===`accessory-catalog-${slug}`);
+  const price=hearts.includes(slug)?15:100;
+  expect(item,slug).toBeTruthy();expect(item.price,slug).toBe(price);
+  await page.locator(`[data-part="${item.id}"]`).click();
+  await expect(page.locator('#figure [data-layer="accessory"]')).toHaveAttribute('href',item.image);
+  expect(await amount(),slug).toBe(base+price);
+ }
+ await page.reload();expect(await amount()).toBe(base+15);
+ await expect(page.locator('#figure [data-layer="accessory"]')).toHaveAttribute('href',/catalog-heart-pink__/);
+ const pending=page.waitForEvent('download');await exportDraftPng(page);
+ expect(await (await pending).failure()).toBeNull();
+ await page.locator('[data-category="accessory"]').click();
+ await page.locator('[data-part="accessory-none"]').click();
+ expect(await amount()).toBe(base);
 });
