@@ -162,7 +162,7 @@ test('animal ordering uses explicit catalog order while preserving permanent IDs
 test('seven additional original hairpieces retain numbers, zero prices and requested neighbors',async()=>{
  const manifest=JSON.parse(await readFile(new URL('../scripts/additional-hair-manifest.json',import.meta.url),'utf8'));
  const hair=(await collectParts(new URL('../',import.meta.url).pathname)).filter(p=>p.category==='hair');
- assert.equal(hair.length,69);
+ assert.equal(hair.length,70);
  assert.deepEqual(manifest.map(p=>p.displayNumber),[56,57,58,59,60,61,62]);
  const index=id=>hair.findIndex(p=>p.id===id);
  assert.equal(index('hair-glossy-02'),index('hair-renewed-53')+1);

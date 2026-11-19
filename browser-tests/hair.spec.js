@@ -2,12 +2,37 @@ import {exportDraftPng} from './helpers/figure-export.js';
 import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 
+test('hairstyle 70 retains its centered curls after reload and PNG export',async({page})=>{
+ await page.goto('/');
+ const hair=await page.evaluate(async()=>(await import('./catalog.js')).default.find(p=>p.id==='hair-curly-brown-70'));
+ expect(hair.price).toBe(0);expect(hair.name).toBe('70 · Каштановые локоны с пробором');
+ await page.locator(`[data-part="${hair.id}"]`).click();
+ await expect(page.locator('#total')).toHaveText(/550/);
+ await page.reload();
+ await expect(page.locator('#figure [data-layer="hair"]')).toHaveAttribute('href',hair.image);
+ const pending=page.waitForEvent('download');await exportDraftPng(page);
+ expect(await (await pending).failure()).toBeNull();
+ const result=await page.evaluate(async image=>{
+  const load=async src=>{const i=new Image();i.src=src;await i.decode();return i;};
+  const [source,png]=await Promise.all([load(image),load(document.querySelector('#test-figure-png').href)]);
+  const canvas=document.createElement('canvas');canvas.width=600;canvas.height=720;
+  const ctx=canvas.getContext('2d');ctx.drawImage(source,0,0);
+  const original=[...ctx.getImageData(300,170,1,1).data];
+  canvas.width=1200;canvas.height=1440;ctx.drawImage(png,0,0);
+  const exported=[...ctx.getImageData(600,340,1,1).data];
+  return {size:[png.width,png.height],original,exported};
+ },hair.image);
+ expect(result.size).toEqual([1200,1440]);
+ expect(result.original[3]).toBeGreaterThanOrEqual(245);
+ for(let i=0;i<3;i++)expect(Math.abs(result.exported[i]-result.original[i])).toBeLessThan(15);
+});
+
 test('all renewed hairstyles keep facial features clear, cover the stud and retain complete silhouettes',async({page})=>{
  await page.goto('/');
  const failures=await page.evaluate(async()=>{
   const catalog=(await import('./catalog.js')).default,failures=[];
   const hairs=catalog.filter(p=>p.category==='hair');
-  if(hairs.length!==69||hairs.filter(p=>p.id.startsWith('hair-renewed-')).length!==53||hairs.filter(p=>p.id.startsWith('hair-glossy-')).length!==7||hairs.filter(p=>p.id.startsWith('hair-headwear-')).length!==7||hairs.filter(p=>/hair-catalog-cap-(black|white)$/.test(p.id)).length!==2)failures.push('obsolete or missing hairstyles');
+  if(hairs.length!==70||!hairs.some(p=>p.id==='hair-curly-brown-70')||hairs.filter(p=>p.id.startsWith('hair-renewed-')).length!==53||hairs.filter(p=>p.id.startsWith('hair-glossy-')).length!==7||hairs.filter(p=>p.id.startsWith('hair-headwear-')).length!==7||hairs.filter(p=>/hair-catalog-cap-(black|white)$/.test(p.id)).length!==2)failures.push('obsolete or missing hairstyles');
   for(const hair of hairs){
    const image=new Image();image.src=hair.image;await image.decode();
    const canvas=document.createElement('canvas');canvas.width=600;canvas.height=720;
