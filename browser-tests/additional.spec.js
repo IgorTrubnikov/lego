@@ -47,7 +47,7 @@ test('card note and both thumbnails survive cart reload, editing, heart packagin
  expect(await amount(page,'#cart-total')).toBe(1275);
  const options=await page.locator('#cart-packaging option').allTextContents();
  expect(options.some(s=>s.includes('Брелок с круглым кольцом — 650'))).toBe(true);
- expect(options.some(s=>s.includes('Брелок в виде сердца — 675'))).toBe(true);
+ expect(options.some(s=>s.includes('Брелок с кольцом в виде сердца — 675'))).toBe(true);
  await page.reload();await expect(page.locator('.cart-item-art img')).toHaveCount(3);
  await page.locator('.cart-item summary').click();
  await expect(page.locator('.cart-detail-note')).toContainText('любая картинка');
@@ -59,7 +59,7 @@ test('card note and both thumbnails survive cart reload, editing, heart packagin
  });
  const pending=page.waitForEvent('download');await page.locator('#save-png').click();expect(await (await pending).failure()).toBeNull();
  const exported=await page.evaluate(()=>({text:window.__orderTexts.join(' ').replace(/\u00a0/g,' '),images:window.__orderImages}));
- expect(exported.text).toContain('Брелок в виде сердца 675 ₽, один персонаж включён.');
+ expect(exported.text).toContain('Брелок с кольцом в виде сердца 675 ₽, один персонаж включён.');
  expect(exported.text).toContain('любая картинка');expect(exported.text).toContain('Итого за весь заказ: 1 275 ₽');
  expect(exported.images).toContain(cart.items[0].altarPreview);
  expect(exported.images).toContain(cart.items[0].additionalPreview);

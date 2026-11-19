@@ -60,7 +60,7 @@ export async function createOrderPngs(cart){
     ctx.fillStyle='#f5e5e8';ctx.fillRect(35,top,1330,125);
     ctx.fillStyle='#791e36';ctx.font='bold 28px Arial';ctx.fillText(`${g.name} — ${money(g.total)}`,65,top+38);
     ctx.fillStyle='#38252a';ctx.font='21px Arial';
-    const rule=g.type==='none'?'Без оформления: каждая фигурка 550 ₽.':g.type==='keyholder'?'Ключница 2500 ₽, две фигурки включены. Дополнения оплачиваются отдельно.':g.type==='keychain'?'Брелок с круглым кольцом 650 ₽, один персонаж включён.':g.type==='keychain-heart'?'Брелок в виде сердца 675 ₽, один персонаж включён.':g.type==='flask'?'Колба 1500 ₽ с первой фигуркой; вторая и третья по 400 ₽, с четвёртой по 350 ₽.':`Рамка ${money(g.price)}; первые три фигурки по 400 ₽, с четвёртой по 350 ₽.`;
+    const rule=g.type==='none'?'Без оформления: каждая фигурка 550 ₽.':g.type==='keyholder'?'Ключница 2500 ₽, две фигурки включены. Дополнения оплачиваются отдельно.':g.type==='keychain'?'Брелок с круглым кольцом 650 ₽, один персонаж включён.':g.type==='keychain-heart'?'Брелок с кольцом в виде сердца 675 ₽, один персонаж включён.':g.type==='flask'?'Колба 1500 ₽ с первой фигуркой; вторая и третья по 400 ₽, с четвёртой по 350 ₽.':`Рамка ${money(g.price)}; первые три фигурки по 400 ₽, с четвёртой по 350 ₽.`;
     ctx.fillText(rule,65,top+75);
     ctx.font='19px Arial';ctx.fillText(`Оформление ${money(g.price)} + фигурки ${money(g.figures)} + дополнения ${money(g.extras)} = ${money(g.total)}`,65,top+107);
     top+=140;

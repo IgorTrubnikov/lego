@@ -8,7 +8,7 @@ export const packagingOptions=[
  {id:'frame-15x21',name:'Рамка 15×21',price:1250},
  {id:'frame-20x20',name:'Рамка 20×20',price:1350},
  {id:'keychain',name:'Брелок с круглым кольцом',price:650,includesFirst:true,capacity:1},
- {id:'keychain-heart',name:'Брелок в виде сердца',price:675,includesFirst:true,capacity:1},
+ {id:'keychain-heart',name:'Брелок с кольцом в виде сердца',price:675,includesFirst:true,capacity:1},
  {id:'keyholder',name:'Ключница',price:2500,includedCharacters:2,capacity:2}
 ];
 const uid=()=>globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+Math.random().toString(36).slice(2);

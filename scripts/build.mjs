@@ -6,6 +6,10 @@ import {readGallery,galleryPage,renderWorksPreview} from './gallery.mjs';
 import {readReviews,reviewsPage} from './reviews.mjs';
 import { fileURLToPath } from 'node:url';
 import {createHash} from 'node:crypto';
+export const accessoryGroups=JSON.parse(await readFile(new URL('./accessory-order.json',import.meta.url),'utf8'));
+const accessorySlugs=accessoryGroups.flatMap(group=>group.slugs);
+if(new Set(accessorySlugs).size!==accessorySlugs.length)throw new Error('Duplicate accessory in accessory-order.json');
+const accessoryOrder=new Map(accessorySlugs.map((slug,index)=>['accessory-catalog-'+slug,index+1]));
 
 export const folders = { haircuts:'hair', faces:'face', clothes:'torso', pants:'legs', skirts:'skirt', suits:'suit', accessories:'accessory', animals:'animal', transport:'transport', children:'children', altars:'altar', additional:'additional' };
 const size = { width:600, height:720 };
@@ -74,8 +78,8 @@ export async function collectParts(root) {
       const legsTop=rawLegsTop===undefined?undefined:Number(rawLegsTop);
       if(rawLegsTop!==undefined&&(category!=='torso'||!Number.isSafeInteger(legsTop)||legsTop<1||legsTop>=720))throw new Error(`${folder}/${filename}: неверная граница брюк`);
       const rawOrder=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-catalog-order=["']([^"']*)["']/)?.[1]:undefined;
-      const catalogOrder=rawOrder===undefined?undefined:Number(rawOrder);
-      if(rawOrder!==undefined&&(!['hair','animal','torso'].includes(category)||!Number.isSafeInteger(catalogOrder)||catalogOrder<1||catalogOrder>10000))throw new Error(`${folder}/${filename}: неверный порядок карточки`);
+      const catalogOrder=rawOrder===undefined?(category==='accessory'?accessoryOrder.get(id):undefined):Number(rawOrder);
+      if(rawOrder!==undefined&&(!['hair','animal','torso','accessory'].includes(category)||!Number.isSafeInteger(catalogOrder)||catalogOrder<1||catalogOrder>10000))throw new Error(`${folder}/${filename}: неверный порядок карточки`);
       const skirtMode=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-skirt-mode=["']([^"']*)["']/)?.[1]:undefined;
       if(skirtMode!==undefined&&(category!=='skirt'||!['overlay','replace-legs'].includes(skirtMode)))throw new Error(folder+'/'+filename+': неверный режим юбки');
       if(category==='skirt'&&!skirtMode)throw new Error(folder+'/'+filename+': укажите data-skirt-mode="overlay" или "replace-legs"');
@@ -94,7 +98,7 @@ export async function collectParts(root) {
       ids.add(id);count++;
       categoryParts.push({id,category,name,price,...(legsTop!==undefined?{legsTop}:{}),...(catalogOrder!==undefined?{catalogOrder}:{}),image:`./${folder}/${encodeURIComponent(filename)}`+versionQuery,...(previewBox?{previewBox}:{}),...(backImage?{backImage:backImage+versionQuery}:{}),...(includedLabel?{includedLabel}:{}),...(skirtMode?{skirtMode}:{})});
     }
-    if(['hair','animal','torso'].includes(category))categoryParts.sort((a,b)=>(a.catalogOrder??Number.MAX_SAFE_INTEGER)-(b.catalogOrder??Number.MAX_SAFE_INTEGER));
+    if(['hair','animal','torso','accessory'].includes(category))categoryParts.sort((a,b)=>(a.catalogOrder??Number.MAX_SAFE_INTEGER)-(b.catalogOrder??Number.MAX_SAFE_INTEGER));
     parts.push(...categoryParts);
     if(!count&&!optional)throw new Error(`Добавьте хотя бы одну деталь в ${folder}/`);
   }

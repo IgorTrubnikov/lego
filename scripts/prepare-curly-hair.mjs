@@ -7,7 +7,7 @@ import os from 'node:os';
 import {fileURLToPath} from 'node:url';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const source=path.join(root,'scripts/curly-hair-70/source.png');
-const width=270,x=165,y=118;
+const width=243,x=179,y=132;
 function magick(args){
  const result=spawnSync('magick',args,{encoding:'utf8'});
  if(result.error)throw result.error;

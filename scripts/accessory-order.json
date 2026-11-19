@@ -1,0 +1,14 @@
+[
+  {"name":"Цветы","slugs":["flower-white","flower-pink","flowers-pink","flowers-red-bouquet","flowers-orange","flowers-yellow","flowers-green","flowers-blue","flowers-purple"]},
+  {"name":"Сердечки и свадьба","slugs":["heart-white","heart-pink","heart-red","heart","heart-large","heart-tile","ring-box","married-sign"]},
+  {"name":"Игрушки","slugs":["bear-beige","bear-brown","bear-heart","bunny-yellow","bunny-pink"]},
+  {"name":"Сумки и портфели","slugs":["white-handbag","handbag-light-pink","handbag-hot-pink","handbag-black","shoulder-bag","shoulder-bag-black","briefcase-brown","briefcase-black"]},
+  {"name":"Спорт","slugs":["football","basketball","tennis-racket","boxing-gloves","skateboard","trophy"]},
+  {"name":"Техника и музыка","slugs":["smartphone","camera","laptop-white","laptop-black","gamepad","headphones","boombox","acoustic-guitar"]},
+  {"name":"Книги и деньги","slugs":["book","quibbler","banknote"]},
+  {"name":"Еда и напитки","slugs":["ice-cream-vanilla","ice-cream-strawberry","ice-cream-chocolate","chocolate","mug-white","coffee","soda-can","bottle"]},
+  {"name":"Уход","slugs":["hairbrush","lipstick"]},
+  {"name":"Медицина","slugs":["first-aid","syringe"]},
+  {"name":"Катаны и волшебная палочка","slugs":["katana-gold","katana-gray","magic-wand"]},
+  {"name":"Инструменты и детали","slugs":["crowbar","wheel-large","rod-black","rod-brown","rod-red","rod-yellow","rod-cyan"]}
+]

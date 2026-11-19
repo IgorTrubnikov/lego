@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {mkdtemp,mkdir,writeFile,readFile,rm,rename} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import {collectParts,folders,imageSize} from '../scripts/build.mjs';
+import {collectParts,folders,imageSize,accessoryGroups} from '../scripts/build.mjs';
 import {replacePreparedHair} from '../scripts/prepare-renewed-hair.mjs';
 const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 720"><rect x="224" y="190" width="152" height="130"/></svg>';
 async function fixture(fn){const root=await mkdtemp(path.join(os.tmpdir(),'teuilor-catalog-'));try{for(const f of Object.keys(folders)){await mkdir(path.join(root,f));await writeFile(path.join(root,f,'test__250__Деталь.svg'),f==='skirts'?svg.replace('<svg ','<svg data-skirt-mode="overlay" '):svg);}await fn(root);}finally{await rm(root,{recursive:true,force:true});}}
@@ -261,4 +261,17 @@ test('original uploaded torso sheets and reviewed masks are preserved with nativ
   assert.deepEqual(imageSize(raster,'.png'),{width,height});
   assert.doesNotMatch(svg,/<filter|feColor|feBlend/);
  }
+});
+
+test('accessories keep related items adjacent without changing prices or IDs',async()=>{
+ const accessories=(await collectParts(new URL('../',import.meta.url).pathname)).filter(p=>p.category==='accessory');
+ assert.equal(accessories.length,69);
+ const ids=accessories.map(p=>p.id),position=slug=>ids.indexOf('accessory-catalog-'+slug);
+ for(const group of accessoryGroups){
+  const positions=group.slugs.map(position);assert.ok(positions.every(i=>i>=0),group.name);
+  assert.deepEqual(positions,Array.from({length:positions.length},(_,i)=>positions[0]+i),group.name);
+ }
+ assert.equal(position('basketball'),position('football')+1);
+ assert.equal(position('briefcase-black'),position('briefcase-brown')+1);
+ for(const accessory of accessories)assert.equal(accessory.price,/^accessory-catalog-heart-(white|red|pink)$/.test(accessory.id)?15:100);
 });
