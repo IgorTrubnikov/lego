@@ -39,19 +39,6 @@
     "fullHeight": 1280
   },
   {
-    "id": "winter-ribbon-02",
-    "source": "шар на ленте2.jpeg",
-    "category": "ribbon-balls",
-    "title": "Парный шар на красной ленточке",
-    "alt": "Другой ракурс прозрачного ёлочного шара на красной ленточке с двумя минифигурками LEGO в декоративном снегу.",
-    "thumb": "assets/gallery/thumbs/winter-ribbon-02.webp",
-    "full": "assets/gallery/full/winter-ribbon-02.webp",
-    "width": 540,
-    "height": 720,
-    "fullWidth": 960,
-    "fullHeight": 1280
-  },
-  {
     "id": "winter-frame-01",
     "source": "рамка1.jpeg",
     "category": "frames",
