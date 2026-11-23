@@ -5,7 +5,7 @@
   {"name":"Сумки и портфели","slugs":["white-handbag","handbag-light-pink","handbag-hot-pink","handbag-black","shoulder-bag","shoulder-bag-black","briefcase-brown","briefcase-black"]},
   {"name":"Спорт","slugs":["football","basketball","tennis-racket","boxing-gloves","skateboard","trophy"]},
   {"name":"Техника и музыка","slugs":["smartphone","camera","laptop-white","laptop-black","gamepad","headphones","boombox","acoustic-guitar"]},
-  {"name":"Книги и деньги","slugs":["book","quibbler","banknote"]},
+  {"name":"Письма, книги и деньги","slugs":["letter-seal","letter-love","book","quibbler","banknote"]},
   {"name":"Еда и напитки","slugs":["ice-cream-vanilla","ice-cream-strawberry","ice-cream-chocolate","chocolate","mug-white","coffee","soda-can","bottle"]},
   {"name":"Уход","slugs":["hairbrush","lipstick"]},
   {"name":"Медицина","slugs":["first-aid","syringe"]},

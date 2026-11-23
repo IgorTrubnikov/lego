@@ -265,7 +265,7 @@ test('original uploaded torso sheets and reviewed masks are preserved with nativ
 
 test('accessories keep related items adjacent without changing prices or IDs',async()=>{
  const accessories=(await collectParts(new URL('../',import.meta.url).pathname)).filter(p=>p.category==='accessory');
- assert.equal(accessories.length,69);
+ assert.equal(accessories.length,71);
  const ids=accessories.map(p=>p.id),position=slug=>ids.indexOf('accessory-catalog-'+slug);
  for(const group of accessoryGroups){
   const positions=group.slugs.map(position);assert.ok(positions.every(i=>i>=0),group.name);

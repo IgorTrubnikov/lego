@@ -25,7 +25,7 @@ function render(){
   if(art)art.innerHTML=addon?renderFigure(selection,parts,category):'';
   const name=$(additional?'#additional-name':'#addon-name');
   if(name)name.textContent=addon?addon.name+' · '+money(addon.price):'';
-  if(additional&&$('#additional-description'))$('#additional-description').textContent=partNote(addon)||'На фото — пример с фигурками. Персонажи оплачиваются отдельно.';
+  if(additional&&$('#additional-description'))$('#additional-description').textContent=partNote(addon)||'Дополнение к заказу. Персонажи оплачиваются отдельно.';
  }
  $('#figure').setAttribute('aria-label','Фигурка: '+selectionCategories(selection,parts).filter(c=>!orderAddonCategories.includes(c.id)).map(c=>parts.find(p=>p.id===selection[c.id])?.name).filter(Boolean).join(', '));
  $('#total').textContent=money(totalPrice(selection,parts,draftBasePrice()));
