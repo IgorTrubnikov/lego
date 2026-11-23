@@ -4,6 +4,8 @@ export const cartStorageKey='teuilor-cart-v1';
 export const packagingOptions=[
  {id:'none',name:'Без оформления',price:0},
  {id:'flask',name:'Колба',price:1500,includesFirst:true},
+ {id:'ball-stand',name:'Шар на подставке',price:1500,includesFirst:true,characterPrice:400},
+ {id:'ball-ribbon',name:'Шар на ленте',price:800,characterPrice:400},
  {id:'frame-10x15',name:'Рамка 10×15',price:1150},
  {id:'frame-15x21',name:'Рамка 15×21',price:1250},
  {id:'frame-20x20',name:'Рамка 20×20',price:1350},
@@ -18,6 +20,7 @@ export function characterBasePrice(index=0,type='none'){
  const option=packagingOptions.find(p=>p.id===type);
  if(!option||type==='none')return figurePrice;
  if(index<(option.includedCharacters??(option.includesFirst?1:0)))return 0;
+ if(option.characterPrice!==undefined)return option.characterPrice;
  return index<3?400:350;
 }
 const isPreview=value=>typeof value==='string'&&/^data:image\/(?:png|webp);base64,[A-Za-z0-9+/=]+$/.test(value)&&value.length<2_000_000;

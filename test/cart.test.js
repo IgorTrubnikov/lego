@@ -4,6 +4,24 @@ import {withOptionalChoices,initialSelection,totalPrice,choosePart} from '../par
 const item=(id,details=[],groupId='none')=>({id,groupId,selection:{...initialSelection},preview:'data:image/webp;base64,YQ==',details});
 const detail=(id,category,price)=>({id,category,label:category,name:id,price});
 const group=(id,type)=>({id,type});
+test('stand and ribbon balls use 400 per paid character at every position and charge extras in full',()=>{
+ for(const [type,price,bases] of [
+  ['ball-stand',1500,[0,400,400,400,400]],
+  ['ball-ribbon',800,[400,400,400,400,400]],
+ ]){
+  const cart={...newCart(),groups:[group('ball',type)],items:['a','b','c','d','e'].map((id,i)=>item(id,i===0?[detail('bag','accessory',100),detail('snow','additional',100)]:[],'ball'))};
+  const total=cartTotals(cart);
+  assert.deepEqual(total.lines.map(line=>line.base),bases);assert.equal(total.extras,200);
+  assert.equal(total.total,price+bases.reduce((a,b)=>a+b,0)+200);assert.equal(total.ready,true);
+  assert.equal(cartTotals(restoreCart(cart)).total,total.total);
+  const old=restoreCart({...cart,version:1,packagingId:type,groups:undefined});
+  assert.equal(cartTotals(old).total,total.total);
+ }
+ const independent={...newCart(),groups:[group('a','ball-stand'),group('b','ball-stand')],items:[item('1',[],'a'),item('2',[],'a'),item('3',[],'b')]};
+ assert.deepEqual(cartTotals(independent).lines.map(line=>line.base),[0,400,0]);
+ assert.equal(cartTotals(independent).total,3400);
+ assert.deepEqual([0,1,2,3,4].map(i=>characterBasePrice(i,'flask')),[0,400,400,350,350]);
+});
 test('multiple additions toggle independently, count once and preserve all previews',()=>{
  const parts=withOptionalChoices([
   {id:'additional-card',category:'additional',name:'Карточка',price:200,image:'card.svg'},
@@ -46,7 +64,7 @@ test('standalone characters always cost 550, including the fourth and later',()=
  const cart={...newCart(),items:['a','b','c','d'].map(id=>item(id))};assert.equal(cartTotals(cart).total,2200);assert.equal(cartTotals(cart).ready,true);
 });
 test('each frame charges its empty price and the first three at 400, then 350',()=>{
- assert.deepEqual(packagingOptions.map(p=>p.price),[0,1500,1150,1250,1350,650,675,2500]);
+ assert.deepEqual(packagingOptions.map(p=>p.price),[0,1500,1500,800,1150,1250,1350,650,675,2500]);
  for(const [type,price] of [['frame-10x15',1150],['frame-15x21',1250],['frame-20x20',1350]]){
   const cart={...newCart(),groups:[group('f',type)],items:['a','b','c','d','e'].map(id=>item(id,[],'f'))};
   const t=cartTotals(cart);assert.deepEqual(t.lines.map(l=>l.base),[400,400,400,350,350]);assert.equal(t.total,price+1900);

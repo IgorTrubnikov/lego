@@ -8,6 +8,33 @@ const move=async(page,index,group)=>{const id=(await state(page)).items[index].i
 const character=async(page,index)=>page.locator(`[data-cart-item="${(await state(page)).items[index].id}"]`);
 const download=async page=>{const pending=page.waitForEvent('download');await page.locator('#save-png').click();const file=await pending;expect(await file.failure()).toBeNull();return readFile(await file.path());};
 const recordText=page=>page.evaluate(()=>{window.__orderTexts=[];const fill=CanvasRenderingContext2D.prototype.fillText;CanvasRenderingContext2D.prototype.fillText=function(text,...args){window.__orderTexts.push(String(text));return fill.call(this,text,...args);};});
+test('both ball formats keep every paid character at 400 and extras separate after moves, reload and PNG export',async({page})=>{
+ await page.goto('/');
+ await choose(page,'accessory','accessory-catalog-gamepad');
+ await choose(page,'additional','additional-decorative-snow');
+ await add(page,1);for(let i=2;i<=5;i++)await add(page,i);
+ const stand=await createGroup(page,'ball-stand');
+ for(let i=0;i<5;i++)await move(page,i,stand);
+ expect(await amount(page)).toBe(3300); // 1500 + 4 × 400 + 200 additions.
+ await page.reload();expect(await amount(page)).toBe(3300);
+ await expect(page.locator(`[data-group="${stand}"]`)).toContainText('Каждый следующий — 400 ₽');
+ await recordText(page);await download(page);
+ let text=await page.evaluate(()=>window.__orderTexts.join(' ').replace(/\u00a0/g,' '));
+ expect(text).toContain('Шар на подставке 1500 ₽, первый персонаж включён, каждый следующий — 400 ₽');
+ expect(text).toContain('Итого за весь заказ: 3 300 ₽');
+ const ribbon=await createGroup(page,'ball-ribbon');
+ for(let i=0;i<5;i++)await move(page,i,ribbon);
+ await page.locator(`[data-group-remove="${stand}"]`).click();
+ expect(await amount(page)).toBe(3000); // 800 + 5 × 400 + 200 additions.
+ await page.reload();expect(await amount(page)).toBe(3000);
+ await expect(page.locator(`[data-group="${ribbon}"]`)).toContainText('Каждый персонаж — 400 ₽');
+ await recordText(page);await download(page);
+ text=await page.evaluate(()=>window.__orderTexts.join(' ').replace(/\u00a0/g,' '));
+ expect(text).toContain('Шар на ленте 800 ₽ без персонажей, каждый персонаж — 400 ₽');
+ expect(text).toContain('Итого за весь заказ: 3 000 ₽');
+ expect(text).toContain('дополнения 200 ₽');
+ expect((await state(page)).items[0].details.filter(p=>['accessory','additional'].includes(p.category))).toHaveLength(2);
+});
 test('separate orders, independent frames, edits, removal and reload keep the new prices',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');expect(await amount(page,'#total')).toBe(550);
  await choose(page,'accessory','accessory-catalog-gamepad');await add(page,1);expect(await amount(page,'#total')).toBe(550);
