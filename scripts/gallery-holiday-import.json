@@ -1,0 +1,32 @@
+[
+  {
+    "id": "winter-stand-01",
+    "source": "шар на подставке1.jpeg",
+    "category": "stand-balls",
+    "sha256": "c7a5f5861ec76459a23224a8377ea467f79f8e5b723eec25eb2f2f7663bcfc97"
+  },
+  {
+    "id": "winter-stand-02",
+    "source": "шар на подставке2.jpeg",
+    "category": "stand-balls",
+    "sha256": "a05a35f81c37ba22a9387c027b5da7432561c7e57915393ab68d5759ad2897df"
+  },
+  {
+    "id": "winter-ribbon-01",
+    "source": "шар на ленте1.jpeg",
+    "category": "ribbon-balls",
+    "sha256": "9a4f0f39903c882e37e189198d3833eba30126a09921b37d8eccba22c102177d"
+  },
+  {
+    "id": "winter-ribbon-02",
+    "source": "шар на ленте2.jpeg",
+    "category": "ribbon-balls",
+    "sha256": "37ca7e0cc8ac9763e156cf68217e47ee508efbbcc83b7aeaf932fa921e290c5b"
+  },
+  {
+    "id": "winter-frame-01",
+    "source": "рамка1.jpeg",
+    "category": "frames",
+    "sha256": "cd268178457633215289c965db421b5b4b557883c9c933240a725f84c5728f1d"
+  }
+]

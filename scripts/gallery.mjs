@@ -2,7 +2,7 @@ import {readFile,stat} from 'node:fs/promises';
 import path from 'node:path';
 import {escapeHtml} from '../parts.js';
 import {hero,cta} from './site-pages.mjs';
-export const workCategories={frames:'Рамки',keychains:'Брелоки',keyholders:'Ключницы',domes:'Под колпаком'};
+export const workCategories={frames:'Рамки',keychains:'Брелоки',keyholders:'Ключницы',domes:'Под колпаком','stand-balls':'Шары на подставке','ribbon-balls':'Шары на ленточке'};
 export async function readGallery(root){
  const works=JSON.parse(await readFile(path.join(root,'assets/gallery/works.json'),'utf8'));
  if(!Array.isArray(works))throw new Error('Галерея должна быть массивом в assets/gallery/works.json');
@@ -31,8 +31,8 @@ export function renderWorksPreview(works){
 }
 export function galleryPage(works){
  const filters=[['all','Все работы'],...Object.entries(workCategories)];
- return {id:'works',title:'Готовые работы — LEGO.FROM.TEUILOR',description:'Настоящие фотографии готовых рамок, парных брелоков, ключниц и композиций под колпаком от LEGO.FROM.TEUILOR. Найдите идею для своей истории.',scripts:works.length?['gallery.js']:[],body:
-  hero('Готовые работы','Ваши истории.<br><em>Уже в деталях.</em>','Рамки, брелоки, ключницы и маленькие миры под колпаком.<br>Настоящие работы нашей мастерской — для вдохновения и ваших новых идей.')+
+ return {id:'works',title:'Готовые работы — LEGO.FROM.TEUILOR',description:'Настоящие фотографии готовых рамок, парных брелоков, ключниц, композиций под колпаком и новогодних шаров от LEGO.FROM.TEUILOR. Найдите идею для своей истории.',scripts:works.length?['gallery.js']:[],body:
+  hero('Готовые работы','Ваши истории.<br><em>Уже в деталях.</em>','Рамки, брелоки, ключницы, новогодние шары и маленькие миры под колпаком.<br>Настоящие работы нашей мастерской — для вдохновения и ваших новых идей.')+
   (works.length?`<section class="works-collection" aria-label="Галерея готовых работ"><div class="works-toolbar"><div class="work-filters" role="group" aria-label="Категории работ" hidden>${filters.map(([id,label])=>`<button type="button" data-filter="${id}" aria-pressed="${id==='all'}">${label} <span>${id==='all'?works.length:works.filter(w=>w.category===id).length}</span></button>`).join('')}</div><span id="work-count" role="status" aria-live="polite">${works.length} фото</span></div><div class="works-grid" id="works-grid">${works.map((work,index)=>workCard(work,index)).join('')}</div></section>`:'<section class="gallery-empty"><span aria-hidden="true">♡</span><h2>Мы обновляем галерею</h2><p>Новые фотографии готовых работ скоро появятся здесь.</p></section>')+
   cta('А какая история будет вашей?','Выберите настроение, расскажите о близких — и мы создадим подарок с вашими деталями.')+
   (works.length?`<dialog class="work-lightbox" id="work-lightbox" aria-labelledby="work-lightbox-title"><div class="lightbox-toolbar"><span id="work-position" aria-live="polite"></span><a id="work-download" target="_blank" rel="noopener noreferrer">Открыть отдельно</a><button type="button" id="work-close" aria-label="Закрыть просмотр">×</button></div><div class="lightbox-stage"><button type="button" id="work-prev" aria-label="Предыдущее фото">‹</button><img id="work-full" alt=""><button type="button" id="work-next" aria-label="Следующее фото">›</button></div><div class="lightbox-caption"><span id="work-lightbox-category"></span><h2 id="work-lightbox-title"></h2></div></dialog>`:'')};

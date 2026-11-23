@@ -2,6 +2,29 @@ import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 const works=JSON.parse(await readFile(new URL('../assets/gallery/works.json',import.meta.url),'utf8'));
 
+test('holiday photos follow their original filenames and appear under the correct filters',async({page})=>{
+ const expected=[
+  ['шар на подставке1.jpeg','stand-balls','winter-stand-01'],
+  ['шар на подставке2.jpeg','stand-balls','winter-stand-02'],
+  ['шар на ленте1.jpeg','ribbon-balls','winter-ribbon-01'],
+  ['шар на ленте2.jpeg','ribbon-balls','winter-ribbon-02'],
+  ['рамка1.jpeg','frames','winter-frame-01'],
+ ];
+ for(const [source,category,id] of expected){const work=works.find(w=>w.source===source);expect(work?.category,source).toBe(category);expect(work?.id,source).toBe(id);}
+ await page.goto('/works.html');
+ for(const category of ['stand-balls','ribbon-balls']){
+  await page.locator(`[data-filter="${category}"]`).click();
+  await expect(page.locator('#works-grid .work-card:visible')).toHaveCount(2);
+  for(const [,group,id] of expected.filter(row=>row[1]===category))await expect(page.locator(`#work-${id}`)).toBeVisible();
+ }
+ await page.locator('[data-filter="frames"]').click();
+ await expect(page.locator('#work-winter-frame-01')).toBeVisible();
+ await expect(page.locator('#work-winter-stand-01')).toBeHidden();
+ await page.locator('#work-winter-frame-01 .work-open').click();
+ await expect(page.locator('#work-lightbox')).toBeVisible();
+ await expect(page.locator('#work-full')).toHaveAttribute('src',/winter-frame-01\.webp$/);
+});
+
 test('gallery navigation, categories and every supplied photo work',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');
