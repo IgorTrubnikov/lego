@@ -1,4 +1,4 @@
-import {partNote,selectionCategories,includedInFigure,figurePrice} from './parts.js';
+import {selectedCategoryParts,partNote,selectionCategories,includedInFigure,figurePrice} from './parts.js';
 // Keep the storage key so existing orders can migrate without losing their previews.
 export const cartStorageKey='teuilor-cart-v1';
 export const packagingOptions=[
@@ -24,7 +24,7 @@ const isPreview=value=>typeof value==='string'&&/^data:image\/(?:png|webp);base6
 export function restoreCart(value){
  const empty=newCart();
  if(!value||![1,2].includes(value.version)||!Array.isArray(value.items))return empty;
- const items=value.items.filter(i=>i&&typeof i.id==='string'&&i.selection&&typeof i.selection==='object'&&Array.isArray(i.details)&&isPreview(i.preview)).map(i=>({id:i.id.slice(0,80),groupId:typeof i.groupId==='string'?i.groupId:'none',selection:{...i.selection},preview:i.preview,altarPreview:isPreview(i.altarPreview)?i.altarPreview:undefined,additionalPreview:isPreview(i.additionalPreview)?i.additionalPreview:undefined,details:i.details.filter(p=>p&&typeof p.id==='string'&&typeof p.category==='string'&&typeof p.name==='string'&&Number.isSafeInteger(p.price)&&p.price>=0&&p.price<=100000).map(p=>({id:p.id.slice(0,100),category:p.category.slice(0,30),label:String(p.label||p.category).slice(0,40),name:p.name.slice(0,160),price:p.price,...(partNote(p)?{note:partNote(p)}:{}),includedLabel:typeof p.includedLabel==='string'?p.includedLabel.slice(0,100):undefined}))}));
+ const items=value.items.filter(i=>i&&typeof i.id==='string'&&i.selection&&typeof i.selection==='object'&&Array.isArray(i.details)&&isPreview(i.preview)).map(i=>({id:i.id.slice(0,80),groupId:typeof i.groupId==='string'?i.groupId:'none',selection:{...i.selection},preview:i.preview,altarPreview:isPreview(i.altarPreview)?i.altarPreview:undefined,additionalPreview:isPreview(i.additionalPreview)?i.additionalPreview:undefined,additionalPreviews:Array.isArray(i.additionalPreviews)?i.additionalPreviews.filter(isPreview).slice(0,32):undefined,details:i.details.filter(p=>p&&typeof p.id==='string'&&typeof p.category==='string'&&typeof p.name==='string'&&Number.isSafeInteger(p.price)&&p.price>=0&&p.price<=100000).map(p=>({id:p.id.slice(0,100),category:p.category.slice(0,30),label:String(p.label||p.category).slice(0,40),name:p.name.slice(0,160),price:p.price,...(partNote(p)?{note:partNote(p)}:{}),includedLabel:typeof p.includedLabel==='string'?p.includedLabel.slice(0,100):undefined}))}));
  const unique=items.filter((item,index)=>items.findIndex(other=>other.id===item.id)===index);
  let groups=[],needsReview=value.needsReview===true;
  if(value.version===2){
@@ -51,10 +51,7 @@ export function restoreCart(value){
  return {...empty,groups,needsReview,id:typeof value.id==='string'&&/^[A-Z0-9-]{1,40}$/.test(value.id)?value.id:empty.id,createdAt:Number.isFinite(value.createdAt)?value.createdAt:empty.createdAt,items:unique};
 }
 export function snapshotDetails(selection,parts){
- return selectionCategories(selection,parts).map(category=>{
-  const part=parts.find(p=>p.id===selection[category.id]&&p.category===category.id&&p.image);
-  return part?{id:part.id,category:part.category,label:category.singular,name:part.name,price:part.price,...(partNote(part)?{note:partNote(part)}:{}),...(part.includedLabel?{includedLabel:part.includedLabel}:{})}:undefined;
- }).filter(Boolean);
+ return selectionCategories(selection,parts).flatMap(category=>selectedCategoryParts(selection,parts,category.id).map(part=>({id:part.id,category:part.category,label:category.singular,name:part.name,price:part.price,...(partNote(part)?{note:partNote(part)}:{}),...(part.includedLabel?{includedLabel:part.includedLabel}:{})})));
 }
 export const detailIsExtra=part=>!includedInFigure.has(part.category)&&part.category!=='suit';
 export const extrasPrice=item=>item.details.filter(detailIsExtra).reduce((sum,p)=>sum+p.price,0);

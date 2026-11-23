@@ -16,6 +16,12 @@ export const initialSelection = { hair:'hair-renewed-14',face:'face-catalog-58',
 export const orderAddonCategories=['altar','additional'];
 export const cardBackgroundNote='Фон выбираете вы — подойдёт любая картинка. Пришлите её вместе с заказом в Telegram. Фон на миниатюре — пример.';
 export function partNote(part){return part?.id==='additional-card'?cardBackgroundNote:'';}
+// Older saved selections contain one additional ID; new selections keep a list.
+export function selectedCategoryParts(selection,parts,category){
+ const ids=category==='additional'&&Array.isArray(selection.additionalItems)?selection.additionalItems:[selection[category]];
+ return [...new Set(ids)].map(id=>parts.find(p=>p.id===id&&p.category===category&&p.image)).filter(Boolean);
+}
+export function additionalPreviews(item){return Array.isArray(item.additionalPreviews)?item.additionalPreviews:item.additionalPreview?[item.additionalPreview]:[];}
 // Empty choices are virtual: administrators only add actual images to the folders.
 export function withOptionalChoices(parts) {
  return [...categories.filter(c=>c.optional).map(c=>({id:c.id+'-none',category:c.id,name:c.emptyLabel,price:0})),...parts];
@@ -30,6 +36,11 @@ export function selectionCategories(selection,parts){
 }
 export function choosePart(selection,category,id,parts=[]){
  const next={...selection,[category]:id};
+ if(category==='additional'){
+  const ids=selectedCategoryParts(selection,parts,category).map(p=>p.id);
+  next.additionalItems=id==='additional-none'?[]:ids.includes(id)?ids.filter(value=>value!==id):[...ids,id];
+  next.additional=next.additionalItems.at(-1)||'additional-none';
+ }
  if(['torso','legs'].includes(category)||(category==='skirt'&&id!=='skirt-none'))next.suit='suit-none';
  if(category==='suit'&&id!=='suit-none')next.skirt='skirt-none';
  if(category==='legs'&&selectedSkirt(selection,parts)?.skirtMode==='replace-legs')next.skirt='skirt-none';
@@ -39,7 +50,7 @@ export const figurePrice=550;
 export const includedInFigure=new Set(['hair','face','torso','legs']);
 export function priceBreakdown(selection,parts,basePrice){
  const suit=selectedSuit(selection,parts);
- const extras=selectionCategories(selection,parts).filter(c=>!includedInFigure.has(c.id)&&c.id!=='suit').map(c=>({category:c.id,label:c.singular,part:parts.find(p=>p.id===selection[c.id]&&p.category===c.id)})).filter(row=>row.part?.image&&row.part.price>0).map(row=>({category:row.category,label:row.label,price:row.part.price}));
+ const extras=selectionCategories(selection,parts).filter(c=>!includedInFigure.has(c.id)&&c.id!=='suit').flatMap(c=>selectedCategoryParts(selection,parts,c.id).filter(p=>p.price>0).map(p=>({category:c.id,label:c.id==='additional'?p.name:c.singular,price:p.price})));
  return [{category:'figure',label:suit?'Фигурка с костюмом':'Фигурка',price:basePrice??suit?.price??figurePrice},...extras];
 }
 export function totalPrice(selection,parts,basePrice){return priceBreakdown(selection,parts,basePrice).reduce((sum,row)=>sum+row.price,0);}

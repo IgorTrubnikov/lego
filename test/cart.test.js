@@ -1,9 +1,33 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {characterBasePrice,cartTotals,restoreCart,newCart,snapshotDetails,packagingOptions,refreshCart,assignGroup} from '../cart.js';
-import {withOptionalChoices,initialSelection,totalPrice} from '../parts.js';
+import {withOptionalChoices,initialSelection,totalPrice,choosePart} from '../parts.js';
 const item=(id,details=[],groupId='none')=>({id,groupId,selection:{...initialSelection},preview:'data:image/webp;base64,YQ==',details});
 const detail=(id,category,price)=>({id,category,label:category,name:id,price});
 const group=(id,type)=>({id,type});
+test('multiple additions toggle independently, count once and preserve all previews',()=>{
+ const parts=withOptionalChoices([
+  {id:'additional-card',category:'additional',name:'Карточка',price:200,image:'card.svg'},
+  {id:'additional-snowy-tree',category:'additional',name:'Ёлка',price:100,image:'tree.svg'},
+  {id:'additional-decorative-snow',category:'additional',name:'Снег',price:100,image:'snow.svg'},
+  {id:'altar-test',category:'altar',name:'Алтарь',price:400,image:'altar.svg'}
+ ]);
+ let selection={...initialSelection,additional:'additional-card',altar:'altar-test'};
+ selection=choosePart(selection,'additional','additional-snowy-tree',parts);
+ selection=choosePart(selection,'additional','additional-decorative-snow',parts);
+ assert.equal(totalPrice(selection,parts),1350);
+ const details=snapshotDetails(selection,parts);
+ assert.equal(details.filter(p=>p.category==='additional').length,3);
+ const previews=['data:image/webp;base64,YQ==','data:image/webp;base64,Yg=='];
+ const restored=restoreCart({...newCart(),items:[{...item('a',details),selection,additionalPreviews:[...previews,'https://example.com/a.png']}]});
+ assert.deepEqual(restored.items[0].additionalPreviews,previews);
+ assert.equal(cartTotals(restored).total,1350);
+ selection=choosePart(selection,'additional','additional-card',parts);
+ assert.equal(totalPrice(selection,parts),1150);
+ assert.equal(totalPrice({...selection,additionalItems:[...selection.additionalItems,'additional-snowy-tree','missing']},parts),1150);
+ selection=choosePart(selection,'additional','additional-none',parts);
+ assert.equal(totalPrice(selection,parts),950);
+ assert.deepEqual(selection.additionalItems,[]);
+});
 test('heart keychain includes one figure, preserves additions and restores its own preview',()=>{
  const card={id:'additional-card',category:'additional',name:'Карточка со своим фоном',price:200,image:'./additional/card.svg'};
  const parts=withOptionalChoices([card]);

@@ -2,6 +2,58 @@ import {test,expect} from '@playwright/test';
 const amount=async(page,selector='#total')=>Number((await page.locator(selector).innerText()).replace(/\D/g,''));
 const choose=async(page,category,id)=>{await page.locator(`[data-category="${category}"]`).click();await page.locator(`[data-part="${id}"]`).click();};
 
+test('multiple additions persist, export every thumbnail without clipping and can be removed separately',async({page})=>{
+ await page.goto('/');
+ const items=await page.evaluate(async()=>(await import('./catalog.js')).default.filter(p=>p.category==='additional'));
+ await choose(page,'altar','altar-photo-03');
+ await page.locator('[data-category="additional"]').click();
+ for(const part of items)await page.locator(`[data-part="${part.id}"]`).click();
+ await expect(page.locator('[data-additional-item]')).toHaveCount(7);
+ await expect(page.locator('#catalog [aria-pressed="true"]')).toHaveCount(7);
+ expect(await amount(page)).toBe(1750);
+ await page.reload();await expect(page.locator('[data-additional-item]')).toHaveCount(7);
+ await page.locator('#add-cart').click();await expect(page.locator('.cart-additional')).toHaveCount(7);
+ expect(await amount(page,'#cart-total')).toBe(1750);
+ await page.reload();await expect(page.locator('.cart-additional')).toHaveCount(7);
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('teuilor-cart-v1')));
+ expect(saved.items[0].details.filter(p=>p.category==='additional')).toHaveLength(7);
+ await page.evaluate(()=>{
+  window.__multiImages=[];window.__multiText=[];
+  const draw=CanvasRenderingContext2D.prototype.drawImage,fill=CanvasRenderingContext2D.prototype.fillText;
+  CanvasRenderingContext2D.prototype.drawImage=function(img,...args){if(this.canvas.width===1400)window.__multiImages.push({src:img.src,box:args,height:this.canvas.height});return draw.call(this,img,...args);};
+  CanvasRenderingContext2D.prototype.fillText=function(text,...args){window.__multiText.push(String(text));return fill.call(this,text,...args);};
+ });
+ const pending=page.waitForEvent('download');await page.locator('#save-png').click();expect(await (await pending).failure()).toBeNull();
+ const result=await page.evaluate(()=>({images:window.__multiImages,text:window.__multiText.join(' ')}));
+ const previews=[saved.items[0].altarPreview,...saved.items[0].additionalPreviews];
+ const thumbs=result.images.filter(img=>previews.includes(img.src));expect(thumbs).toHaveLength(8);
+ for(const image of thumbs){const [x,y,w,h]=image.box;expect(y+h).toBeLessThan(image.height);expect(x+w).toBeLessThan(1400);}
+ for(let i=0;i<thumbs.length;i++)for(let j=i+1;j<thumbs.length;j++){
+  const [ax,ay,aw,ah]=thumbs[i].box,[bx,by,bw,bh]=thumbs[j].box;
+  expect(ax+aw<=bx||bx+bw<=ax||ay+ah<=by||by+bh<=ay).toBe(true);
+ }
+ for(const part of items)expect(result.text).toContain(part.id);
+ expect(result.text).toContain('любая картинка');
+ await page.locator('[data-cart-edit]').click();
+ await page.locator('[data-remove-additional="additional-snowy-tree"]').click();
+ await expect(page.locator('[data-additional-item]')).toHaveCount(6);
+ await page.locator('#add-cart').click();await expect(page.locator('#cancel-edit')).toBeHidden();
+ expect(await amount(page,'#cart-total')).toBe(1650);await expect(page.locator('.cart-additional')).toHaveCount(6);
+ await page.locator('[data-cart-edit]').click();await choose(page,'additional','additional-none');
+ await expect(page.locator('#order-additional')).toBeHidden();
+ await page.locator('#add-cart').click();await expect(page.locator('#cancel-edit')).toBeHidden();expect(await amount(page,'#cart-total')).toBe(950);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+test('a legacy single addition joins the new multiple selection without losing its choice',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({additional:'additional-card'})));
+ await page.goto('/');await expect(page.locator('[data-additional-item]')).toHaveCount(1);
+ await choose(page,'additional','additional-snowy-tree');expect(await amount(page)).toBe(850);
+ await expect(page.locator('[data-additional-item]')).toHaveCount(2);
+ await page.locator('[data-part="additional-card"]').click();expect(await amount(page)).toBe(650);
+ await expect(page.locator('[data-additional-item="additional-snowy-tree"]')).toBeVisible();
+});
+
 test('tree, snow and the two distinct letters cost 100 and survive cart reload and order export',async({page})=>{
  await page.goto('/');
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
@@ -51,6 +103,7 @@ test('additional products show below the figure independently of altars and expl
   expect(await amount(page)).toBe(550+item.price);
   expect(await page.locator('#figure').innerHTML()).toBe(figure);
   await expect(page.locator('#additional-art [data-layer="additional"]')).toHaveAttribute('href',item.image);
+  await page.locator('[data-part="additional-none"]').click();
  }
  await choose(page,'additional','additional-card');
  await expect(page.locator('#additional-description')).toContainText('Фон выбираете вы');

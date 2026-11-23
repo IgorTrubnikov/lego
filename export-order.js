@@ -1,5 +1,5 @@
 import {cartTotals,detailIsExtra} from './cart.js';
-import {money,orderAddonCategories} from './parts.js';
+import {money,orderAddonCategories,selectedCategoryParts,additionalPreviews} from './parts.js';
 function wrapped(ctx,text,width){
  const lines=[];let line='';
  for(const word of String(text).split(/\s+/)){
@@ -20,11 +20,14 @@ export async function createCartPreviews(selection,parts){
   const preview=c.toDataURL('image/webp',.94);
   const addons={};
   for(const category of orderAddonCategories){
-   const addon=parts.find(p=>p.category===category&&p.id===selection[category]&&p.image);
-   if(!addon)continue;
+   const previews=[];
+   for(const addon of selectedCategoryParts(selection,parts,category)){
    const image=await load(new URL(addon.image,document.baseURI).href),[x,y,w,h]=(addon.previewBox||'0 0 600 720').split(' ').map(Number);
    const a=document.createElement('canvas');a.width=240;a.height=Math.round(240*h/w);a.getContext('2d').drawImage(image,x,y,w,h,0,0,a.width,a.height);
-   addons[category+'Preview']=a.toDataURL('image/webp',.94);
+   previews.push(a.toDataURL('image/webp',.94));
+   }
+   if(category==='additional')addons.additionalPreviews=previews;
+   if(previews.length)addons[category+'Preview']=previews[0];
   }
   return {preview,...addons};
  }finally{URL.revokeObjectURL(url);}
@@ -37,8 +40,9 @@ export async function createOrderPngs(cart){
   scratch.font='21px Arial';
   const details=line.item.details.map(p=>({p,names:wrapped(scratch,p.label+': '+p.name,770),notes:p.note?wrapped(scratch,p.note,770):[],codes:wrapped(scratch,p.id+' · '+(detailIsExtra(p)?money(p.price):'входит в фигурку')+(p.includedLabel?' · '+p.includedLabel:''),850)}));
   const textHeight=details.reduce((sum,d)=>sum+(d.names.length+d.notes.length)*29+d.codes.length*23+14,0);
-  const addons=await Promise.all(orderAddonCategories.map(category=>line.item[category+'Preview']).filter(Boolean).map(load));
-  return {...line,details,height:Math.max(640,textHeight+190)+(line.firstInGroup?140:0),image:await load(line.item.preview),addons};
+  const addons=await Promise.all([line.item.altarPreview,...additionalPreviews(line.item)].filter(Boolean).map(load));
+  const addonRows=Math.ceil(addons.length/2);
+  return {...line,details,height:Math.max(640+Math.max(0,addonRows-1)*155,textHeight+190)+(line.firstInGroup?140:0),image:await load(line.item.preview),addons};
  }));
  const pages=[];let current=[],height=0;
  for(const card of cards){if(current.length&&(height+card.height>2600||current.length===4)){pages.push(current);current=[];height=0;}current.push(card);height+=card.height;}
@@ -69,11 +73,11 @@ export async function createOrderPngs(cart){
    ctx.fillStyle='#ffffff';ctx.fillRect(35,top,1330,cardHeight-20);ctx.strokeStyle='#eadfe0';ctx.strokeRect(35,top,1330,cardHeight-20);
    ctx.fillStyle='#791e36';ctx.font='bold 27px Arial';ctx.fillText(`Персонаж ${card.index+1} — ${card.included&&!card.extras?'включён':money(card.total)}`,65,top+45);
    ctx.fillStyle='#746169';ctx.font='19px Arial';ctx.fillText(`${card.groupName} · ${card.included?'фигурка включена':`фигурка ${money(card.base)}`} + дополнения ${money(card.extras)}`,65,top+78);
-   const figureH=card.addons.length?Math.min(410,cardHeight-280):cardHeight-165;
+   const figureH=card.addons.length?Math.min(410,cardHeight-135-Math.ceil(card.addons.length/2)*155):cardHeight-165;
    contain(ctx,card.image,65,top+100,350,figureH);
    for(const [i,addon] of card.addons.entries()){
     const width=card.addons.length>1?165:230;
-    contain(ctx,addon,card.addons.length>1?65+i*175:120,top+105+figureH,width,145);
+    contain(ctx,addon,card.addons.length>1?65+(i%2)*175:120,top+105+figureH+Math.floor(i/2)*155,width,145);
    }
    let y=top+115;
    for(const detail of card.details){
