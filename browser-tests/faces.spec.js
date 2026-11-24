@@ -2,11 +2,11 @@ import {readFile} from 'node:fs/promises';
 import {exportDraftPng} from './helpers/figure-export.js';
 import {test,expect} from '@playwright/test';
 
-test('all 74 heads load transparently, select, update price and survive reload',async({page})=>{
+test('all 72 heads load transparently, select, update price and survive reload',async({page})=>{
  test.setTimeout(90_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');await page.locator('[data-category="face"]').click();
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
- const faces=catalog.filter(p=>p.category==='face');expect(faces).toHaveLength(74);
+ const faces=catalog.filter(p=>p.category==='face');expect(faces).toHaveLength(72);
  expect(faces.every(p=>p.price===0&&/^face-(catalog|additional)-\d\d$/.test(p.id))).toBe(true);
  const artwork=await page.evaluate(async faces=>Promise.all(faces.map(async face=>{
   const img=new Image();img.src=face.image;await img.decode();
@@ -27,21 +27,21 @@ test('all 74 heads load transparently, select, update price and survive reload',
  expect(errors).toEqual([]);
 });
 
-test('a removed test head resets to the new default without discarding other choices',async({page})=>{
- await page.addInitScript(()=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({face:'face-glasses',hair:'hair-renewed-07',torso:'torso-catalog-12',legs:'legs-catalog-21'})));
+for(const retired of ['face-glasses','face-additional-69','face-additional-70'])test(`removed head ${retired} resets to the default without discarding other choices`,async({page})=>{
+ await page.addInitScript(retired=>localStorage.setItem('teuilor-selection-v1',JSON.stringify({face:retired,hair:'hair-renewed-07',torso:'torso-catalog-12',legs:'legs-catalog-21'})),retired);
  await page.goto('/');
  await expect(page.locator('#figure [data-layer="face"]')).toHaveAttribute('href',/catalog-58__/);
  await expect(page.locator('#figure [data-layer="hair"]')).toHaveAttribute('href',/renewed-07__/);
  await expect(page.locator('#figure [data-layer="torso"]')).toHaveAttribute('href',/catalog-12__/);
  await expect(page.locator('#figure [data-layer="legs"]')).toHaveAttribute('href',/catalog-21__/);
- await page.locator('[data-category="face"]').click();await expect(page.locator('[data-part="face-glasses"]')).toHaveCount(0);
+ await page.locator('[data-category="face"]').click();await expect(page.locator(`[data-part="${retired}"]`)).toHaveCount(0);
 });
 
 
-test('all eight added heads persist and appear in PNG with their own face print',async({page})=>{
+test('all six retained added heads persist and appear in PNG with their own face print',async({page})=>{
  test.setTimeout(90_000);await page.goto('/');
  const faces=await page.evaluate(async()=>(await import('./catalog.js')).default.filter(p=>p.id.startsWith('face-additional-')));
- expect(faces).toHaveLength(8);
+ expect(faces).toHaveLength(6);
  for(const face of faces){
   await page.locator('[data-category="face"]').click();await page.locator(`[data-part="${face.id}"]`).click();
   await expect(page.locator('#total')).toHaveText(/550/);await page.reload();

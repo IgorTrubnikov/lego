@@ -1,4 +1,4 @@
-// Rebuild the eight reviewed heads without replacing the original collection.
+// Rebuild the six retained reviewed heads without replacing the original collection.
 import {chromium} from '@playwright/test';
 import {readFile,writeFile,readdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
