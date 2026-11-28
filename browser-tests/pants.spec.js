@@ -6,7 +6,8 @@ test('all 20 retained reference pants have a wider waist, complete feet and a tr
  test.setTimeout(90_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');await page.locator('[data-category="legs"]').click();
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
- const pants=catalog.filter(p=>p.category==='legs');expect(pants).toHaveLength(20);
+ const pants=catalog.filter(p=>p.category==='legs'&&!p.heightOffset);expect(pants).toHaveLength(20);
+ expect(catalog.filter(p=>p.category==='legs')).toHaveLength(26);
  expect(pants.every(p=>p.price===0&&/^legs-catalog-\d\d$/.test(p.id))).toBe(true);
  const artwork=await page.evaluate(async list=>Promise.all(list.map(async part=>{
   const img=new Image();img.src=part.image;await img.decode();

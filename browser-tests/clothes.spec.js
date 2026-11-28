@@ -2,12 +2,12 @@ import {readFile} from 'node:fs/promises';
 import {exportDraftPng} from './helpers/figure-export.js';
 import {test,expect} from '@playwright/test';
 
-test('all 34 available outfits keep their hands, fit below the head and select without a separate charge',async({page})=>{
+test('all 36 available outfits keep their hands, fit below the head and select without a separate charge',async({page})=>{
  test.setTimeout(90_000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');await page.locator('[data-category="torso"]').click();
  const catalog=await page.evaluate(async()=>(await import('./catalog.js')).default);
- const clothes=catalog.filter(p=>p.category==='torso');expect(clothes).toHaveLength(34);
- expect(clothes.every(p=>p.price===0&&/^torso-(catalog|plain)-\d\d$/.test(p.id))).toBe(true);
+ const clothes=catalog.filter(p=>p.category==='torso');expect(clothes).toHaveLength(36);
+ expect(clothes.every(p=>p.price===0&&/^torso-(catalog|plain|tank)-\d\d$/.test(p.id))).toBe(true);
  const artwork=await page.evaluate(async list=>Promise.all(list.map(async part=>{
   const img=new Image();img.src=part.image;await img.decode();
   const c=document.createElement('canvas');c.width=600;c.height=720;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);
@@ -17,7 +17,7 @@ test('all 34 available outfits keep their hands, fit below the head and select w
    visible++;if(x<bx||x>=bx+bw||y<by||y>=by+bh)outside++;
    if(y>=450&&x<220)leftHand++;if(y>=450&&x>=380)rightHand++;
   }
-  return {id:part.id,w:img.width,h:img.height,outside,visible,leftHand,rightHand,collar:ctx.getImageData(300,319,1,1).data[3]};
+  return {id:part.id,w:img.width,h:img.height,outside,visible,leftHand,rightHand,collar:ctx.getImageData(300,part.id.startsWith('torso-tank-')?322:319,1,1).data[3]};
  })),clothes);
  for(const a of artwork){
   expect([a.w,a.h],a.id).toEqual([600,720]);expect(a.outside,a.id).toBe(0);expect(a.visible,a.id).toBeGreaterThan(30000);

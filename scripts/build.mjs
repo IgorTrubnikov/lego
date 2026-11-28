@@ -77,6 +77,9 @@ export async function collectParts(root) {
       const rawLegsTop=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-legs-top=["']([^"']*)["']/)?.[1]:undefined;
       const legsTop=rawLegsTop===undefined?undefined:Number(rawLegsTop);
       if(rawLegsTop!==undefined&&(category!=='torso'||!Number.isSafeInteger(legsTop)||legsTop<1||legsTop>=720))throw new Error(`${folder}/${filename}: неверная граница брюк`);
+      const rawHeightOffset=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-height-offset=["']([^"']*)["']/)?.[1]:undefined;
+      const heightOffset=rawHeightOffset===undefined?undefined:Number(rawHeightOffset);
+      if(rawHeightOffset!==undefined&&(category!=='legs'||!Number.isSafeInteger(heightOffset)||heightOffset<1||heightOffset>160))throw new Error(`${folder}/${filename}: неверная поправка роста`);
       const rawOrder=format.toLowerCase()==='svg'?data.toString('utf8').match(/<svg\b[^>]*\bdata-catalog-order=["']([^"']*)["']/)?.[1]:undefined;
       const catalogOrder=rawOrder===undefined?(category==='accessory'?accessoryOrder.get(id):undefined):Number(rawOrder);
       if(rawOrder!==undefined&&(!['hair','animal','torso','accessory'].includes(category)||!Number.isSafeInteger(catalogOrder)||catalogOrder<1||catalogOrder>10000))throw new Error(`${folder}/${filename}: неверный порядок карточки`);
@@ -96,7 +99,7 @@ export async function collectParts(root) {
         if(back.length>2*1024*1024||dimensions.width!==size.width||dimensions.height!==size.height)throw new Error(`${folder}/${filename}: неверный размер заднего слоя причёски`);
       }
       ids.add(id);count++;
-      categoryParts.push({id,category,name,price,...(legsTop!==undefined?{legsTop}:{}),...(catalogOrder!==undefined?{catalogOrder}:{}),image:`./${folder}/${encodeURIComponent(filename)}`+versionQuery,...(previewBox?{previewBox}:{}),...(backImage?{backImage:backImage+versionQuery}:{}),...(includedLabel?{includedLabel}:{}),...(skirtMode?{skirtMode}:{})});
+      categoryParts.push({id,category,name,price,...(heightOffset!==undefined?{heightOffset}:{}),...(legsTop!==undefined?{legsTop}:{}),...(catalogOrder!==undefined?{catalogOrder}:{}),image:`./${folder}/${encodeURIComponent(filename)}`+versionQuery,...(previewBox?{previewBox}:{}),...(backImage?{backImage:backImage+versionQuery}:{}),...(includedLabel?{includedLabel}:{}),...(skirtMode?{skirtMode}:{})});
     }
     if(['hair','animal','torso','accessory'].includes(category))categoryParts.sort((a,b)=>(a.catalogOrder??Number.MAX_SAFE_INTEGER)-(b.catalogOrder??Number.MAX_SAFE_INTEGER));
     parts.push(...categoryParts);

@@ -73,12 +73,13 @@ export function figureScene(selection,parts){
  const hasChildren=chosen.some(p=>p.category==='children'),hasTransport=chosen.some(p=>p.category==='transport');
  const hasLargeAnimal=chosen.some(p=>p.category==='animal'&&largeAnimalIds.has(p.id));
  const legsTop=chosen.find(p=>p.category==='torso')?.legsTop;
+ const heightOffset=chosen.find(p=>p.category==='legs')?.heightOffset||0;
  const layers=chosen.map(part=>{
-  if(part.category==='legs'&&legsTop!==undefined)return {...part,x:0,y:0,scale:1,clipTop:legsTop};
+  if(part.category==='legs'&&legsTop!==undefined)return {...part,x:0,y:heightOffset,scale:1,clipTop:legsTop};
   if(part.category==='animal'&&largeAnimalIds.has(part.id))return {...part,x:450-415*(14/9),y:695-695*(14/9),scale:14/9};
   if(part.category==='transport'&&hasChildren)return {...part,x:-31,y:501,scale:.7};
   if(part.category==='children')return {...part,x:hasTransport?150:0,y:300,scale:1};
-  return {...part,x:0,y:part.category==='transport'?300:0,scale:1};
+  return {...part,x:0,y:part.category==='transport'?300:['legs','skirt','torso','face','hair','hair-back'].includes(part.category)?heightOffset:0,scale:1};
  });
  return {width:hasLargeAnimal?760:600,height:hasChildren||hasTransport?1020:720,layers};
 }

@@ -3,6 +3,22 @@ import assert from 'node:assert/strict';
 import { totalPrice,renderFigure,escapeHtml,withOptionalChoices,selectedFigureParts,choosePart,selectionCategories,figureScene } from '../parts.js';
 const parts=[{id:'h',category:'hair',price:250,image:'./haircuts/test.svg'},{id:'f',category:'face',price:150,image:'./faces/test.png'},{id:'t',category:'torso',price:350,image:'./clothes/test.webp'},{id:'l',category:'legs',price:250,image:'./pants/test.svg'}];
 const selection={hair:'h',face:'f',torso:'t',legs:'l'};
+test('short legs lower the unchanged upper body and keep other scene elements grounded',()=>{
+ const short={id:'short',category:'legs',price:0,image:'short.svg',heightOffset:48};
+ const catalog=[...parts,short,{id:'a',category:'accessory',price:100,image:'a.svg'},{id:'dog',category:'animal',price:200,image:'dog.svg'}];
+ const chosen={...selection,legs:short.id,accessory:'a',animal:'dog'};
+ const scene=figureScene(chosen,catalog);assert.equal(scene.height,720);
+ for(const category of ['hair','face','torso','legs'])assert.equal(scene.layers.find(p=>p.category===category).y,48);
+ for(const category of ['animal','accessory'])assert.equal(scene.layers.find(p=>p.category===category).y,0);
+ assert.ok(scene.layers.every(p=>p.scale===1));
+ const masked=figureScene(chosen,[...catalog.filter(p=>p.category!=='torso'),{...parts[2],legsTop:510}]);
+ assert.equal(masked.layers.find(p=>p.category==='legs').clipTop,510);
+ assert.match(renderFigure(chosen,catalog),/translate\(0 48\)/);
+ const suit={id:'s',category:'suit',price:550,image:'s.svg'};
+ assert.ok(figureScene({...chosen,suit:'s'},[...catalog,suit]).layers.every(p=>p.y===0));
+ const long={id:'long',category:'skirt',price:100,image:'long.svg',skirtMode:'replace-legs'};
+ assert.ok(figureScene({...chosen,skirt:'long'},[...catalog,long]).layers.every(p=>p.y===0));
+});
 test('figure price includes all four core details even with legacy part prices',()=>{
  assert.equal(totalPrice(selection,parts),550);
  assert.equal(totalPrice({...selection,hair:'new'},[...parts,{id:'new',category:'hair',price:0}]),550);

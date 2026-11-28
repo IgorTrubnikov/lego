@@ -226,9 +226,11 @@ test('six retained additional faces preserve previous heads and source order wit
 test('torso catalog removes retired IDs and groups solid colors before prints and medical clothing',async()=>{
  const config=JSON.parse(await readFile(new URL('../scripts/plain-torsos/order.json',import.meta.url),'utf8'));
  const tops=(await collectParts(new URL('../',import.meta.url).pathname)).filter(p=>p.category==='torso');
- assert.equal(tops.length,34);
+ assert.equal(tops.length,36);
  const numbers=tops.map(p=>Number(p.name.split(' · ')[0]));
- assert.deepEqual(numbers,config.groups.flatMap(g=>g.numbers));
+ assert.deepEqual(numbers.filter(n=>![50,51].includes(n)),config.groups.flatMap(g=>g.numbers));
+ assert.equal(numbers.indexOf(51),numbers.indexOf(50)+1);
+ assert.ok(numbers.indexOf(50)<numbers.indexOf(config.groups[1].numbers[0]));
  for(const n of config.retired)assert.ok(!numbers.includes(n));
  assert.equal(tops.filter(p=>p.id.startsWith('torso-plain-')).length,9);
  assert.ok(tops.every(p=>p.price===0));
@@ -246,6 +248,26 @@ test('upper pants masking metadata is accepted only on torsos with a valid bound
  await writeFile(path.join(root,'pants/test__250__Деталь.svg'),svg.replace('<svg ','<svg data-legs-top="510" '));
  await assert.rejects(collectParts(root),/граница брюк/);
 }));
+
+test('short height metadata only belongs to legs and the new parts retain their labels and zero prices',async()=>{
+ await fixture(async root=>{
+  const file=path.join(root,'pants/test__250__Деталь.svg');
+  await writeFile(file,svg.replace('<svg ','<svg data-height-offset="48" '));
+  assert.equal((await collectParts(root)).find(p=>p.category==='legs').heightOffset,48);
+  for(const value of ['0','-1','161','48.5','bad']){
+   await writeFile(file,svg.replace('<svg ',`<svg data-height-offset="${value}" `));await assert.rejects(collectParts(root),/поправка роста/);
+  }
+  await writeFile(file,svg);
+  await writeFile(path.join(root,'clothes/test__250__Деталь.svg'),svg.replace('<svg ','<svg data-height-offset="48" '));
+  await assert.rejects(collectParts(root),/поправка роста/);
+ });
+ const catalog=await collectParts(new URL('../',import.meta.url).pathname);
+ const shorts=catalog.filter(p=>p.category==='legs'&&p.heightOffset);
+ assert.equal(shorts.length,6);assert.deepEqual(shorts.map(p=>Number(p.name.split(' · ')[0])),[29,30,31,32,33,34]);
+ assert.ok(shorts.every(p=>p.heightOffset===48&&p.price===0&&p.name.includes('Короткие')));
+ const tanks=catalog.filter(p=>p.id.startsWith('torso-tank-'));assert.equal(tanks.length,2);
+ assert.ok(tanks.every(p=>p.price===0&&p.name.includes('без рукавов')));
+});
 
 test('original uploaded torso sheets and reviewed masks are preserved with native-resolution cutouts',async()=>{
  const base=new URL('../scripts/original-torsos/',import.meta.url);
